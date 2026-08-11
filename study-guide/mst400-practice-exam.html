@@ -279,6 +279,9 @@ p { margin: 0 0 1rem; }
   gap: 0.45rem;
 }
 
+/* display:flex above outranks the UA [hidden] rule, so restore it explicitly */
+.bar__stat[hidden] { display: none; }
+
 .bar__stat b {
   font-size: 1.05rem;
   letter-spacing: 0;
@@ -288,6 +291,20 @@ p { margin: 0 0 1rem; }
 
 #clock.is-warn b { color: var(--warn); }
 #clock.is-crit b { color: var(--bad); }
+#runningScore b { color: var(--accent); }
+
+.verdictline {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 1.15rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+.verdictline.ok { color: var(--good); }
+.verdictline.no { color: var(--bad); }
 
 .bar__spacer { flex: 1; }
 
@@ -380,6 +397,21 @@ p { margin: 0 0 1rem; }
 .opt.is-wrong em { color: var(--bad); }
 .opt[disabled] { cursor: default; }
 
+.opt .mine {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid currentColor;
+  padding: 0.05rem 0.35rem;
+  margin-left: 0.5rem;
+  white-space: nowrap;
+  vertical-align: 0.08em;
+}
+.opt.is-right .mine { color: var(--good); }
+.opt.is-wrong .mine { color: var(--bad); }
+
 textarea {
   width: 100%;
   min-height: 9rem;
@@ -426,6 +458,9 @@ textarea:focus { border-color: var(--accent); }
 .dot:hover { border-color: var(--accent); color: var(--ink); }
 .dot.is-answered { background: var(--sunken); color: var(--ink); border-color: var(--rule); }
 .dot.is-current { border-color: var(--accent); color: var(--accent); font-weight: 700; box-shadow: inset 0 0 0 1px var(--accent); }
+.dot.is-ok { border-color: var(--good); color: var(--good); background: var(--good-soft); }
+.dot.is-no { border-color: var(--bad); color: var(--bad); background: var(--bad-soft); }
+.dot.is-part { border-color: var(--warn); color: var(--warn); background: var(--warn-soft); }
 .dot.is-flagged::after {
   content: "";
   position: absolute;
@@ -451,6 +486,11 @@ textarea:focus { border-color: var(--accent); }
 .legend i.f { background: var(--sunken); }
 .legend i.g { border-color: var(--accent); }
 .legend i.w { background: var(--warn); border-color: var(--warn); border-radius: 50%; }
+.legend i.ok { background: var(--good-soft); border-color: var(--good); }
+.legend i.no { background: var(--bad-soft); border-color: var(--bad); }
+.legend .only-immediate { display: none; }
+.legend.is-immediate .only-immediate { display: inline-flex; }
+.legend.is-immediate .only-end { display: none; }
 
 /* ---------- results ---------- */
 
@@ -616,7 +656,8 @@ textarea:focus { border-color: var(--accent); }
       <h1>Draw a practice paper</h1>
       <p class="lede">Every paper is a fresh random draw, and the answer options are reshuffled each
         time, so you cannot memorise position. Questions are scenario-based: you are given a
-        situation and asked what you would actually do.</p>
+        situation and asked what you would actually do. By default each answer is marked
+        straight away, with the reasoning, before you move on.</p>
     </div>
 
     <h2>Choose a paper</h2>
@@ -659,6 +700,22 @@ textarea:focus { border-color: var(--accent); }
       </div>
     </div>
 
+    <h2>Marking</h2>
+    <div class="modes">
+      <button class="mode" type="button" data-fb="immediate" aria-pressed="true">
+        <span class="spec">Learn as you go</span>
+        <b>Check as I go</b>
+        <small>Marks each question the moment you answer it and shows the correct answer and
+          the reasoning before you move on. Best for learning the material.</small>
+      </button>
+      <button class="mode" type="button" data-fb="end" aria-pressed="false">
+        <span class="spec">Exam conditions</span>
+        <b>Grade at the end</b>
+        <small>No feedback until you submit, so nothing tips you off mid-paper. Best for a
+          realistic dress rehearsal.</small>
+      </button>
+    </div>
+
     <div class="nav-row">
       <button class="btn" id="start" type="button">Start paper</button>
       <span class="hint" id="startNote"></span>
@@ -675,6 +732,7 @@ textarea:focus { border-color: var(--accent); }
       <span class="bar__stat" id="clock" hidden>Time left <b id="clockVal">80:00</b></span>
       <span class="bar__stat">Question <b id="counter">1 / 29</b></span>
       <span class="bar__stat">Answered <b id="answered">0 / 29</b></span>
+      <span class="bar__stat" id="runningScore" hidden>Score <b id="runningVal">0 / 0</b></span>
       <span class="bar__spacer"></span>
       <button class="btn btn--sm" id="submit" type="button">Submit paper</button>
       <span class="meter"><span id="progress"></span></span>
@@ -692,8 +750,10 @@ textarea:focus { border-color: var(--accent); }
     <div class="navigator">
       <h3>Paper</h3>
       <div class="dots" id="dots"></div>
-      <div class="legend">
-        <span><i class="f"></i> answered</span>
+      <div class="legend" id="legend">
+        <span class="only-end"><i class="f"></i> answered</span>
+        <span class="only-immediate"><i class="ok"></i> correct</span>
+        <span class="only-immediate"><i class="no"></i> wrong</span>
         <span><i class="g"></i> current</span>
         <span><i class="w"></i> flagged</span>
         <span>keys: A&ndash;D to answer, &larr; &rarr; to move</span>
@@ -791,12 +851,22 @@ window.__GUIDE__ = "https://claude.ai/code/artifact/21b14a1c-59f3-472f-a832-1356
     focus:  { label: 'Module focus',   count: 15, sa: 2, minutes: 0  }
   };
   var mode = 'full';
+  var feedback = 'immediate';
   var picked = {};
 
-  Array.prototype.forEach.call(document.querySelectorAll('.mode'), function (b) {
+  Array.prototype.forEach.call(document.querySelectorAll('.mode[data-fb]'), function (b) {
+    b.addEventListener('click', function () {
+      feedback = b.dataset.fb;
+      Array.prototype.forEach.call(document.querySelectorAll('.mode[data-fb]'), function (o) {
+        o.setAttribute('aria-pressed', String(o === b));
+      });
+    });
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.mode[data-mode]'), function (b) {
     b.addEventListener('click', function () {
       mode = b.dataset.mode;
-      Array.prototype.forEach.call(document.querySelectorAll('.mode'), function (o) {
+      Array.prototype.forEach.call(document.querySelectorAll('.mode[data-mode]'), function (o) {
         o.setAttribute('aria-pressed', String(o === b));
       });
       $('#picker').hidden = mode !== 'focus';
@@ -846,7 +916,7 @@ window.__GUIDE__ = "https://claude.ai/code/artifact/21b14a1c-59f3-472f-a832-1356
     var picks = mcPool.slice(0, wantMC).concat(saPool.slice(0, wantSA));
 
     paper = shuffle(picks).map(function (q) {
-      var item = { q: q, flagged: false, chosen: null, text: '', grade: null };
+      var item = { q: q, flagged: false, chosen: null, text: '', grade: null, revealed: false };
       if (q.type === 'mc') {
         var order = shuffle(q.options.map(function (_, i) { return i; }));
         item.order = order;
@@ -868,6 +938,7 @@ window.__GUIDE__ = "https://claude.ai/code/artifact/21b14a1c-59f3-472f-a832-1356
     } else {
       $('#clock').hidden = true;
     }
+    $('#legend').classList.toggle('is-immediate', feedback === 'immediate');
     show('exam');
     renderQuestion();
     renderDots();
@@ -903,18 +974,59 @@ window.__GUIDE__ = "https://claude.ai/code/artifact/21b14a1c-59f3-472f-a832-1356
     h += '<div class="scenario"><p>' + esc(q.scenario) + '</p></div>';
     h += '<p class="qtext">' + esc(q.q) + '</p>';
 
+    var shown = feedback === 'immediate' && it.revealed;
+
     if (q.type === 'mc') {
       h += '<div class="opts">';
       it.order.forEach(function (srcIx, pos) {
-        h += '<button class="opt" type="button" data-pos="' + pos + '" aria-pressed="' +
-             (it.chosen === pos) + '"><em>' + 'ABCD'[pos] + '</em><span>' +
-             esc(q.options[srcIx]) + '</span></button>';
+        var k = '';
+        if (shown) {
+          if (pos === it.correct) k = ' is-right';
+          else if (pos === it.chosen) k = ' is-wrong';
+        }
+        h += '<button class="opt' + k + '" type="button" data-pos="' + pos + '"' +
+             (shown ? ' disabled' : '') + ' aria-pressed="' + (it.chosen === pos) + '"><em>' +
+             'ABCD'[pos] + '</em><span>' + esc(q.options[srcIx]) +
+             (shown && pos === it.chosen ? '<i class="mine">your answer</i>' : '') +
+             '</span></button>';
       });
       h += '</div>';
+
+      if (shown) {
+        var right = it.chosen === it.correct;
+        h += '<p class="verdictline ' + (right ? 'ok' : 'no') + '">' +
+             (right ? '✓ Correct' : '✗ Not quite — ' + 'ABCD'[it.correct] + ' is right') + '</p>';
+        h += '<div class="explain"><strong>Why:</strong> ' + esc(q.explain) + '</div>';
+      }
     } else {
-      h += '<textarea id="sa" placeholder="Write your answer. Aim for the key terms — graders scan for them.">' +
+      h += '<textarea id="sa"' + (shown ? ' disabled' : '') +
+           ' placeholder="Write your answer. Aim for the key terms — graders scan for them.">' +
            esc(it.text) + '</textarea>';
-      h += '<p class="hint">You will grade this yourself against a model answer at the end.</p>';
+
+      if (!shown) {
+        h += '<div class="nav-row" style="margin-top:0.9rem">';
+        h += '<button class="btn btn--ghost btn--sm" id="check" type="button">Check my answer</button>';
+        h += '<span class="hint">Reveals the model answer, then you grade yourself.</span>';
+        h += '</div>';
+      } else {
+        h += '<h3 style="margin-top:1.3rem">Model answer</h3><p class="model">' + esc(q.model) + '</p>';
+        var lower = it.text.toLowerCase();
+        var hits = 0;
+        var th = '';
+        q.keyTerms.forEach(function (t) {
+          var hit = lower.indexOf(t.toLowerCase()) !== -1;
+          if (hit) hits++;
+          th += '<b class="' + (hit ? 'hit' : '') + '">' + esc(t) + '</b>';
+        });
+        h += '<h3>Key terms a grader scans for — you hit ' + hits + ' of ' + q.keyTerms.length + '</h3>';
+        h += '<div class="terms">' + th + '</div>';
+        h += '<h3 style="margin-top:1.2rem">How did you do?</h3>';
+        h += '<div class="grade" id="sagrade">' +
+             '<button class="btn btn--quiet btn--sm" data-g="got" aria-pressed="' + (it.grade === 'got') + '">Got it</button>' +
+             '<button class="btn btn--quiet btn--sm" data-g="part" aria-pressed="' + (it.grade === 'part') + '">Partial</button>' +
+             '<button class="btn btn--quiet btn--sm" data-g="miss" aria-pressed="' + (it.grade === 'miss') + '">Missed</button>' +
+             '</div>';
+      }
     }
 
     $('#qcard').innerHTML = h;
@@ -929,10 +1041,12 @@ window.__GUIDE__ = "https://claude.ai/code/artifact/21b14a1c-59f3-472f-a832-1356
     Array.prototype.forEach.call($('#qcard').querySelectorAll('.opt'), function (b) {
       b.addEventListener('click', function () {
         it.chosen = Number(b.dataset.pos);
+        if (feedback === 'immediate') it.revealed = true;
         renderQuestion();
         renderDots();
       });
     });
+
     var ta = $('#sa');
     if (ta) {
       ta.addEventListener('input', function () {
@@ -942,13 +1056,51 @@ window.__GUIDE__ = "https://claude.ai/code/artifact/21b14a1c-59f3-472f-a832-1356
         renderDots();
       });
     }
+
+    var check = $('#check');
+    if (check) {
+      check.addEventListener('click', function () {
+        it.revealed = true;
+        renderQuestion();
+        renderDots();
+      });
+    }
+
+    var sg = $('#sagrade');
+    if (sg) {
+      Array.prototype.forEach.call(sg.querySelectorAll('button'), function (b) {
+        b.addEventListener('click', function () {
+          it.grade = b.dataset.g;
+          renderQuestion();
+          renderDots();
+        });
+      });
+    }
+
+    updateRunningScore();
+  }
+
+  function updateRunningScore() {
+    var el = $('#runningScore');
+    if (feedback !== 'immediate') { el.hidden = true; return; }
+    var done = paper.filter(function (it) { return it.revealed; });
+    el.hidden = done.length === 0;
+    var got = done.reduce(function (a, it) { return a + scoreOf(it); }, 0);
+    $('#runningVal').textContent = (Math.round(got * 10) / 10) + ' / ' + done.length;
   }
 
   function renderDots() {
     var h = '';
     paper.forEach(function (it, i) {
       var done = it.q.type === 'mc' ? it.chosen !== null : it.text.trim().length > 0;
-      h += '<button class="dot' + (done ? ' is-answered' : '') +
+      var state = done ? ' is-answered' : '';
+      if (feedback === 'immediate' && it.revealed) {
+        var s = scoreOf(it);
+        // A short answer stays neutral until it has been self-graded.
+        if (it.q.type === 'sa' && it.grade === null) state = ' is-answered';
+        else state = s === 1 ? ' is-ok' : s === 0.5 ? ' is-part' : ' is-no';
+      }
+      h += '<button class="dot' + state +
            (it.flagged ? ' is-flagged' : '') + (i === cur ? ' is-current' : '') +
            '" data-i="' + i + '" type="button" aria-label="Question ' + (i + 1) + '">' + (i + 1) + '</button>';
     });
@@ -982,9 +1134,6 @@ window.__GUIDE__ = "https://claude.ai/code/artifact/21b14a1c-59f3-472f-a832-1356
   // ---------- results ----------
   function finish() {
     if (ticker) { clearInterval(ticker); ticker = null; }
-    paper.forEach(function (it) {
-      if (it.q.type === 'sa') it.grade = null;
-    });
     renderResults();
     show('results');
   }
@@ -1076,7 +1225,8 @@ window.__GUIDE__ = "https://claude.ai/code/artifact/21b14a1c-59f3-472f-a832-1356
           if (pos === it.correct) k = ' is-right';
           else if (pos === it.chosen) k = ' is-wrong';
           rh += '<button class="opt' + k + '" type="button" disabled><em>' + 'ABCD'[pos] +
-                '</em><span>' + esc(q.options[srcIx]) + (pos === it.chosen ? '  ← your answer' : '') +
+                '</em><span>' + esc(q.options[srcIx]) +
+                (pos === it.chosen ? '<i class="mine">your answer</i>' : '') +
                 '</span></button>';
         });
         rh += '</div>';
