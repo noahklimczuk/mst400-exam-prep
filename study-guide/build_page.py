@@ -823,7 +823,7 @@ def main() -> None:
       </dl>
       <p class="cross">
         <a href="{EXAM_URL}" target="_blank" rel="noopener">Practice exam &rarr;</a>
-        <span>155 scenario questions, random papers, 80-minute timed mock. Read here, then test there.</span>
+        <span>155 scenario questions marked as you go, random draws, 80-minute timed mock. Read here, then test there.</span>
       </p>
     </header>
 

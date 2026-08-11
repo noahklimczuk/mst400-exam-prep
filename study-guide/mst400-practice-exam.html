@@ -252,6 +252,8 @@ p { margin: 0 0 1rem; }
 
 .btn--sm { padding: 0.4rem 0.85rem; font-size: 0.85rem; }
 
+.btn--end:hover { color: var(--bad); border-color: var(--bad); }
+
 /* ---------- exam bar ---------- */
 
 .bar {
@@ -653,14 +655,14 @@ textarea:focus { border-color: var(--accent); }
   <section id="setup" class="screen is-active">
     <div class="setup-head">
       <p class="eyebrow">MST400 &middot; Practice engine &middot; 155 questions</p>
-      <h1>Draw a practice paper</h1>
-      <p class="lede">Every paper is a fresh random draw, and the answer options are reshuffled each
+      <h1>Draw a practice test</h1>
+      <p class="lede">Every test is a fresh random draw, and the answer options are reshuffled each
         time, so you cannot memorise position. Questions are scenario-based: you are given a
         situation and asked what you would actually do. By default each answer is marked
         straight away, with the reasoning, before you move on.</p>
     </div>
 
-    <h2>Choose a paper</h2>
+    <h2>Choose a test</h2>
     <div class="modes">
       <button class="mode" type="button" data-mode="full" aria-pressed="true">
         <span class="spec">29 questions &middot; 80 min</span>
@@ -711,13 +713,13 @@ textarea:focus { border-color: var(--accent); }
       <button class="mode" type="button" data-fb="end" aria-pressed="false">
         <span class="spec">Exam conditions</span>
         <b>Grade at the end</b>
-        <small>No feedback until you submit, so nothing tips you off mid-paper. Best for a
+        <small>No feedback until you submit, so nothing tips you off mid-test. Best for a
           realistic dress rehearsal.</small>
       </button>
     </div>
 
     <div class="nav-row">
-      <button class="btn" id="start" type="button">Start paper</button>
+      <button class="btn" id="start" type="button">Start test</button>
       <span class="hint" id="startNote"></span>
     </div>
 
@@ -734,7 +736,7 @@ textarea:focus { border-color: var(--accent); }
       <span class="bar__stat">Answered <b id="answered">0 / 29</b></span>
       <span class="bar__stat" id="runningScore" hidden>Score <b id="runningVal">0 / 0</b></span>
       <span class="bar__spacer"></span>
-      <button class="btn btn--sm" id="submit" type="button">Submit paper</button>
+      <button class="btn btn--sm" id="submit" type="button">End test</button>
       <span class="meter"><span id="progress"></span></span>
     </div>
 
@@ -743,12 +745,13 @@ textarea:focus { border-color: var(--accent); }
     <div class="nav-row">
       <button class="btn btn--quiet" id="prev" type="button">&larr; Previous</button>
       <button class="btn btn--quiet" id="next" type="button">Next &rarr;</button>
-      <span class="grow"></span>
       <button class="btn btn--quiet" id="flag" type="button" aria-pressed="false">Flag for review</button>
+      <span class="grow"></span>
+      <button class="btn btn--quiet btn--end" id="endTest" type="button">End test &amp; see results</button>
     </div>
 
     <div class="navigator">
-      <h3>Paper</h3>
+      <h3>Test</h3>
       <div class="dots" id="dots"></div>
       <div class="legend" id="legend">
         <span class="only-end"><i class="f"></i> answered</span>
@@ -782,7 +785,7 @@ textarea:focus { border-color: var(--accent); }
     <div class="review" id="review"></div>
 
     <div class="nav-row" style="margin-top:2rem">
-      <button class="btn" id="retake" type="button">Draw another paper</button>
+      <button class="btn" id="retake" type="button">Draw another test</button>
       <span class="hint">A new random selection, with options reshuffled again.</span>
     </div>
   </section>
@@ -1122,11 +1125,14 @@ window.__GUIDE__ = "https://claude.ai/code/artifact/21b14a1c-59f3-472f-a832-1356
     renderDots();
   });
 
-  $('#submit').addEventListener('click', function () {
+  function endTest() {
     var left = paper.length - answeredCount();
-    if (left > 0 && !confirm(left + ' question(s) are unanswered. Submit anyway?')) return;
+    if (left > 0 && !confirm(left + ' question(s) are unanswered. End the test anyway?')) return;
     finish();
-  });
+  }
+
+  $('#submit').addEventListener('click', endTest);
+  $('#endTest').addEventListener('click', endTest);
 
   $('#start').addEventListener('click', startExam);
   $('#retake').addEventListener('click', function () { show('setup'); });
@@ -1158,7 +1164,7 @@ window.__GUIDE__ = "https://claude.ai/code/artifact/21b14a1c-59f3-472f-a832-1356
     var ungraded = paper.filter(function (it) { return it.q.type === 'sa' && it.grade === null; }).length;
     $('#verdict').textContent = ungraded
       ? 'Grade your ' + ungraded + ' short answer(s) below and the score will update.'
-      : (pct >= 85 ? 'Strong. Draw another paper to confirm it holds across different questions.'
+      : (pct >= 85 ? 'Strong. Draw another test to confirm it holds across different questions.'
         : pct >= 70 ? 'Solid pass. Work the weakest modules below, then re-draw.'
         : 'Below where you want to be on Thursday. Reread the weak modules before drawing again.');
 
@@ -1188,7 +1194,7 @@ window.__GUIDE__ = "https://claude.ai/code/artifact/21b14a1c-59f3-472f-a832-1356
       $('#weak').hidden = false;
       $('#weakList').innerHTML = 'Reread ' + weak.map(function (m) {
         return '<strong>' + esc(MODNAME[m]) + '</strong>';
-      }).join(', ') + ' in the <a href="' + GUIDE + '" target="_blank" rel="noopener">study guide</a>, then draw a fresh paper.';
+      }).join(', ') + ' in the <a href="' + GUIDE + '" target="_blank" rel="noopener">study guide</a>, then draw a fresh test.';
     } else {
       $('#weak').hidden = true;
     }
