@@ -1822,139 +1822,139 @@ Azure PowerShell = **`<Verb>-Az<Noun>`**. Verbs: `New` (create), `Get` (read), `
 Answer all 45, then check the key at the end. Aim for 40+.
 
 **1.** How many IP addresses does Azure reserve in every subnet?
-A) 3 B) 4 C) **5** D) 6
+A) 3 B) 4 C) 5 D) 6
 
 **2.** A resource group tagged `Environment=Prod` contains 10 VMs. How many VMs have that tag?
-A) All 10 B) **0** C) Only new ones D) Depends on Azure Policy
+A) All 10 B) 0 C) Only new ones D) Depends on Azure Policy
 
 **3.** Which two lock types does Azure Resource Manager support?
-A) Write and Delete B) **ReadOnly and Delete** C) Full and Partial D) CanNotWrite and CanNotDelete
+A) Write and Delete B) ReadOnly and Delete C) Full and Partial D) CanNotWrite and CanNotDelete
 
 **4.** Which roles can create or delete management locks?
-A) Contributor and Owner B) **Owner and User Access Administrator** C) Reader and Owner D) Any role with write permission
+A) Contributor and Owner B) Owner and User Access Administrator C) Reader and Owner D) Any role with write permission
 
 **5.** Which NSG rule is evaluated first: priority 200 or priority 4000?
-A) 4000 B) **200** C) Both simultaneously D) Whichever is on the NIC
+A) 4000 B) 200 C) Both simultaneously D) Whichever is on the NIC
 
 **6.** For inbound traffic to a VM, which NSG is evaluated first?
-A) The NIC NSG B) **The subnet NSG** C) Whichever has lower priority D) Azure Firewall
+A) The NIC NSG B) The subnet NSG C) Whichever has lower priority D) Azure Firewall
 
 **7.** Azure Firewall processes rules in what order?
-A) Application → Network → NAT B) Network → NAT → Application C) **NAT → Network → Application** D) All simultaneously
+A) Application → Network → NAT B) Network → NAT → Application C) NAT → Network → Application D) All simultaneously
 
 **8.** Which Azure Firewall rule type would you use to allow outbound traffic to `*.microsoft.com` over HTTPS?
-A) NAT rule B) Network rule C) **Application rule** D) DNAT rule
+A) NAT rule B) Network rule C) Application rule D) DNAT rule
 
 **9.** What must the VPN gateway subnet be named?
-A) VPNSubnet B) **GatewaySubnet** C) AzureGatewaySubnet D) Any name is fine
+A) VPNSubnet B) GatewaySubnet C) AzureGatewaySubnet D) Any name is fine
 
 **10.** VNet A is peered to VNet B, and VNet B is peered to VNet C. Can resources in A reach C?
-A) Yes, automatically B) **No — peering is non-transitive** C) Only with gateway transit D) Only if in the same region
+A) Yes, automatically B) No — peering is non-transitive C) Only with gateway transit D) Only if in the same region
 
 **11.** Which is Layer 7?
-A) Azure Load Balancer B) **Application Gateway** C) Both D) Neither
+A) Azure Load Balancer B) Application Gateway C) Both D) Neither
 
 **12.** An Application Gateway requires a dedicated subnet of at least what size?
-A) /24 B) /28 C) **/27** D) /29
+A) /24 B) /28 C) /27 D) /29
 
 **13.** How many route tables can be associated with a single subnet?
-A) Unlimited B) Up to 5 C) **One** D) One per next hop type
+A) Unlimited B) Up to 5 C) One D) One per next hop type
 
 **14.** Which blob type is used for Azure VM OS and data disks?
-A) Block blob B) Append blob C) **Page blob** D) Managed blob
+A) Block blob B) Append blob C) Page blob D) Managed blob
 
 **15.** Which blob type is optimized for logging?
-A) Block blob B) **Append blob** C) Page blob D) Table blob
+A) Block blob B) Append blob C) Page blob D) Table blob
 
 **16.** Can a blob's type be changed after creation?
-A) Yes B) **No** C) Only within 30 days D) Only for block blobs
+A) Yes B) No C) Only within 30 days D) Only for block blobs
 
 **17.** Minimum storage duration for the Archive tier?
-A) 30 days B) 90 days C) **180 days** D) 365 days
+A) 30 days B) 90 days C) 180 days D) 365 days
 
 **18.** Which redundancy option provides 6 replicas across 2 regions with read access to the secondary?
-A) GRS B) **RA-GRS** C) ZRS D) LRS
+A) GRS B) RA-GRS C) ZRS D) LRS
 
 **19.** Which redundancy option writes synchronously to three zones AND asynchronously to a secondary region?
-A) GRS B) ZRS C) **GZRS** D) RA-GRS
+A) GRS B) ZRS C) GZRS D) RA-GRS
 
 **20.** Storage Service Encryption uses which algorithm and can it be disabled?
-A) 128-bit AES, yes B) **256-bit AES, no** C) 256-bit RSA, yes D) 512-bit AES, no
+A) 128-bit AES, yes B) 256-bit AES, no C) 256-bit RSA, yes D) 512-bit AES, no
 
 **21.** What is the SLA for two or more VMs deployed across two or more availability zones?
-A) 99.9% B) 99.95% C) **99.99%** D) 99.999%
+A) 99.9% B) 99.95% C) 99.99% D) 99.999%
 
 **22.** What is the SLA for two or more VMs in an availability set?
-A) 99.9% B) **99.95%** C) 99.99% D) None
+A) 99.9% B) 99.95% C) 99.99% D) None
 
 **23.** By default, how many update domains does an availability set have?
-A) 2 B) 3 C) **5** D) 20
+A) 2 B) 3 C) 5 D) 20
 
 **24.** Which disk on an Azure VM should NOT be used to store data you need to keep?
-A) OS disk B) Data disk C) **Temporary disk** D) Managed disk
+A) OS disk B) Data disk C) Temporary disk D) Managed disk
 
 **25.** How many deployment slots does the Standard App Service tier support?
-A) 0 B) **5** C) 10 D) 20
+A) 0 B) 5 C) 10 D) 20
 
 **26.** Which App Service tiers support backup?
-A) Free and Shared B) Basic and above C) **Standard and Premium** D) All tiers
+A) Free and Shared B) Basic and above C) Standard and Premium D) All tiers
 
 **27.** Max size of an App Service backup?
-A) 1 GB B) 5 GB C) **10 GB** D) 100 GB
+A) 1 GB B) 5 GB C) 10 GB D) 100 GB
 
 **28.** "Scale out" for a web app means:
-A) Change the pricing tier B) **Increase the number of VM instances** C) Add more disk D) Move to another region
+A) Change the pricing tier B) Increase the number of VM instances C) Add more disk D) Move to another region
 
 **29.** What is a container group?
-A) A Kubernetes namespace B) **A collection of containers scheduled on the same host machine** C) A container registry D) A Docker image layer
+A) A Kubernetes namespace B) A collection of containers scheduled on the same host machine C) A container registry D) A Docker image layer
 
 **30.** Which statement about container isolation is true?
-A) Containers isolate better than VMs B) **VMs provide a stronger security boundary than containers** C) They are identical D) Containers run their own kernel
+A) Containers isolate better than VMs B) VMs provide a stronger security boundary than containers C) They are identical D) Containers run their own kernel
 
 **31.** How long are backups preserved in soft-delete state after deletion?
-A) 7 days B) **14 days** C) 30 days D) 90 days
+A) 7 days B) 14 days C) 30 days D) 90 days
 
 **32.** How long is the Azure Activity Log retained?
-A) 30 days B) 60 days C) **90 days** D) 1 year
+A) 30 days B) 60 days C) 90 days D) 1 year
 
 **33.** By default, how long are VM backup instant-restore snapshots retained, and what is the configurable range?
-A) 1 day, 1–7 B) **2 days, 1–5** C) 5 days, 1–10 D) 7 days, 1–14
+A) 1 day, 1–7 B) 2 days, 1–5 C) 5 days, 1–10 D) 7 days, 1–14
 
 **34.** Which limitation applies to the MARS agent?
-A) Requires a separate backup server B) **Not application aware; file, folder, and volume-level restore only** C) Cannot back up Windows D) Requires System Center
+A) Requires a separate backup server B) Not application aware; file, folder, and volume-level restore only C) Cannot back up Windows D) Requires System Center
 
 **35.** Which backup component can back up VMware VMs and provides app-aware snapshots?
-A) MARS agent B) **Azure Backup Server (MABS)** C) Azure Site Recovery D) Managed disk snapshots
+A) MARS agent B) Azure Backup Server (MABS) C) Azure Site Recovery D) Managed disk snapshots
 
 **36.** You need to recover from an entire Azure region going offline. Which service?
-A) Azure Backup B) **Azure Site Recovery** C) Managed disk snapshots D) Soft delete
+A) Azure Backup B) Azure Site Recovery C) Managed disk snapshots D) Soft delete
 
 **37.** Which Network Watcher tool tells you whether a packet is allowed or denied to/from a VM?
-A) Next Hop B) Topology C) **IP Flow Verify** D) Packet Capture
+A) Next Hop B) Topology C) IP Flow Verify D) Packet Capture
 
 **38.** Which Network Watcher tool shows hop-by-hop latency between a source VM and a destination?
-A) IP Flow Verify B) **Connection Troubleshoot** C) NSG Flow Logs D) Effective Security Rules
+A) IP Flow Verify B) Connection Troubleshoot C) NSG Flow Logs D) Effective Security Rules
 
 **39.** Azure Monitor data falls into which two fundamental types?
-A) Alerts and actions B) **Metrics and logs** C) Events and traces D) Signals and conditions
+A) Alerts and actions B) Metrics and logs C) Events and traces D) Signals and conditions
 
 **40.** How many action groups can be attached to a single alert rule?
-A) 1 B) 3 C) **5** D) Unlimited
+A) 1 B) 3 C) 5 D) Unlimited
 
 **41.** In Entra ID, which feature requires a P2 license?
-A) MFA B) Conditional Access C) **Privileged Identity Management (PIM)** D) Self-service password reset
+A) MFA B) Conditional Access C) Privileged Identity Management (PIM) D) Self-service password reset
 
 **42.** Which membership type is available only for security groups (not Microsoft 365 groups)?
-A) Assigned B) Dynamic User C) **Dynamic Device** D) Nested
+A) Assigned B) Dynamic User C) Dynamic Device D) Nested
 
 **43.** A user's Source in Entra ID shows "Windows Server AD". What type of user is this?
-A) Cloud identity B) **Directory-synchronized identity** C) Guest user D) Service principal
+A) Cloud identity B) Directory-synchronized identity C) Guest user D) Service principal
 
 **44.** Which record types can verify a custom domain name in Entra ID?
-A) A or CNAME B) **MX or TXT** C) NS or SOA D) SRV or PTR
+A) A or CNAME B) MX or TXT C) NS or SOA D) SRV or PTR
 
 **45.** Which two things does an Azure Cloud Shell session require?
-A) A VM and a public IP B) **A storage account and an Azure File share (plus a resource group)** C) A VNet and an NSG D) Nothing — it's fully serverless
+A) A VM and a public IP B) A storage account and an Azure File share (plus a resource group) C) A VNet and an NSG D) Nothing — it's fully serverless
 
 ### Answer key
 1-C · 2-B · 3-B · 4-B · 5-B · 6-B · 7-C · 8-C · 9-B · 10-B · 11-B · 12-C · 13-C · 14-C · 15-B · 16-B · 17-C · 18-B · 19-C · 20-B · 21-C · 22-B · 23-C · 24-C · 25-B · 26-C · 27-C · 28-B · 29-B · 30-B · 31-B · 32-C · 33-B · 34-B · 35-B · 36-B · 37-C · 38-B · 39-B · 40-C · 41-C · 42-C · 43-B · 44-B · 45-B
