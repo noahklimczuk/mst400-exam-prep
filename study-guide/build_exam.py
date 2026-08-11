@@ -192,6 +192,28 @@ p { margin: 0 0 1rem; }
   color: var(--accent);
 }
 
+.cross {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 2.5rem;
+  padding: 0.85rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  font-size: 0.93rem;
+}
+
+.cross a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.cross a:hover { border-bottom-color: var(--accent); }
+.cross span { color: var(--muted); }
+
 .picker { margin: 0 0 2rem; }
 .picker[hidden] { display: none; }
 
@@ -1077,6 +1099,11 @@ def main() -> None:
       <button class="btn" id="start" type="button">Start paper</button>
       <span class="hint" id="startNote"></span>
     </div>
+
+    <p class="cross">
+      <a href="{GUIDE_URL}" target="_blank" rel="noopener">Study guide &rarr;</a>
+      <span>All eleven modules, the lab recap, and the cram sheet of numbers. Read there, then test here.</span>
+    </p>
   </section>
 
   <section id="exam" class="screen">

@@ -11,6 +11,8 @@ HERE = Path(__file__).parent
 SRC = HERE / "MST400-Final-Exam-Study-Guide.md"
 OUT = HERE / "mst400-study-guide.html"
 
+EXAM_URL = "https://claude.ai/code/artifact/f0879343-655d-44c9-b27c-a2d97503a664"
+
 STYLE = """
 :root {
   color-scheme: light dark;
@@ -229,6 +231,44 @@ body {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
+
+.cross {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+  padding: 0.85rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  font-size: 0.93rem;
+}
+
+.cross a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.cross a:hover { border-bottom-color: var(--accent); }
+.cross span { color: var(--muted); }
+
+.rail__cta {
+  display: block;
+  margin: 1.4rem 0 0;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+.rail__cta:hover { border-color: var(--accent); }
+.rail__cta b { display: block; color: var(--accent); font-size: 0.86rem; }
+.rail__cta span { color: var(--muted); }
 
 /* ---------- prose ---------- */
 
@@ -761,6 +801,10 @@ def main() -> None:
 {nav}
       </ol>
     </nav>
+    <a class="rail__cta" href="{EXAM_URL}" target="_blank" rel="noopener">
+      <b>Practice exam &rarr;</b>
+      <span>155 scenario questions</span>
+    </a>
   </aside>
 
   <main class="main" id="main">
@@ -777,6 +821,10 @@ def main() -> None:
         <div><dt>Format</dt><dd>MC + short answer</dd></div>
         <div><dt>Materials</dt><dd>Closed book</dd></div>
       </dl>
+      <p class="cross">
+        <a href="{EXAM_URL}" target="_blank" rel="noopener">Practice exam &rarr;</a>
+        <span>155 scenario questions, random papers, 80-minute timed mock. Read here, then test there.</span>
+      </p>
     </header>
 
     <div class="prose">
