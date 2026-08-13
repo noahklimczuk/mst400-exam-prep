@@ -1,409 +1,929 @@
 [
-{"id":"m8-01","module":"M8","type":"mc",
- "scenario":"An application owner needs the highest uptime SLA Azure offers for virtual machines and has budget for redundancy.",
- "q":"What must you deploy, and what SLA does it carry?",
- "options":["Two or more VM instances across two or more availability zones in the same region, for 99.99%","Two or more VM instances in an availability set, for 99.99%","A single VM using premium storage, for 99.95%","Two or more VM instances in one availability zone, for 99.99%"],
- "answer":[0],
- "explain":"The three SLA tiers are 99.99% for two or more VMs across two or more availability zones in the same region, 99.95% for two or more VMs in an availability set, and 99.9% for a single VM using premium storage. This was the point of Lab 05 Task 1, where you selected both Zone 1 and Zone 2 in one deployment."},
-
-{"id":"m8-02","module":"M8","type":"mc",
- "scenario":"A team stored an application cache on the D: drive of a Windows VM. After Azure performed host maintenance the directory was empty.",
- "q":"What happened?",
- "options":["That is the temporary disk, which is not a managed disk and is only intended for data such as page or swap files","The OS disk was reimaged during maintenance and lost the cache","The data disk was detached automatically during maintenance","Managed disks are wiped when a VM is deallocated"],
- "answer":[0],
- "explain":"Every VM contains a temporary disk, which is not a managed disk. It provides short-term storage for applications and processes and is intended only to store data such as page or swap files. Every VM also has one OS disk, registered as a SATA drive and labelled C: by default, and optionally data disks, which are managed disks for application data you need to keep."},
-
-{"id":"m8-03","module":"M8","type":"mc",
- "scenario":"During planned platform maintenance, Azure must never reboot more than one group of your availability set VMs at a time.",
- "q":"Which construct provides this, and what is the default count?",
- "options":["Update domains; five by default, configurable up to 20","Fault domains; three by default, configurable up to 20","Availability zones; three by default","Scale set instances; two by default"],
- "answer":[0],
- "explain":"During planned maintenance only one update domain is rebooted at a time. By default there are five non-user-configurable update domains, but you can configure up to 20. A fault domain, by contrast, defines a group of VMs sharing a common set of hardware and switches, such as a server rack with shared power or networking, and therefore a single point of failure."},
-
-{"id":"m8-04","module":"M8","type":"mc",
- "scenario":"You are designing a three-tier application with web, business, and database tiers, all requiring redundancy within one datacenter.",
- "q":"What is the recommended availability set design?",
- "options":["Configure each application tier into separate availability sets, and combine them with a load balancer","Place all nine VMs in one availability set so Azure spreads them evenly","Use one availability set per virtual machine","Skip availability sets and use a single large VM per tier with premium storage"],
- "answer":[0],
- "explain":"The guidance is that VMs in an availability set should perform an identical set of functions and have the same software installed, each application tier should be configured into separate availability sets, availability sets should be combined with a load balancer, and managed disks should be used."},
-
-{"id":"m8-05","module":"M8","type":"mc",
- "scenario":"In Lab 05 you changed a running VM from its original size to Standard DS1_v2.",
- "q":"What kind of scaling is this, and what is its main limitation?",
- "options":["Vertical scaling (scale up or down); it generally has more limitations, being bounded by the largest available size and requiring a restart","Horizontal scaling (scale out or in); it is limited by the load balancer backend pool size","Reprovisioning; it destroys and recreates the VM automatically","Autoscaling; it only works on scale sets"],
- "answer":[0],
- "explain":"Vertical scaling, also known as scale up and scale down, means increasing or decreasing virtual machine sizes in response to a workload, and generally has more limitations. Horizontal scaling, or scale out and scale in, alters the number of VMs and is more flexible in a cloud situation. Reprovisioning means removing an existing VM and replacing it with a new one."},
-
-{"id":"m8-06","module":"M8","type":"mc",
- "scenario":"Demand on a web application swings from 2 servers overnight to 6 at peak, and you want Azure to add and remove instances automatically based on CPU.",
- "q":"What do you deploy?",
- "options":["A virtual machine scale set with a custom autoscale rule based on the Percentage CPU metric, plus instance limits","Six VMs in an availability set, manually stopped and started","A single large VM resized on a schedule","An Application Gateway with autoscaling enabled"],
- "answer":[0],
- "explain":"A scale set can automatically increase or decrease the number of VM instances running your application so you can dynamically scale to meet changing demand, and autoscaling can also be scheduled to change capacity at fixed times. Lab 05 configured a scale-out rule on Percentage CPU greater than 10 over 1 minute increasing count by 1, a scale-in rule under the threshold decreasing count by 1, and instance limits of minimum 2, maximum 6, default 2."},
-
-{"id":"m8-07","module":"M8","type":"mc",
- "scenario":"A runaway autoscale rule could theoretically create dozens of VM instances and generate an enormous bill.",
- "q":"Which setting prevents this?",
- "options":["Instance limits: the minimum, maximum, and default instance counts on the scaling blade","The cool down period on the scale-out rule","The time grain statistic on the metric","The orchestration mode of the scale set"],
- "answer":[0],
- "explain":"Instance limits ensure you do not scale out beyond the maximum number of instances or scale in beyond the minimum. The cool down period only delays how soon the next scale action can occur; it does not cap the total."},
-
-{"id":"m8-08","module":"M8","type":"mc",
- "scenario":"Security requires that administrators be able to RDP and SSH to VMs across a virtual network without any of those VMs having a public IP address and without opening 3389 to the internet.",
- "q":"What do you deploy?",
- "options":["Azure Bastion","A jump box VM with a public IP and an NSG restricting source addresses","A point-to-site VPN for each administrator","Windows Remote Management over the public IP"],
- "answer":[0],
- "explain":"Bastion provides secure RDP and SSH connectivity to all VMs in the virtual network in which it is provisioned, from the browser, so the VMs need no public IP. The other connection methods covered are RDP and WinRM for Windows, which establishes a command-line session, and SSH clients such as PuTTY for Linux."},
-
-{"id":"m8-09","module":"M8","type":"mc",
- "scenario":"After deploying a VM from the gallery you must automatically install and configure IIS with no manual steps and no custom image.",
- "q":"What do you use?",
- "options":["A VM extension such as the Custom Script Extension","An ARM template outputs section","A managed disk snapshot of a pre-built server","Azure Site Recovery replication"],
- "answer":[0],
- "explain":"Extensions are small applications that provide post-deployment VM configuration and automation tasks. They are managed with Azure CLI, PowerShell, ARM templates, and the portal, can be bundled with a new VM deployment or run against an existing system, and differ between Windows and Linux. Cloud-init is the Linux equivalent applied at provisioning time."},
-
-{"id":"m8-10","module":"M8","type":"mc",
- "scenario":"In Lab 05 you created a 32 GiB Standard HDD data disk, detached it, changed it to Standard SSD, and reattached it.",
- "q":"What does detaching a disk do?",
- "options":["Removes the disk from the VM but keeps it in storage for later use","Deletes the disk and its data permanently","Converts the disk to a snapshot in the same resource group","Moves the disk to the temporary storage tier"],
- "answer":[0],
- "explain":"Detaching removes the disk from the VM but keeps it in storage for later use, which is why you could then change its size and performance tier independently under the Disks resource and reattach it. Note that the NIC, disk, and public IP are all independently created and managed resources."},
-
-{"id":"m8-11","module":"M8","type":"mc",
- "scenario":"You need a VM naming convention that identifies environment, role, and location at a glance, as the module recommends.",
- "q":"Which example follows the pattern taught, and why does the name matter?",
- "options":["deveus-webvm01, because the VM name is used as the computer name and should be meaningful and consistent","vm-00000001, because unique GUIDs prevent collisions","WEBSERVER, because short names are easier to type","Any name; the VM name is independent of the guest computer name"],
- "answer":[0],
- "explain":"The VM name is used as the computer name, so choose names that are meaningful and consistent. The example given is deveus-webvm01, representing the first development web server hosted in the US South Central location."},
-
-{"id":"m8-12","module":"M8","type":"mc",
- "scenario":"An architect asks which of the three impact scenarios describes Azure predicting that hardware associated with a physical machine is about to fail.",
- "q":"Which is it?",
- "options":["Unplanned hardware maintenance","Unexpected downtime","Planned maintenance","Fault domain rebalancing"],
- "answer":[0],
- "explain":"An unplanned hardware maintenance event occurs when the Azure platform predicts that the hardware or any platform component associated to a physical machine is about to fail. Unexpected downtime is when hardware or physical infrastructure fails without warning, and planned maintenance is periodic Microsoft updates to the underlying platform."},
-
-{"id":"m8-13","module":"M8","type":"mc",
- "scenario":"You need to change a running VM to a size that is not offered in the resize list.",
- "q":"What does the module say about this?",
- "options":["When you stop and deallocate the VM you can select any size available in your region","Sizes can never be changed after creation; redeploy instead","Only sizes in the same family are ever available","Resizing requires the VM to be in an availability set"],
- "answer":[0],
- "explain":"The resize list for a running VM is constrained by the hardware cluster it currently sits on. When you stop and deallocate the VM, you can select any size available in your region, because Azure is then free to place it on different hardware."},
-
-{"id":"m8-14","module":"M8","type":"mc",
- "scenario":"In Lab 05 you created the scale set and were asked to choose an orchestration mode, selecting Uniform.",
- "q":"What does Uniform mode mean?",
- "options":["All instances are identical, created from a single VM configuration","Instances are spread uniformly across all availability zones only","Instances can mix VM sizes and configurations within one scale set","Instances are updated all at once rather than in batches"],
- "answer":[0],
- "explain":"Uniform orchestration creates identical VMs from a single configuration, which is the classic scale set model. Flexible orchestration is the alternative and allows a mix of VM types and configurations in one scale set."},
-
-{"id":"m8-15","module":"M8","type":"sa",
- "scenario":"A client currently runs two VMs in a single availability set and is asking whether moving them to availability zones is worth the migration effort.",
- "q":"Explain the difference in what each protects against, and quote the SLA for each.",
- "model":"An availability set protects against rack-level hardware failure and planned maintenance inside a single datacenter. It works through fault domains, which group VMs sharing a common set of hardware and switches such as a server rack with shared power or networking, and update domains, of which there are five by default configurable up to 20, where only one update domain is rebooted at a time during planned maintenance. Two or more VM instances in an availability set carry a 99.95% SLA. Availability zones are unique physical locations within an Azure region, each made up of one or more datacenters with independent power, cooling, and networking, with a minimum of three separate zones in every enabled region. The physical separation protects applications and data from a whole datacenter failure, which an availability set cannot survive. Two or more VM instances deployed across two or more availability zones in the same region carry a 99.99% SLA, the industry best VM uptime SLA. So the migration buys datacenter-level fault tolerance and moves the SLA from 99.95% to 99.99%.",
- "keyTerms":["availability set","fault domain","update domain","rack","planned maintenance","99.95","availability zone","independent power","cooling","networking","datacenter failure","99.99","three zones"]},
-
-{"id":"m9-01","module":"M9","type":"mc",
- "scenario":"A web app on the Basic tier needs a staging environment where a new build can be validated and then promoted with no downtime.",
- "q":"What must change first?",
- "options":["Scale up the App Service plan to Standard or higher, because Free, Shared, and Basic support zero deployment slots","Nothing; Basic supports up to five slots","Move the app to a different region where slots are available","Enable continuous deployment, which creates slots automatically"],
- "answer":[0],
- "explain":"Slot availability by tier is Free, Shared, and Basic zero; Standard up to five; Premium up to 20; Isolated up to 20. Slots are live apps with their own hostnames that let you validate changes before sending them to production, avoid a cold start, eliminate downtime, and fall back to a last known good site."},
-
-{"id":"m9-02","module":"M9","type":"mc",
- "scenario":"After swapping a staging slot into production, the operations team is surprised that the custom domain and SSL certificate did not move with the code.",
- "q":"Why?",
- "options":["Endpoints, custom domain names, SSL certificates, and scaling are not sticky to the slot and stay with the slot they were configured on","Custom domains can only be configured on the production slot","The swap was performed with Auto Swap, which excludes networking settings","The certificate expired during the swap"],
- "answer":[0],
- "explain":"Slot settings fall into three categories: slot-specific app settings and connection strings, continuous deployment settings, and App Service authentication settings. Not all settings are sticky, and the module names endpoints, custom domain names, SSL certificates, and scaling as the ones that do not follow the swap in the way you might expect."},
-
-{"id":"m9-03","module":"M9","type":"mc",
- "scenario":"Traffic to a web app is rising and response times are climbing, but the app is single-threaded and cannot use more CPU cores effectively.",
- "q":"Which scaling workflow is appropriate?",
- "options":["Scale out: increase the number of VM instances that run the app","Scale up: change the pricing tier for more CPU and memory","Reprovision the app in a larger region","Enable deployment slots to distribute traffic"],
- "answer":[0],
- "explain":"Scale up gets more CPU, memory, disk space, and extra features by changing the App Service plan, which will not help an app that cannot use more cores. Scale out increases the number of VM instances running the app, which adds parallel capacity. Autoscaling can scale on a metric such as CPU percentage, memory percentage, or HTTP requests, or on a schedule."},
-
-{"id":"m9-04","module":"M9","type":"mc",
- "scenario":"A web app must be backed up nightly along with its connected database, and the app currently runs on a Basic plan.",
- "q":"What do you tell the owner?",
- "options":["App Service backup requires a Standard or Premium plan and supports up to 10 GB of app and database content","Backup is available on all tiers but limited to 1 GB on Basic","Backups require the Isolated tier only","Backup only covers file content, never the connected database"],
- "answer":[0],
- "explain":"App Service backup can run manually or on a schedule, backs up the configuration, file content, and database connected to the app, requires a Standard or Premium plan, is limited to 10 GB of app and database content, supports partial backups with exclusions, and can restore on demand to a previous state or into a new app."},
-
-{"id":"m9-05","module":"M9","type":"mc",
- "scenario":"In Lab 06 you pointed the staging slot at an external Git repository so that pushes to the branch would appear in the slot automatically.",
- "q":"Which App Service feature is this?",
- "options":["Continuous deployment, configured in the Deployment Center","Deployment slots auto swap","Application Insights release annotations","App Service authentication"],
- "answer":[0],
- "explain":"The portal provides out-of-the-box continuous integration and deployment with Azure DevOps, GitHub, Bitbucket, FTP, or a local Git repository. Whenever code updates are pushed to source control, the website or web app automatically picks up the updates. In the lab you selected External Git with the php-docs-hello-world repository on the master branch."},
-
-{"id":"m9-06","module":"M9","type":"mc",
- "scenario":"You need a production web app to answer at www.contoso.ca rather than contoso.azurewebsites.net.",
- "q":"What are the configuration steps?",
- "options":["Register the domain, then create DNS records mapping it to the web app using a CNAME or A record","Rename the web app to www.contoso.ca in the Overview blade","Add the domain as a custom domain in Entra ID and verify it with a TXT record","Create a private DNS zone named contoso.ca and link it to the app service plan"],
- "answer":[0],
- "explain":"When you create a web app Azure assigns it a subdomain of azurewebsites.net. To use a custom domain you register the domain name, create DNS records that map the domain to your Azure web app, and create a CNAME or A record with the mapping. Note that the MX or TXT record answer belongs to Entra ID custom domain verification, which is a different task."},
-
-{"id":"m9-07","module":"M9","type":"mc",
- "scenario":"A team must host two applications from competing client companies on the same infrastructure, and the contract requires a strong security boundary between them.",
- "q":"Which hosting model does the module recommend, and why?",
- "options":["Virtual machines, because they provide complete isolation from the host OS and other VMs, which matters when a strong security boundary is critical","Containers, because their lightweight isolation is sufficient for any multi-tenant workload","Containers in separate container groups on the same host","Either, since isolation is identical"],
- "answer":[0],
- "explain":"Containers typically provide lightweight isolation from the host and other containers but do not provide as strong a security boundary as a virtual machine. VMs provide complete isolation from the host operating system and other VMs, which the module explicitly says is useful when hosting apps from competing companies on the same server or cluster."},
-
-{"id":"m9-08","module":"M9","type":"mc",
- "scenario":"A developer needs to run a single containerized batch job in Azure without provisioning virtual machines and without standing up an orchestrator.",
- "q":"Which service fits?",
- "options":["Azure Container Instances","Azure Kubernetes Service","Azure App Service on a Premium plan","A virtual machine scale set running Docker"],
- "answer":[0],
- "explain":"Azure Container Instances let you run a container in Azure without managing virtual machines and without a higher-level service. Azure Container Apps go a step further by managing the cluster environment for you, unlike AKS where you must still manage the cluster."},
-
-{"id":"m9-09","module":"M9","type":"mc",
- "scenario":"You need two containers scheduled together on the same host, sharing a single public IP with one exposed port and mounting Azure file shares as volumes.",
- "q":"What construct is this?",
- "options":["A container group","A Kubernetes namespace","A container registry","A container image layer"],
- "answer":[0],
- "explain":"A container group is a collection of containers scheduled on the same host machine. It is assigned a DNS name label, exposes a single public IP address with one exposed port, and can include Azure file shares as volume mounts, with each container mounting one of the shares locally."},
-
-{"id":"m9-10","module":"M9","type":"mc",
- "scenario":"A build pipeline needs to take a Dockerfile and produce an image, then place that image in a registry for deployment.",
- "q":"Which two Docker operations are involved, in order?",
- "options":["Build, then push","Pull, then build","Push, then pull","Build, then pull"],
- "answer":[0],
- "explain":"Build refers to the action of building a container image based on the information and context provided by the Dockerfile. Push refers to uploading a container image to a container registry, and pull refers to downloading one from a registry. A Dockerfile is a text file of build instructions, where the first line identifies the base image."},
-
-{"id":"m9-11","module":"M9","type":"mc",
- "scenario":"You need live telemetry on request rates, response times, failure rates, page load performance, and exceptions for a production web app.",
- "q":"What do you enable?",
- "options":["Application Insights, a feature of Azure Monitor","Azure Backup Center reporting","Log Analytics connected sources","Network Watcher connection monitor"],
- "answer":[0],
- "explain":"Application Insights, a feature of Azure Monitor, monitors your live applications and shows request rates, deny rates, response time and failure rates, page views and load performance, user and session counts, performance counters, and diagnostics and exceptions."},
-
-{"id":"m9-12","module":"M9","type":"mc",
- "scenario":"Two web apps and one API in the same region will run on shared compute to reduce cost.",
- "q":"Which statement about App Service plans is correct?",
- "options":["One or more apps can be configured to run on the same computing resources in a single App Service plan","Each app requires its own App Service plan","App Service plans define the runtime stack, which all apps on the plan must share","App Service plans are global and span regions"],
- "answer":[0],
- "explain":"An App Service plan defines a set of compute resources for a web app to run, and one or more apps can be configured to run on the same computing resources in the plan. Each plan defines a region, a number of VM instances, and the size of those instances. Runtime stack is a per-app setting, not a plan setting."},
-
-{"id":"m9-13","module":"M9","type":"sa",
- "scenario":"In Lab 06 you created a staging slot with Do not clone settings, pointed it at an external Git repository, verified the Hello World page on the staging URL, and then swapped.",
- "q":"Explain what swapping achieves that deploying straight to production does not, and one precaution to take before swapping.",
- "model":"Deployment slots are live apps with their own hostnames, so the new build runs on real App Service infrastructure at a separate URL where it can be validated before any user sees it. Swapping then promotes the tested code into production, which avoids a cold start and eliminates downtime because the instances are already warmed up and running, whereas deploying directly to production restarts the production app and serves a cold, unverified build to live users. Swapping also gives an instant rollback path, since you can swap back to fall back to a last known good site. Auto Swap is available when pre-swap validation is not needed. The precaution is to check which settings are slot-specific versus which follow the swap: slot-specific app settings and connection strings, continuous deployment settings, and App Service authentication settings are configured per slot, while endpoints, custom domain names, SSL certificates, and scaling are not sticky, so verify that connection strings point at the right database before promoting.",
- "keyTerms":["live apps","own hostnames","validate","before","no downtime","cold start","roll back","last known good","slot-specific","connection strings","not sticky"]},
-
-{"id":"m10-01","module":"M10","type":"mc",
- "scenario":"A ransomware attack encrypts files on an on-premises Windows file server. You need to restore individual folders from before the attack.",
- "q":"Which backup component protects this workload?",
- "options":["The Azure Backup MARS agent, which backs up files and folders on physical or virtual Windows machines with no separate backup server required","Azure Site Recovery replication of the file server","A managed disk snapshot of the server volume","Azure Backup Server (MABS), which is the only option for file-level restore"],
- "answer":[0],
- "explain":"The MARS agent backs up files and folders on physical or virtual Windows OS, on-premises or in Azure, and requires no separate backup server. Its limits are backup three times per day, not application aware, file, folder, and volume-level restore only, and no support for Linux. MABS is also capable here but adds app-aware snapshots and Linux support on Hyper-V and VMware, which this scenario does not require."},
-
-{"id":"m10-02","module":"M10","type":"mc",
- "scenario":"You must back up SQL Server and Exchange with application-consistent, app-aware snapshots and also protect VMware virtual machines, without buying a System Center license.",
- "q":"Which component do you deploy?",
- "options":["Azure Backup Server (MABS)","The MARS agent on each application server","Azure Site Recovery","Managed disk snapshots on a schedule"],
- "answer":[0],
- "explain":"MABS and DPM provide app-aware backups optimized for common apps including SQL Server, Exchange, and SharePoint, offer full flexibility on backup timing and recovery granularity, support Linux on Hyper-V and VMware VMs, can back up and restore VMware VMs, and do not require a System Center license. Its limits are that it cannot back up Oracle workloads, always requires a live Azure subscription, and has no support for tape backup."},
-
-{"id":"m10-03","module":"M10","type":"mc",
- "scenario":"An entire Azure region hosting your production application goes offline. The business needs the application running again in a different region within minutes.",
- "q":"Which service is designed for this?",
- "options":["Azure Site Recovery, which replicates workloads to a secondary location so you can fail over and later fail back","Azure Backup, restoring the latest recovery point into a new region","Managed disk snapshots copied to the second region","Geo-redundant storage on the VM disks"],
- "answer":[0],
- "explain":"Azure Site Recovery protects VMs from a major disaster scenario when a whole region experiences an outage; you recover with a single click and replicate to an Azure region of your choice. When an outage occurs you fail over to the secondary location, and after the primary is running again you fail back. Azure Backup protects against data loss such as accidental deletion or corruption, which is a different problem."},
-
-{"id":"m10-04","module":"M10","type":"mc",
- "scenario":"In Lab 07 you created the first Recovery Services vault in East US and the second one in West US.",
- "q":"Why did the regions differ?",
- "options":["A backup vault must be in the same region as the VMs it protects, while the Site Recovery target vault must be in a different region than the VM","Vaults are always created in pairs across regions for redundancy","The second vault was in West US only to reduce cost","Site Recovery requires the target vault to be in the same region as the source for low latency"],
- "answer":[0],
- "explain":"The lab instructions state explicitly that for backup you must specify the same region into which you deployed virtual machines, and for the replication vault you must specify a different region than the virtual machine. That difference reflects the purpose of each: backup protects data locally, replication protects against the loss of the whole region."},
-
-{"id":"m10-05","module":"M10","type":"mc",
- "scenario":"You delete a backup item by mistake and immediately try to reclaim the storage cost.",
- "q":"What happens to the deleted backup?",
- "options":["It is preserved in a soft-delete state for 14 additional days","It is deleted immediately and cannot be recovered","It is retained for 90 days matching the activity log","It is retained for 7 days, matching the storage account default"],
- "answer":[0],
- "explain":"Even after a backup is deleted it is preserved in a soft-delete state for 14 additional days. This has a practical consequence seen in Lab 07: simply deleting resource groups will not delete the Recovery Services vault, and you must delete the backups and the vault first, which the portal supports through a generated PowerShell script run in Cloud Shell."},
-
-{"id":"m10-06","module":"M10","type":"mc",
- "scenario":"Azure is the primary backup storage endpoint for a production workload, and the business wants protection if the region is lost.",
- "q":"Which vault storage replication type should you choose, and when would the alternative apply?",
- "options":["Geo-redundant, which is the default; choose locally redundant when Azure is a non-primary backup endpoint, to reduce cost","Locally redundant, which is the default; choose geo-redundant only for on-premises workloads","Zone-redundant, which is the only option for Recovery Services vaults","Read-access geo-redundant, which is required for all VM backups"],
- "answer":[0],
- "explain":"If you are using Azure as a primary backup storage endpoint use the default geo-redundant storage. If Azure is a non-primary backup storage endpoint, choose locally redundant storage, which reduces the cost of storing data in Azure. Note that the storage replication type can only be configured if there are no existing backup items in the vault."},
-
-{"id":"m10-07","module":"M10","type":"mc",
- "scenario":"An Azure VM backup job is running. You are asked whether a restore can begin before the data reaches the vault.",
- "q":"What is correct?",
- "options":["Yes. Snapshots taken as part of a backup job are available for recovery without waiting for data transfer to the vault to finish","No. The backup must complete its transfer to the vault first","Yes, but only for VMs smaller than 32 TB in total disk size","No, unless the instant restore retention is set to 5 days"],
- "answer":[0],
- "explain":"An Azure backup job has two phases: a VM snapshot is taken, then the snapshot is transferred to the Recovery Services vault. Retaining snapshots locally reduces backup and restore times, the default retention is two days and is configurable between 1 and 5 days, disk sizes up to 32 TB are supported, and snapshots are usable for recovery without waiting for the vault transfer to complete."},
-
-{"id":"m10-08","module":"M10","type":"mc",
- "scenario":"You enable backup on a VM that was built from a custom image several years ago, and the backup extension fails to install.",
- "q":"What is the most likely prerequisite that is missing?",
- "options":["The Azure VM Agent, which must be installed for the Backup extension to work","A Recovery Services vault in a different region","Soft delete enabled on the vault","Geo-redundant storage on the OS disk"],
- "answer":[0],
- "explain":"The Azure VM Agent must be installed on the Azure virtual machine for the Backup extension to work. If the VM was created from the Azure gallery the agent is already present, which is why custom or older images are the usual cause of this failure."},
-
-{"id":"m10-09","module":"M10","type":"mc",
- "scenario":"A development team needs a fast, simple way to capture the state of a managed disk before a risky change, with no vault and no policy.",
- "q":"Which VM data protection option fits?",
- "options":["Managed disk snapshots, which exist independently of the source disk and can be used to create new managed disks","Azure Backup with a daily policy","Azure Site Recovery replication","An image captured from a generalized VM"],
- "answer":[0],
- "explain":"For development and test environments, snapshots provide a quick and simple option for backing up VMs that use managed disks; you can back up at any point in time and the snapshots exist independently of the source disk and can be used to create new managed disks. Images, by contrast, are captured from a custom VHD or a generalized sysprepped VM and are used to create many VMs."},
-
-{"id":"m10-10","module":"M10","type":"mc",
- "scenario":"A backup administrator must oversee backups spanning several vaults, subscriptions, regions, and tenants from one place, and produce detailed reports.",
- "q":"What do you point them at?",
- "options":["Backup Center, which provides a single pane of glass and integrates with Azure Workbooks and Azure Monitor Logs","Each individual Recovery Services vault Overview blade","Azure Site Recovery replicated items","Storage account diagnostic settings"],
- "answer":[0],
- "explain":"Backup Center provides unified management to govern, monitor, operate, and analyze backups at scale, spanning multiple workload types, vaults, subscriptions, regions, and tenants. It supports datasource-centric management with filtering by subscription, resource group, and tags, and uses Azure Workbooks and Azure Monitor Logs for detailed reports."},
-
-{"id":"m10-11","module":"M10","type":"mc",
- "scenario":"You are installing the MARS agent on an on-premises server and the registration step fails.",
- "q":"Which two items from the vault does the installation require?",
- "options":["The downloaded agent installer and the credential file from the vault, which registers the agent","The vault access key and a service principal","An Entra ID app registration and a client secret","The vault ARM template and a parameters file"],
- "answer":[0],
- "explain":"The four steps are create the vault, download the agent and credential file, install and register the agent, and configure the backup. The installer wizard configures the installation location, proxy server, and passphrase, and the downloaded credential file is used to register the agent. Agent versions below 2.0.9083.0 must be upgraded by uninstalling and reinstalling."},
-
-{"id":"m10-12","module":"M10","type":"sa",
- "scenario":"A client asks why they should pay for both Azure Backup and Azure Site Recovery when, in their words, both keep a copy of the VM somewhere else.",
- "q":"Explain what each protects against and how the recovery operation differs.",
- "model":"Azure Backup protects against data loss: accidental or malicious deletion, corruption, and ransomware. It takes recovery points at scheduled intervals, storing them in a Recovery Services vault, and supports application-consistent backups for both Windows and Linux VMs. The operation is a restore, and it can be granular, recovering a file, folder, volume, or whole VM to a chosen point in time. The vault sits in the same region as the protected VMs. Azure Site Recovery protects against a major disaster when a whole region experiences an outage. It continuously replicates workloads running on physical and virtual machines from a primary site to a secondary location, so the recovery point objective is much lower and recovery is fast. The operation is a failover to the secondary location, with a fail back once the primary site is running again, and the target vault must be in a different region from the source. Backup cannot bring an application back online in minutes after a region loss, and Site Recovery cannot recover a single file deleted three weeks ago, so the two address different failures and are complementary.",
- "keyTerms":["data loss","deletion","corruption","recovery points","restore","granular","same region","region outage","disaster","replicates","fail over","fail back","different region","complementary"]},
-
-{"id":"m11-01","module":"M11","type":"mc",
- "scenario":"A production virtual machine disappeared overnight. Management wants to know who deleted it and exactly when.",
- "q":"Where do you look?",
- "options":["The Azure Activity Log, a subscription-level log retained for 90 days","Azure Monitor metrics for the virtual machine","Log Analytics InsightsMetrics table","Network Watcher NSG flow logs"],
- "answer":[0],
- "explain":"The Activity Log is a subscription log providing insight into subscription-level events. It tells you what operations were taken on resources, who started the operation, when it occurred, the status, and other properties. Activity logs are kept for 90 days and can be filtered in the portal by many fields."},
-
-{"id":"m11-02","module":"M11","type":"mc",
- "scenario":"You need to chart CPU utilization for a virtual machine over the last hour with near real-time granularity.",
- "q":"Which Azure Monitor data type is this, and why?",
- "options":["Metrics, because they are numerical values describing a system at a point in time and are lightweight enough for near real-time scenarios","Logs, because performance data is always stored as log records","Activity log entries, because they include resource health","Traces, because they include performance counters"],
- "answer":[0],
- "explain":"All data collected by Azure Monitor fits into one of two fundamental types. Metrics are numerical values that describe some aspect of a system at a particular point in time; they are lightweight and capable of supporting near real-time scenarios. Logs contain different kinds of data organized into records with different sets of properties for each type, including events and traces alongside performance data so it can all be combined for analysis."},
-
-{"id":"m11-03","module":"M11","type":"mc",
- "scenario":"In Lab 08 you built an alert that fired when a VM was deleted, and attached an email notification.",
- "q":"Which component holds the email address, and what is true about it?",
- "options":["The action group, a collection of notification preferences; up to five can be attached to an alert rule, they run concurrently in no specific order, and multiple rules can share one","The alert rule itself, which can hold one email address","The monitor condition, which resolves when the email is delivered","The alert processing rule, which is where notification targets are defined"],
- "answer":[0],
- "explain":"Alerts consist of alert rules, action groups, and monitor conditions. An action group is a collection of notification preferences, supporting email, SMS, push, voice, webhooks, Logic Apps, Functions, runbooks, and ITSM. You can add up to five action groups to an alert rule, they are executed concurrently in no specific order, and multiple alert rules can use the same action group."},
-
-{"id":"m11-04","module":"M11","type":"mc",
- "scenario":"Overnight maintenance runs from 10 pm to 7 am and generates a flood of alert emails that the on-call team must ignore.",
- "q":"What do you configure so the rules keep evaluating but nobody is paged?",
- "options":["An alert processing rule that suppresses notifications, scheduled to apply at that specific time","Disable each alert rule at 10 pm and re-enable it at 7 am with automation","Delete the action group for the duration of the window","Set the alert severity to Sev 4 for the maintenance window"],
- "answer":[0],
- "explain":"This is Lab 08 Task 4. Alert processing rules apply on top of fired alerts and can suppress notifications or add action groups. By default the rule works all the time unless you disable it or configure a schedule, and you can apply it at a specific time with a start, an end, and a time zone."},
-
-{"id":"m11-05","module":"M11","type":"mc",
- "scenario":"A VM cannot reach a database server. You want to know immediately whether an NSG rule is blocking the packet, and which rule is responsible.",
- "q":"Which Network Watcher tool do you use?",
- "options":["IP Flow Verify","Next Hop","Topology","Packet Capture"],
- "answer":[0],
- "explain":"IP Flow Verify checks if a packet is allowed or denied to or from a virtual machine and identifies the rule responsible. Effective Security Rules shows the combined inbound and outbound rules applying to the NIC, Next Hop tells you whether traffic is being routed to the intended destination, and Connection Troubleshoot tests end-to-end reachability with hop-by-hop latency."},
-
-{"id":"m11-06","module":"M11","type":"mc",
- "scenario":"You have added a user-defined route sending traffic through a network virtual appliance, and you need to confirm Azure is actually sending traffic to that appliance.",
- "q":"Which Network Watcher tool answers this directly?",
- "options":["Next Hop","IP Flow Verify","NSG Flow Logs","VPN Troubleshoot"],
- "answer":[0],
- "explain":"Next Hop helps determine whether traffic is being directed to the intended destination by showing the next hop. IP Flow Verify answers a firewall question rather than a routing question, and NSG flow logs map IP traffic through a network security group after the fact."},
-
-{"id":"m11-07","module":"M11","type":"mc",
- "scenario":"In Lab 02 you needed to know whether CoreServicesVM could reach ManufacturingVM on TCP 3389, and wanted latency and the path if it could.",
- "q":"Which Network Watcher tool did you use?",
- "options":["Connection Troubleshoot","IP Flow Verify","Topology","Effective Security Rules"],
- "answer":[0],
- "explain":"Connection Troubleshoot checks connectivity between a source VM and a destination, identifies configuration issues impacting reachability, provides all possible hop-by-hop paths, reviews hop-by-hop latency including minimum, maximum, and average, and shows a graphical topology from source to destination. In the lab it returned UnReachable before peering and succeeded afterwards."},
-
-{"id":"m11-08","module":"M11","type":"mc",
- "scenario":"An administrator opens Network Watcher in West Europe and cannot see the tools for a virtual machine running in East US.",
- "q":"What explains this?",
- "options":["Network Watcher is a regional service and must be used in the region containing the resources","Network Watcher requires a Log Analytics workspace in each region before it appears","Network Watcher only supports the subscription default region","The VM must have a public IP address to appear in Network Watcher"],
- "answer":[0],
- "explain":"Network Watcher is described as a regional service that provides various network diagnostic and monitoring tools. You work with it in the region where the resources live."},
-
-{"id":"m11-09","module":"M11","type":"mc",
- "scenario":"You must query performance data collected from many virtual machines, correlate it with events, and chart the result.",
- "q":"Which service and what does it require?",
- "options":["Log Analytics, which requires a workspace: an Azure resource and a container where data is collected, aggregated, analyzed, and presented","Metrics Explorer, which requires a diagnostic setting per VM","Application Insights, which requires an instrumentation key per VM","Backup Center, which requires a Recovery Services vault"],
- "answer":[0],
- "explain":"Log Analytics helps you collect and analyze data generated by resources in cloud and on-premises environments. A workspace is an Azure resource and a container where data is collected, aggregated, analyzed, and presented; it provides a geographic location, data isolation, and scope, and you can have multiple workspaces per subscription."},
-
-{"id":"m11-10","module":"M11","type":"mc",
- "scenario":"In Lab 08 you ran a query that filtered InsightsMetrics to the last two hours, averaged a value in five-minute buckets per computer, and drew a chart.",
- "q":"Which operator produced the five-minute buckets?",
- "options":["bin()","summarize","render","ago()"],
- "answer":[0],
- "explain":"In that query, ago(2h) set the time range, where filtered rows, summarize performed the aggregation, bin(TimeGenerated, 5m) grouped the timestamps into five-minute buckets, and render timechart drew the chart. Common tables include Heartbeat for agent check-ins and InsightsMetrics for VM Insights performance data."},
-
-{"id":"m11-11","module":"M11","type":"mc",
- "scenario":"You must monitor data about the operation of tenant-level Azure services such as Entra ID.",
- "q":"Which Azure Monitor data tier is this?",
- "options":["Azure tenant monitoring data","Azure subscription monitoring data","Azure resource monitoring data","Guest OS monitoring data"],
- "answer":[0],
- "explain":"The five tiers are application monitoring data about code you have written, guest OS monitoring data about the operating system, Azure resource monitoring data about the operation of a resource, Azure subscription monitoring data about the operation and management of a subscription plus the health of Azure itself, and Azure tenant monitoring data about tenant-level services such as Entra ID."},
-
-{"id":"m11-12","module":"M11","type":"mc",
- "scenario":"Before you could run VM performance queries in Lab 08, you had to complete one setup step on the virtual machine.",
- "q":"What was it?",
- "options":["Enable VM Insights from Azure Monitor, which installs the agent and configures data collection rules","Create an alert processing rule scoped to the resource group","Add a diagnostic setting archiving to a storage account","Enable NSG flow logs on the subnet"],
- "answer":[0],
- "explain":"In Lab 08 you opened Monitor, selected View in the VM Insights box, chose Configure Insights, selected the VM and enabled it, then took the defaults for subscription and data collection rules. It takes a few minutes for the agent to install and configure, and only then does performance data appear in tables such as InsightsMetrics."},
-
-{"id":"m11-13","module":"M11","type":"sa",
- "scenario":"A colleague says all monitoring questions can be answered from the Activity Log. You disagree and want to explain when to reach for the Activity Log, when for metrics, and when for Log Analytics.",
- "q":"Give an example question that each one answers and state what each actually contains.",
- "model":"The Activity Log is a subscription log that provides insight into subscription-level events in Azure. It answers control-plane questions: what operations were taken on the resources in the subscription, who started the operation, when it occurred, and the status. The example is who deleted the production virtual machine and when. It is retained for 90 days. Metrics are numerical values that describe some aspect of a system at a particular point in time; they are lightweight and support near real-time scenarios. They answer questions about current or recent performance, for example what the CPU percentage of this virtual machine was at three o'clock. Logs, queried through Log Analytics, contain different kinds of data organized into records with different sets of properties for each type, with events and traces stored alongside performance data so it can all be combined for analysis. They answer correlation and search questions across many resources, for example which virtual machines exceeded ninety percent disk utilization at any point in the last twenty-four hours, grouped by computer, which is exactly the sort of query written in Kusto against InsightsMetrics. All Azure Monitor data falls into one of the two fundamental types of metrics or logs, and the Activity Log is a specific log stream inside that.",
- "keyTerms":["Activity Log","subscription","who","when","operations","90 days","metrics","numerical","point in time","near real-time","logs","records","combined for analysis","Log Analytics","KQL","correlate"]},
-
-{"id":"lab-01","module":"Labs","type":"mc",
- "scenario":"In Lab 01 you created an Application Security Group named asg-web, an NSG named NSGSecure associated with the SharedServicesSubnet, and an inbound rule at priority 100 allowing TCP 80 and 443 with the ASG as the source.",
- "q":"What did using the ASG as the source achieve?",
- "options":["The rule applies to whichever network interfaces are members of the ASG, so no IP addresses have to be maintained as VMs change","The rule applies to the whole subnet, replacing the need for a subnet association","The rule automatically opens the same ports outbound","The rule takes precedence over the default rules regardless of priority"],
- "answer":[0],
- "explain":"An ASG is a logical grouping of network interfaces by application role and holds no rules itself. Referencing it as the source or destination inside an NSG rule means membership changes automatically apply, removing the need to hard-code or maintain IP addresses."},
-
-{"id":"lab-02","module":"Labs","type":"mc",
- "scenario":"In Lab 03 you deployed the infrastructure by loading mst400-03-vms-template.json and then separately loading mst400-03-vms-parameters.json.",
- "q":"Why are these two separate files?",
- "options":["The template declares the resources and their structure; the parameters file supplies the environment-specific values, so one template can be reused across deployments","The parameters file is a backup copy of the template","Azure requires two files for any deployment over five resources","The parameters file contains the RBAC assignments for the deployment"],
- "answer":[0],
- "explain":"In the parameters section of a template you specify which values you can input when deploying the resources, the classic example being a VM username and password. Keeping them separate is what makes the same template reusable across Dev, Test, and Prod, which is exactly what you did in Lab 01 when you edited both files to turn CoreServicesVnet into ManufacturingVnet."},
-
-{"id":"lab-03","module":"Labs","type":"mc",
- "scenario":"In Lab 04 you set the storage account networking to disable public access, then later re-enabled it from selected virtual networks and IP addresses, adding your client IP to the firewall. In the final task you removed your client IP after adding a service endpoint.",
- "q":"What was the observable result, and why?",
- "options":["Storage Browser returned a not authorized message, because the portal connects from your workstation public IP rather than from inside the virtual network","Storage Browser continued to work, because the portal is exempt from storage firewalls","The storage account was deleted, because removing the last firewall entry deletes the account","Only blob access failed; file shares remained reachable"],
- "answer":[0],
- "explain":"Once the account only accepts traffic from the virtual network, requests from your workstation are rejected. This demonstrates that the storage firewall filters on the actual network origin of the request, and that portal tools are not exempt. Note also that subnets and virtual networks must exist in the same Azure region or region pair as the storage account."},
-
-{"id":"lab-04","module":"Labs","type":"mc",
- "scenario":"In Lab 07 you finished the lab and tried to clean up by deleting the resource groups, but the Recovery Services vault would not delete.",
- "q":"What is the cause and the documented workaround?",
- "options":["Soft delete preserves deleted backups for 14 additional days; delete the backups and the vault first, using the portal option to delete using a generated PowerShell script run in Cloud Shell","The vault was locked with a ReadOnly lock applied automatically at creation","The vault was in a different region from the resource group and had to be moved first","Vaults can only be deleted after 90 days, matching activity log retention"],
- "answer":[0],
- "explain":"Even after a backup is deleted it is preserved in a soft-delete state for 14 additional days, and the lab notes that because soft delete is enabled, simply deleting your resource groups will not delete the Recovery Services vault. The portal offers Delete using PowerShell script; you generate it and run it in Cloud Shell, then delete the resource groups normally."},
-
-{"id":"lab-05","module":"Labs","type":"mc",
- "scenario":"In Lab 05 the scale-out rule fired on Percentage CPU greater than 10 over a one-minute period, increasing the instance count by 1 with a one-minute cool down, and instance limits were minimum 2, maximum 6, default 2.",
- "q":"You generate continuous load with a PowerShell loop. What is the maximum number of instances the scale set can reach?",
- "options":["6","10","2","Unlimited until the cool down expires"],
- "answer":[0],
- "explain":"Instance limits ensure you do not scale out beyond the maximum number of instances, which was set to 6. The lab explicitly notes the CPU threshold of 10 percent over one minute is for demonstration and is not practical in real environments; a production rule would use a higher threshold and a longer duration."},
-
-{"id":"lab-06","module":"Labs","type":"sa",
- "scenario":"Every lab in this course ended with the same instruction: delete all resource groups except the Odl-Seneca-lab default resource group.",
- "q":"Explain the two reasons this matters and name the mechanism that makes deleting a resource group an effective cleanup.",
- "model":"The first reason is cost: removing unused Azure resources ensures there are no unexpected charges and helps manage the Azure credit allocated for the course. Compute is billed while a virtual machine is running, but storage such as managed disks, public IP addresses, and storage accounts continues to be billed even when the VM is stopped, so leaving resources behind keeps consuming credit. The second reason is hygiene: leftover resources make later labs ambiguous and can collide on names that must be unique, such as storage account names and web app names. Deleting the resource group works as cleanup because a resource group is a logical container and all resources in a group should share the same lifecycle, being deployed, updated, and deleted together, and a resource can exist in only one resource group, so deleting the group deletes everything it holds. The exception seen in Lab 07 is that a Recovery Services vault with backup items will block the deletion because soft delete preserves deleted backups for 14 days, so the backups and vault must be removed first.",
- "keyTerms":["cost","unexpected charges","credit","storage still billed","logical container","same lifecycle","deleted together","only one resource group","Recovery Services vault","soft delete"]}
+ {
+  "id": "m8-01",
+  "module": "M8",
+  "type": "mc",
+  "scenario": "An application owner needs the highest uptime SLA Azure offers for virtual machines and has budget for redundancy.",
+  "q": "What must you deploy, and what SLA does it carry?",
+  "options": [
+   "Two or more VM instances across two or more availability zones in the same region, for 99.99%",
+   "Two or more VM instances in an availability set, for 99.99%",
+   "A single VM using premium storage, for 99.95%",
+   "Two or more VM instances in one availability zone, for 99.99%"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "The three SLA tiers are 99.99% for two or more VMs across two or more availability zones in the same region, 99.95% for two or more VMs in an availability set, and 99.9% for a single VM using premium storage. In the portal you achieve this by selecting two zones, for example Zone 1 and Zone 2, in a single deployment."
+ },
+ {
+  "id": "m8-02",
+  "module": "M8",
+  "type": "mc",
+  "scenario": "A team stored an application cache on the D: drive of a Windows VM. After Azure performed host maintenance the directory was empty.",
+  "q": "What happened?",
+  "options": [
+   "That is the temporary disk, which is not a managed disk and is only intended for data such as page or swap files",
+   "The OS disk was reimaged during maintenance and lost the cache",
+   "The data disk was detached automatically during maintenance",
+   "Managed disks are wiped when a VM is deallocated"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Every VM contains a temporary disk, which is not a managed disk. It provides short-term storage for applications and processes and is intended only to store data such as page or swap files. Every VM also has one OS disk, registered as a SATA drive and labelled C: by default, and optionally data disks, which are managed disks for application data you need to keep."
+ },
+ {
+  "id": "m8-03",
+  "module": "M8",
+  "type": "mc",
+  "scenario": "During planned platform maintenance, Azure must never reboot more than one group of your availability set VMs at a time.",
+  "q": "Which construct provides this, and what is the default count?",
+  "options": [
+   "Update domains; five by default, configurable up to 20",
+   "Fault domains; three by default, configurable up to 20",
+   "Availability zones; three by default",
+   "Scale set instances; two by default"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "During planned maintenance only one update domain is rebooted at a time. By default there are five non-user-configurable update domains, but you can configure up to 20. A fault domain, by contrast, defines a group of VMs sharing a common set of hardware and switches, such as a server rack with shared power or networking, and therefore a single point of failure."
+ },
+ {
+  "id": "m8-04",
+  "module": "M8",
+  "type": "mc",
+  "scenario": "You are designing a three-tier application with web, business, and database tiers, all requiring redundancy within one datacenter.",
+  "q": "What is the recommended availability set design?",
+  "options": [
+   "Configure each application tier into separate availability sets, and combine them with a load balancer",
+   "Place all nine VMs in one availability set so Azure spreads them evenly",
+   "Use one availability set per virtual machine",
+   "Skip availability sets and use a single large VM per tier with premium storage"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "The guidance is that VMs in an availability set should perform an identical set of functions and have the same software installed, each application tier should be configured into separate availability sets, availability sets should be combined with a load balancer, and managed disks should be used."
+ },
+ {
+  "id": "m8-05",
+  "module": "M8",
+  "type": "mc",
+  "scenario": "You change a running VM from its original size to Standard DS1_v2.",
+  "q": "What kind of scaling is this, and what is its main limitation?",
+  "options": [
+   "Vertical scaling (scale up or down); it generally has more limitations, being bounded by the largest available size and requiring a restart",
+   "Horizontal scaling (scale out or in); it is limited by the load balancer backend pool size",
+   "Reprovisioning; it destroys and recreates the VM automatically",
+   "Autoscaling; it only works on scale sets"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Vertical scaling, also known as scale up and scale down, means increasing or decreasing virtual machine sizes in response to a workload, and generally has more limitations. Horizontal scaling, or scale out and scale in, alters the number of VMs and is more flexible in a cloud situation. Reprovisioning means removing an existing VM and replacing it with a new one."
+ },
+ {
+  "id": "m8-06",
+  "module": "M8",
+  "type": "mc",
+  "scenario": "Demand on a web application swings from 2 servers overnight to 6 at peak, and you want Azure to add and remove instances automatically based on CPU.",
+  "q": "What do you deploy?",
+  "options": [
+   "A virtual machine scale set with a custom autoscale rule based on the Percentage CPU metric, plus instance limits",
+   "Six VMs in an availability set, manually stopped and started",
+   "A single large VM resized on a schedule",
+   "An Application Gateway with autoscaling enabled"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "A scale set can automatically increase or decrease the number of VM instances running your application so you can dynamically scale to meet changing demand, and autoscaling can also be scheduled to change capacity at fixed times. A worked example is a scale-out rule on Percentage CPU greater than 10 over 1 minute increasing count by 1, a scale-in rule under the threshold decreasing count by 1, and instance limits of minimum 2, maximum 6, default 2."
+ },
+ {
+  "id": "m8-07",
+  "module": "M8",
+  "type": "mc",
+  "scenario": "A runaway autoscale rule could theoretically create dozens of VM instances and generate an enormous bill.",
+  "q": "Which setting prevents this?",
+  "options": [
+   "Instance limits: the minimum, maximum, and default instance counts on the scaling blade",
+   "The cool down period on the scale-out rule",
+   "The time grain statistic on the metric",
+   "The orchestration mode of the scale set"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Instance limits ensure you do not scale out beyond the maximum number of instances or scale in beyond the minimum. The cool down period only delays how soon the next scale action can occur; it does not cap the total."
+ },
+ {
+  "id": "m8-08",
+  "module": "M8",
+  "type": "mc",
+  "scenario": "Security requires that administrators be able to RDP and SSH to VMs across a virtual network without any of those VMs having a public IP address and without opening 3389 to the internet.",
+  "q": "What do you deploy?",
+  "options": [
+   "Azure Bastion",
+   "A jump box VM with a public IP and an NSG restricting source addresses",
+   "A point-to-site VPN for each administrator",
+   "Windows Remote Management over the public IP"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Bastion provides secure RDP and SSH connectivity to all VMs in the virtual network in which it is provisioned, from the browser, so the VMs need no public IP. The other connection methods covered are RDP and WinRM for Windows, which establishes a command-line session, and SSH clients such as PuTTY for Linux."
+ },
+ {
+  "id": "m8-09",
+  "module": "M8",
+  "type": "mc",
+  "scenario": "After deploying a VM from the gallery you must automatically install and configure IIS with no manual steps and no custom image.",
+  "q": "What do you use?",
+  "options": [
+   "A VM extension such as the Custom Script Extension",
+   "An ARM template outputs section",
+   "A managed disk snapshot of a pre-built server",
+   "Azure Site Recovery replication"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Extensions are small applications that provide post-deployment VM configuration and automation tasks. They are managed with Azure CLI, PowerShell, ARM templates, and the portal, can be bundled with a new VM deployment or run against an existing system, and differ between Windows and Linux. Cloud-init is the Linux equivalent applied at provisioning time."
+ },
+ {
+  "id": "m8-10",
+  "module": "M8",
+  "type": "mc",
+  "scenario": "You create a 32 GiB Standard HDD data disk, detach it, change it to Standard SSD, and reattach it.",
+  "q": "What does detaching a disk do?",
+  "options": [
+   "Removes the disk from the VM but keeps it in storage for later use",
+   "Deletes the disk and its data permanently",
+   "Converts the disk to a snapshot in the same resource group",
+   "Moves the disk to the temporary storage tier"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Detaching removes the disk from the VM but keeps it in storage for later use, which is why you could then change its size and performance tier independently under the Disks resource and reattach it. Note that the NIC, disk, and public IP are all independently created and managed resources."
+ },
+ {
+  "id": "m8-11",
+  "module": "M8",
+  "type": "mc",
+  "scenario": "You need a VM naming convention that identifies environment, role, and location at a glance, as the module recommends.",
+  "q": "Which example follows the pattern taught, and why does the name matter?",
+  "options": [
+   "deveus-webvm01, because the VM name is used as the computer name and should be meaningful and consistent",
+   "vm-00000001, because unique GUIDs prevent collisions",
+   "WEBSERVER, because short names are easier to type",
+   "Any name; the VM name is independent of the guest computer name"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "The VM name is used as the computer name, so choose names that are meaningful and consistent. The example given is deveus-webvm01, representing the first development web server hosted in the US South Central location."
+ },
+ {
+  "id": "m8-12",
+  "module": "M8",
+  "type": "mc",
+  "scenario": "An architect asks which of the three impact scenarios describes Azure predicting that hardware associated with a physical machine is about to fail.",
+  "q": "Which is it?",
+  "options": [
+   "Unplanned hardware maintenance",
+   "Unexpected downtime",
+   "Planned maintenance",
+   "Fault domain rebalancing"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "An unplanned hardware maintenance event occurs when the Azure platform predicts that the hardware or any platform component associated to a physical machine is about to fail. Unexpected downtime is when hardware or physical infrastructure fails without warning, and planned maintenance is periodic Microsoft updates to the underlying platform."
+ },
+ {
+  "id": "m8-13",
+  "module": "M8",
+  "type": "mc",
+  "scenario": "You need to change a running VM to a size that is not offered in the resize list.",
+  "q": "What does the module say about this?",
+  "options": [
+   "When you stop and deallocate the VM you can select any size available in your region",
+   "Sizes can never be changed after creation; redeploy instead",
+   "Only sizes in the same family are ever available",
+   "Resizing requires the VM to be in an availability set"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "The resize list for a running VM is constrained by the hardware cluster it currently sits on. When you stop and deallocate the VM, you can select any size available in your region, because Azure is then free to place it on different hardware."
+ },
+ {
+  "id": "m8-14",
+  "module": "M8",
+  "type": "mc",
+  "scenario": "While creating a virtual machine scale set you are asked to choose an orchestration mode, and you select Uniform.",
+  "q": "What does Uniform mode mean?",
+  "options": [
+   "All instances are identical, created from a single VM configuration",
+   "Instances are spread uniformly across all availability zones only",
+   "Instances can mix VM sizes and configurations within one scale set",
+   "Instances are updated all at once rather than in batches"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Uniform orchestration creates identical VMs from a single configuration, which is the classic scale set model. Flexible orchestration is the alternative and allows a mix of VM types and configurations in one scale set."
+ },
+ {
+  "id": "m8-15",
+  "module": "M8",
+  "type": "sa",
+  "scenario": "A client currently runs two VMs in a single availability set and is asking whether moving them to availability zones is worth the migration effort.",
+  "q": "Explain the difference in what each protects against, and quote the SLA for each.",
+  "model": "An availability set protects against rack-level hardware failure and planned maintenance inside a single datacenter. It works through fault domains, which group VMs sharing a common set of hardware and switches such as a server rack with shared power or networking, and update domains, of which there are five by default configurable up to 20, where only one update domain is rebooted at a time during planned maintenance. Two or more VM instances in an availability set carry a 99.95% SLA. Availability zones are unique physical locations within an Azure region, each made up of one or more datacenters with independent power, cooling, and networking, with a minimum of three separate zones in every enabled region. The physical separation protects applications and data from a whole datacenter failure, which an availability set cannot survive. Two or more VM instances deployed across two or more availability zones in the same region carry a 99.99% SLA, the industry best VM uptime SLA. So the migration buys datacenter-level fault tolerance and moves the SLA from 99.95% to 99.99%.",
+  "keyTerms": [
+   "availability set",
+   "fault domain",
+   "update domain",
+   "rack",
+   "planned maintenance",
+   "99.95",
+   "availability zone",
+   "independent power",
+   "cooling",
+   "networking",
+   "datacenter failure",
+   "99.99",
+   "three zones"
+  ]
+ },
+ {
+  "id": "m9-01",
+  "module": "M9",
+  "type": "mc",
+  "scenario": "A web app on the Basic tier needs a staging environment where a new build can be validated and then promoted with no downtime.",
+  "q": "What must change first?",
+  "options": [
+   "Scale up the App Service plan to Standard or higher, because Free, Shared, and Basic support zero deployment slots",
+   "Nothing; Basic supports up to five slots",
+   "Move the app to a different region where slots are available",
+   "Enable continuous deployment, which creates slots automatically"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Slot availability by tier is Free, Shared, and Basic zero; Standard up to five; Premium up to 20; Isolated up to 20. Slots are live apps with their own hostnames that let you validate changes before sending them to production, avoid a cold start, eliminate downtime, and fall back to a last known good site."
+ },
+ {
+  "id": "m9-02",
+  "module": "M9",
+  "type": "mc",
+  "scenario": "After swapping a staging slot into production, the operations team is surprised that the custom domain and SSL certificate did not move with the code.",
+  "q": "Why?",
+  "options": [
+   "Endpoints, custom domain names, SSL certificates, and scaling are not sticky to the slot and stay with the slot they were configured on",
+   "Custom domains can only be configured on the production slot",
+   "The swap was performed with Auto Swap, which excludes networking settings",
+   "The certificate expired during the swap"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Slot settings fall into three categories: slot-specific app settings and connection strings, continuous deployment settings, and App Service authentication settings. Not all settings are sticky, and the module names endpoints, custom domain names, SSL certificates, and scaling as the ones that do not follow the swap in the way you might expect."
+ },
+ {
+  "id": "m9-03",
+  "module": "M9",
+  "type": "mc",
+  "scenario": "Traffic to a web app is rising and response times are climbing, but the app is single-threaded and cannot use more CPU cores effectively.",
+  "q": "Which scaling workflow is appropriate?",
+  "options": [
+   "Scale out: increase the number of VM instances that run the app",
+   "Scale up: change the pricing tier for more CPU and memory",
+   "Reprovision the app in a larger region",
+   "Enable deployment slots to distribute traffic"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Scale up gets more CPU, memory, disk space, and extra features by changing the App Service plan, which will not help an app that cannot use more cores. Scale out increases the number of VM instances running the app, which adds parallel capacity. Autoscaling can scale on a metric such as CPU percentage, memory percentage, or HTTP requests, or on a schedule."
+ },
+ {
+  "id": "m9-04",
+  "module": "M9",
+  "type": "mc",
+  "scenario": "A web app must be backed up nightly along with its connected database, and the app currently runs on a Basic plan.",
+  "q": "What do you tell the owner?",
+  "options": [
+   "App Service backup requires a Standard or Premium plan and supports up to 10 GB of app and database content",
+   "Backup is available on all tiers but limited to 1 GB on Basic",
+   "Backups require the Isolated tier only",
+   "Backup only covers file content, never the connected database"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "App Service backup can run manually or on a schedule, backs up the configuration, file content, and database connected to the app, requires a Standard or Premium plan, is limited to 10 GB of app and database content, supports partial backups with exclusions, and can restore on demand to a previous state or into a new app."
+ },
+ {
+  "id": "m9-05",
+  "module": "M9",
+  "type": "mc",
+  "scenario": "You point a staging slot at an external Git repository so that pushes to the branch appear in the slot automatically.",
+  "q": "Which App Service feature is this?",
+  "options": [
+   "Continuous deployment, configured in the Deployment Center",
+   "Deployment slots auto swap",
+   "Application Insights release annotations",
+   "App Service authentication"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "The portal provides out-of-the-box continuous integration and deployment with Azure DevOps, GitHub, Bitbucket, FTP, or a local Git repository. Whenever code updates are pushed to source control, the website or web app automatically picks up the updates. In the portal this is configured by selecting External Git and supplying the repository URL and the branch name."
+ },
+ {
+  "id": "m9-06",
+  "module": "M9",
+  "type": "mc",
+  "scenario": "You need a production web app to answer at www.contoso.ca rather than contoso.azurewebsites.net.",
+  "q": "What are the configuration steps?",
+  "options": [
+   "Register the domain, then create DNS records mapping it to the web app using a CNAME or A record",
+   "Rename the web app to www.contoso.ca in the Overview blade",
+   "Add the domain as a custom domain in Entra ID and verify it with a TXT record",
+   "Create a private DNS zone named contoso.ca and link it to the app service plan"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "When you create a web app Azure assigns it a subdomain of azurewebsites.net. To use a custom domain you register the domain name, create DNS records that map the domain to your Azure web app, and create a CNAME or A record with the mapping. Note that the MX or TXT record answer belongs to Entra ID custom domain verification, which is a different task."
+ },
+ {
+  "id": "m9-07",
+  "module": "M9",
+  "type": "mc",
+  "scenario": "A team must host two applications from competing client companies on the same infrastructure, and the contract requires a strong security boundary between them.",
+  "q": "Which hosting model does the module recommend, and why?",
+  "options": [
+   "Virtual machines, because they provide complete isolation from the host OS and other VMs, which matters when a strong security boundary is critical",
+   "Containers, because their lightweight isolation is sufficient for any multi-tenant workload",
+   "Containers in separate container groups on the same host",
+   "Either, since isolation is identical"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Containers typically provide lightweight isolation from the host and other containers but do not provide as strong a security boundary as a virtual machine. VMs provide complete isolation from the host operating system and other VMs, which the module explicitly says is useful when hosting apps from competing companies on the same server or cluster."
+ },
+ {
+  "id": "m9-08",
+  "module": "M9",
+  "type": "mc",
+  "scenario": "A developer needs to run a single containerized batch job in Azure without provisioning virtual machines and without standing up an orchestrator.",
+  "q": "Which service fits?",
+  "options": [
+   "Azure Container Instances",
+   "Azure Kubernetes Service",
+   "Azure App Service on a Premium plan",
+   "A virtual machine scale set running Docker"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Azure Container Instances let you run a container in Azure without managing virtual machines and without a higher-level service. Azure Container Apps go a step further by managing the cluster environment for you, unlike AKS where you must still manage the cluster."
+ },
+ {
+  "id": "m9-09",
+  "module": "M9",
+  "type": "mc",
+  "scenario": "You need two containers scheduled together on the same host, sharing a single public IP with one exposed port and mounting Azure file shares as volumes.",
+  "q": "What construct is this?",
+  "options": [
+   "A container group",
+   "A Kubernetes namespace",
+   "A container registry",
+   "A container image layer"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "A container group is a collection of containers scheduled on the same host machine. It is assigned a DNS name label, exposes a single public IP address with one exposed port, and can include Azure file shares as volume mounts, with each container mounting one of the shares locally."
+ },
+ {
+  "id": "m9-10",
+  "module": "M9",
+  "type": "mc",
+  "scenario": "A build pipeline needs to take a Dockerfile and produce an image, then place that image in a registry for deployment.",
+  "q": "Which two Docker operations are involved, in order?",
+  "options": [
+   "Build, then push",
+   "Pull, then build",
+   "Push, then pull",
+   "Build, then pull"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Build refers to the action of building a container image based on the information and context provided by the Dockerfile. Push refers to uploading a container image to a container registry, and pull refers to downloading one from a registry. A Dockerfile is a text file of build instructions, where the first line identifies the base image."
+ },
+ {
+  "id": "m9-11",
+  "module": "M9",
+  "type": "mc",
+  "scenario": "You need live telemetry on request rates, response times, failure rates, page load performance, and exceptions for a production web app.",
+  "q": "What do you enable?",
+  "options": [
+   "Application Insights, a feature of Azure Monitor",
+   "Azure Backup Center reporting",
+   "Log Analytics connected sources",
+   "Network Watcher connection monitor"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Application Insights, a feature of Azure Monitor, monitors your live applications and shows request rates, deny rates, response time and failure rates, page views and load performance, user and session counts, performance counters, and diagnostics and exceptions."
+ },
+ {
+  "id": "m9-12",
+  "module": "M9",
+  "type": "mc",
+  "scenario": "Two web apps and one API in the same region will run on shared compute to reduce cost.",
+  "q": "Which statement about App Service plans is correct?",
+  "options": [
+   "One or more apps can be configured to run on the same computing resources in a single App Service plan",
+   "Each app requires its own App Service plan",
+   "App Service plans define the runtime stack, which all apps on the plan must share",
+   "App Service plans are global and span regions"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "An App Service plan defines a set of compute resources for a web app to run, and one or more apps can be configured to run on the same computing resources in the plan. Each plan defines a region, a number of VM instances, and the size of those instances. Runtime stack is a per-app setting, not a plan setting."
+ },
+ {
+  "id": "m9-13",
+  "module": "M9",
+  "type": "sa",
+  "scenario": "You create a staging slot with Do not clone settings, point it at an external Git repository, verify the page on the staging URL, and then swap.",
+  "q": "Explain what swapping achieves that deploying straight to production does not, and one precaution to take before swapping.",
+  "model": "Deployment slots are live apps with their own hostnames, so the new build runs on real App Service infrastructure at a separate URL where it can be validated before any user sees it. Swapping then promotes the tested code into production, which avoids a cold start and eliminates downtime because the instances are already warmed up and running, whereas deploying directly to production restarts the production app and serves a cold, unverified build to live users. Swapping also gives an instant rollback path, since you can swap back to fall back to a last known good site. Auto Swap is available when pre-swap validation is not needed. The precaution is to check which settings are slot-specific versus which follow the swap: slot-specific app settings and connection strings, continuous deployment settings, and App Service authentication settings are configured per slot, while endpoints, custom domain names, SSL certificates, and scaling are not sticky, so verify that connection strings point at the right database before promoting.",
+  "keyTerms": [
+   "live apps",
+   "own hostnames",
+   "validate",
+   "before",
+   "no downtime",
+   "cold start",
+   "roll back",
+   "last known good",
+   "slot-specific",
+   "connection strings",
+   "not sticky"
+  ]
+ },
+ {
+  "id": "m10-01",
+  "module": "M10",
+  "type": "mc",
+  "scenario": "A ransomware attack encrypts files on an on-premises Windows file server. You need to restore individual folders from before the attack.",
+  "q": "Which backup component protects this workload?",
+  "options": [
+   "The Azure Backup MARS agent, which backs up files and folders on physical or virtual Windows machines with no separate backup server required",
+   "Azure Site Recovery replication of the file server",
+   "A managed disk snapshot of the server volume",
+   "Azure Backup Server (MABS), which is the only option for file-level restore"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "The MARS agent backs up files and folders on physical or virtual Windows OS, on-premises or in Azure, and requires no separate backup server. Its limits are backup three times per day, not application aware, file, folder, and volume-level restore only, and no support for Linux. MABS is also capable here but adds app-aware snapshots and Linux support on Hyper-V and VMware, which this scenario does not require."
+ },
+ {
+  "id": "m10-02",
+  "module": "M10",
+  "type": "mc",
+  "scenario": "You must back up SQL Server and Exchange with application-consistent, app-aware snapshots and also protect VMware virtual machines, without buying a System Center license.",
+  "q": "Which component do you deploy?",
+  "options": [
+   "Azure Backup Server (MABS)",
+   "The MARS agent on each application server",
+   "Azure Site Recovery",
+   "Managed disk snapshots on a schedule"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "MABS and DPM provide app-aware backups optimized for common apps including SQL Server, Exchange, and SharePoint, offer full flexibility on backup timing and recovery granularity, support Linux on Hyper-V and VMware VMs, can back up and restore VMware VMs, and do not require a System Center license. Its limits are that it cannot back up Oracle workloads, always requires a live Azure subscription, and has no support for tape backup."
+ },
+ {
+  "id": "m10-03",
+  "module": "M10",
+  "type": "mc",
+  "scenario": "An entire Azure region hosting your production application goes offline. The business needs the application running again in a different region within minutes.",
+  "q": "Which service is designed for this?",
+  "options": [
+   "Azure Site Recovery, which replicates workloads to a secondary location so you can fail over and later fail back",
+   "Azure Backup, restoring the latest recovery point into a new region",
+   "Managed disk snapshots copied to the second region",
+   "Geo-redundant storage on the VM disks"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Azure Site Recovery protects VMs from a major disaster scenario when a whole region experiences an outage; you recover with a single click and replicate to an Azure region of your choice. When an outage occurs you fail over to the secondary location, and after the primary is running again you fail back. Azure Backup protects against data loss such as accidental deletion or corruption, which is a different problem."
+ },
+ {
+  "id": "m10-04",
+  "module": "M10",
+  "type": "mc",
+  "scenario": "You create one Recovery Services vault in East US and a second one in West US.",
+  "q": "Why did the regions differ?",
+  "options": [
+   "A backup vault must be in the same region as the VMs it protects, while the Site Recovery target vault must be in a different region than the VM",
+   "Vaults are always created in pairs across regions for redundancy",
+   "The second vault was in West US only to reduce cost",
+   "Site Recovery requires the target vault to be in the same region as the source for low latency"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "For backup you must specify the same region into which the virtual machines were deployed, and for the replication vault you must specify a different region than the virtual machine. That difference reflects the purpose of each: backup protects data locally, replication protects against the loss of the whole region."
+ },
+ {
+  "id": "m10-05",
+  "module": "M10",
+  "type": "mc",
+  "scenario": "You delete a backup item by mistake and immediately try to reclaim the storage cost.",
+  "q": "What happens to the deleted backup?",
+  "options": [
+   "It is preserved in a soft-delete state for 14 additional days",
+   "It is deleted immediately and cannot be recovered",
+   "It is retained for 90 days matching the activity log",
+   "It is retained for 7 days, matching the storage account default"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Even after a backup is deleted it is preserved in a soft-delete state for 14 additional days. This has a practical consequence: simply deleting resource groups will not delete the Recovery Services vault, and you must delete the backups and the vault first, which the portal supports through a generated PowerShell script run in Cloud Shell."
+ },
+ {
+  "id": "m10-06",
+  "module": "M10",
+  "type": "mc",
+  "scenario": "Azure is the primary backup storage endpoint for a production workload, and the business wants protection if the region is lost.",
+  "q": "Which vault storage replication type should you choose, and when would the alternative apply?",
+  "options": [
+   "Geo-redundant, which is the default; choose locally redundant when Azure is a non-primary backup endpoint, to reduce cost",
+   "Locally redundant, which is the default; choose geo-redundant only for on-premises workloads",
+   "Zone-redundant, which is the only option for Recovery Services vaults",
+   "Read-access geo-redundant, which is required for all VM backups"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "If you are using Azure as a primary backup storage endpoint use the default geo-redundant storage. If Azure is a non-primary backup storage endpoint, choose locally redundant storage, which reduces the cost of storing data in Azure. Note that the storage replication type can only be configured if there are no existing backup items in the vault."
+ },
+ {
+  "id": "m10-07",
+  "module": "M10",
+  "type": "mc",
+  "scenario": "An Azure VM backup job is running. You are asked whether a restore can begin before the data reaches the vault.",
+  "q": "What is correct?",
+  "options": [
+   "Yes. Snapshots taken as part of a backup job are available for recovery without waiting for data transfer to the vault to finish",
+   "No. The backup must complete its transfer to the vault first",
+   "Yes, but only for VMs smaller than 32 TB in total disk size",
+   "No, unless the instant restore retention is set to 5 days"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "An Azure backup job has two phases: a VM snapshot is taken, then the snapshot is transferred to the Recovery Services vault. Retaining snapshots locally reduces backup and restore times, the default retention is two days and is configurable between 1 and 5 days, disk sizes up to 32 TB are supported, and snapshots are usable for recovery without waiting for the vault transfer to complete."
+ },
+ {
+  "id": "m10-08",
+  "module": "M10",
+  "type": "mc",
+  "scenario": "You enable backup on a VM that was built from a custom image several years ago, and the backup extension fails to install.",
+  "q": "What is the most likely prerequisite that is missing?",
+  "options": [
+   "The Azure VM Agent, which must be installed for the Backup extension to work",
+   "A Recovery Services vault in a different region",
+   "Soft delete enabled on the vault",
+   "Geo-redundant storage on the OS disk"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "The Azure VM Agent must be installed on the Azure virtual machine for the Backup extension to work. If the VM was created from the Azure gallery the agent is already present, which is why custom or older images are the usual cause of this failure."
+ },
+ {
+  "id": "m10-09",
+  "module": "M10",
+  "type": "mc",
+  "scenario": "A development team needs a fast, simple way to capture the state of a managed disk before a risky change, with no vault and no policy.",
+  "q": "Which VM data protection option fits?",
+  "options": [
+   "Managed disk snapshots, which exist independently of the source disk and can be used to create new managed disks",
+   "Azure Backup with a daily policy",
+   "Azure Site Recovery replication",
+   "An image captured from a generalized VM"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "For development and test environments, snapshots provide a quick and simple option for backing up VMs that use managed disks; you can back up at any point in time and the snapshots exist independently of the source disk and can be used to create new managed disks. Images, by contrast, are captured from a custom VHD or a generalized sysprepped VM and are used to create many VMs."
+ },
+ {
+  "id": "m10-10",
+  "module": "M10",
+  "type": "mc",
+  "scenario": "A backup administrator must oversee backups spanning several vaults, subscriptions, regions, and tenants from one place, and produce detailed reports.",
+  "q": "What do you point them at?",
+  "options": [
+   "Backup Center, which provides a single pane of glass and integrates with Azure Workbooks and Azure Monitor Logs",
+   "Each individual Recovery Services vault Overview blade",
+   "Azure Site Recovery replicated items",
+   "Storage account diagnostic settings"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Backup Center provides unified management to govern, monitor, operate, and analyze backups at scale, spanning multiple workload types, vaults, subscriptions, regions, and tenants. It supports datasource-centric management with filtering by subscription, resource group, and tags, and uses Azure Workbooks and Azure Monitor Logs for detailed reports."
+ },
+ {
+  "id": "m10-11",
+  "module": "M10",
+  "type": "mc",
+  "scenario": "You are installing the MARS agent on an on-premises server and the registration step fails.",
+  "q": "Which two items from the vault does the installation require?",
+  "options": [
+   "The downloaded agent installer and the credential file from the vault, which registers the agent",
+   "The vault access key and a service principal",
+   "An Entra ID app registration and a client secret",
+   "The vault ARM template and a parameters file"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "The four steps are create the vault, download the agent and credential file, install and register the agent, and configure the backup. The installer wizard configures the installation location, proxy server, and passphrase, and the downloaded credential file is used to register the agent. Agent versions below 2.0.9083.0 must be upgraded by uninstalling and reinstalling."
+ },
+ {
+  "id": "m10-12",
+  "module": "M10",
+  "type": "sa",
+  "scenario": "A client asks why they should pay for both Azure Backup and Azure Site Recovery when, in their words, both keep a copy of the VM somewhere else.",
+  "q": "Explain what each protects against and how the recovery operation differs.",
+  "model": "Azure Backup protects against data loss: accidental or malicious deletion, corruption, and ransomware. It takes recovery points at scheduled intervals, storing them in a Recovery Services vault, and supports application-consistent backups for both Windows and Linux VMs. The operation is a restore, and it can be granular, recovering a file, folder, volume, or whole VM to a chosen point in time. The vault sits in the same region as the protected VMs. Azure Site Recovery protects against a major disaster when a whole region experiences an outage. It continuously replicates workloads running on physical and virtual machines from a primary site to a secondary location, so the recovery point objective is much lower and recovery is fast. The operation is a failover to the secondary location, with a fail back once the primary site is running again, and the target vault must be in a different region from the source. Backup cannot bring an application back online in minutes after a region loss, and Site Recovery cannot recover a single file deleted three weeks ago, so the two address different failures and are complementary.",
+  "keyTerms": [
+   "data loss",
+   "deletion",
+   "corruption",
+   "recovery points",
+   "restore",
+   "granular",
+   "same region",
+   "region outage",
+   "disaster",
+   "replicates",
+   "fail over",
+   "fail back",
+   "different region",
+   "complementary"
+  ]
+ },
+ {
+  "id": "m11-01",
+  "module": "M11",
+  "type": "mc",
+  "scenario": "A production virtual machine disappeared overnight. Management wants to know who deleted it and exactly when.",
+  "q": "Where do you look?",
+  "options": [
+   "The Azure Activity Log, a subscription-level log retained for 90 days",
+   "Azure Monitor metrics for the virtual machine",
+   "Log Analytics InsightsMetrics table",
+   "Network Watcher NSG flow logs"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "The Activity Log is a subscription log providing insight into subscription-level events. It tells you what operations were taken on resources, who started the operation, when it occurred, the status, and other properties. Activity logs are kept for 90 days and can be filtered in the portal by many fields."
+ },
+ {
+  "id": "m11-02",
+  "module": "M11",
+  "type": "mc",
+  "scenario": "You need to chart CPU utilization for a virtual machine over the last hour with near real-time granularity.",
+  "q": "Which Azure Monitor data type is this, and why?",
+  "options": [
+   "Metrics, because they are numerical values describing a system at a point in time and are lightweight enough for near real-time scenarios",
+   "Logs, because performance data is always stored as log records",
+   "Activity log entries, because they include resource health",
+   "Traces, because they include performance counters"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "All data collected by Azure Monitor fits into one of two fundamental types. Metrics are numerical values that describe some aspect of a system at a particular point in time; they are lightweight and capable of supporting near real-time scenarios. Logs contain different kinds of data organized into records with different sets of properties for each type, including events and traces alongside performance data so it can all be combined for analysis."
+ },
+ {
+  "id": "m11-03",
+  "module": "M11",
+  "type": "mc",
+  "scenario": "You build an alert that fires when a VM is deleted, and attach an email notification.",
+  "q": "Which component holds the email address, and what is true about it?",
+  "options": [
+   "The action group, a collection of notification preferences; up to five can be attached to an alert rule, they run concurrently in no specific order, and multiple rules can share one",
+   "The alert rule itself, which can hold one email address",
+   "The monitor condition, which resolves when the email is delivered",
+   "The alert processing rule, which is where notification targets are defined"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Alerts consist of alert rules, action groups, and monitor conditions. An action group is a collection of notification preferences, supporting email, SMS, push, voice, webhooks, Logic Apps, Functions, runbooks, and ITSM. You can add up to five action groups to an alert rule, they are executed concurrently in no specific order, and multiple alert rules can use the same action group."
+ },
+ {
+  "id": "m11-04",
+  "module": "M11",
+  "type": "mc",
+  "scenario": "Overnight maintenance runs from 10 pm to 7 am and generates a flood of alert emails that the on-call team must ignore.",
+  "q": "What do you configure so the rules keep evaluating but nobody is paged?",
+  "options": [
+   "An alert processing rule that suppresses notifications, scheduled to apply at that specific time",
+   "Disable each alert rule at 10 pm and re-enable it at 7 am with automation",
+   "Delete the action group for the duration of the window",
+   "Set the alert severity to Sev 4 for the maintenance window"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Alert processing rules apply on top of fired alerts and can suppress notifications or add action groups. By default the rule works all the time unless you disable it or configure a schedule, and you can apply it at a specific time with a start, an end, and a time zone."
+ },
+ {
+  "id": "m11-05",
+  "module": "M11",
+  "type": "mc",
+  "scenario": "A VM cannot reach a database server. You want to know immediately whether an NSG rule is blocking the packet, and which rule is responsible.",
+  "q": "Which Network Watcher tool do you use?",
+  "options": [
+   "IP Flow Verify",
+   "Next Hop",
+   "Topology",
+   "Packet Capture"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "IP Flow Verify checks if a packet is allowed or denied to or from a virtual machine and identifies the rule responsible. Effective Security Rules shows the combined inbound and outbound rules applying to the NIC, Next Hop tells you whether traffic is being routed to the intended destination, and Connection Troubleshoot tests end-to-end reachability with hop-by-hop latency."
+ },
+ {
+  "id": "m11-06",
+  "module": "M11",
+  "type": "mc",
+  "scenario": "You have added a user-defined route sending traffic through a network virtual appliance, and you need to confirm Azure is actually sending traffic to that appliance.",
+  "q": "Which Network Watcher tool answers this directly?",
+  "options": [
+   "Next Hop",
+   "IP Flow Verify",
+   "NSG Flow Logs",
+   "VPN Troubleshoot"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Next Hop helps determine whether traffic is being directed to the intended destination by showing the next hop. IP Flow Verify answers a firewall question rather than a routing question, and NSG flow logs map IP traffic through a network security group after the fact."
+ },
+ {
+  "id": "m11-07",
+  "module": "M11",
+  "type": "mc",
+  "scenario": "You need to know whether one virtual machine can reach another on TCP 3389, and want the latency and the path if it can.",
+  "q": "Which Network Watcher tool did you use?",
+  "options": [
+   "Connection Troubleshoot",
+   "IP Flow Verify",
+   "Topology",
+   "Effective Security Rules"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Connection Troubleshoot checks connectivity between a source VM and a destination, identifies configuration issues impacting reachability, provides all possible hop-by-hop paths, reviews hop-by-hop latency including minimum, maximum, and average, and shows a graphical topology from source to destination. Between virtual machines in unpeered virtual networks it returns UnReachable, and succeeds once peering is configured."
+ },
+ {
+  "id": "m11-08",
+  "module": "M11",
+  "type": "mc",
+  "scenario": "An administrator opens Network Watcher in West Europe and cannot see the tools for a virtual machine running in East US.",
+  "q": "What explains this?",
+  "options": [
+   "Network Watcher is a regional service and must be used in the region containing the resources",
+   "Network Watcher requires a Log Analytics workspace in each region before it appears",
+   "Network Watcher only supports the subscription default region",
+   "The VM must have a public IP address to appear in Network Watcher"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Network Watcher is described as a regional service that provides various network diagnostic and monitoring tools. You work with it in the region where the resources live."
+ },
+ {
+  "id": "m11-09",
+  "module": "M11",
+  "type": "mc",
+  "scenario": "You must query performance data collected from many virtual machines, correlate it with events, and chart the result.",
+  "q": "Which service and what does it require?",
+  "options": [
+   "Log Analytics, which requires a workspace: an Azure resource and a container where data is collected, aggregated, analyzed, and presented",
+   "Metrics Explorer, which requires a diagnostic setting per VM",
+   "Application Insights, which requires an instrumentation key per VM",
+   "Backup Center, which requires a Recovery Services vault"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "Log Analytics helps you collect and analyze data generated by resources in cloud and on-premises environments. A workspace is an Azure resource and a container where data is collected, aggregated, analyzed, and presented; it provides a geographic location, data isolation, and scope, and you can have multiple workspaces per subscription."
+ },
+ {
+  "id": "m11-10",
+  "module": "M11",
+  "type": "mc",
+  "scenario": "You run a query that filters InsightsMetrics to the last two hours, averages a value in five-minute buckets per computer, and draws a chart.",
+  "q": "Which operator produced the five-minute buckets?",
+  "options": [
+   "bin()",
+   "summarize",
+   "render",
+   "ago()"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "In that query, ago(2h) set the time range, where filtered rows, summarize performed the aggregation, bin(TimeGenerated, 5m) grouped the timestamps into five-minute buckets, and render timechart drew the chart. Common tables include Heartbeat for agent check-ins and InsightsMetrics for VM Insights performance data."
+ },
+ {
+  "id": "m11-11",
+  "module": "M11",
+  "type": "mc",
+  "scenario": "You must monitor data about the operation of tenant-level Azure services such as Entra ID.",
+  "q": "Which Azure Monitor data tier is this?",
+  "options": [
+   "Azure tenant monitoring data",
+   "Azure subscription monitoring data",
+   "Azure resource monitoring data",
+   "Guest OS monitoring data"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "The five tiers are application monitoring data about code you have written, guest OS monitoring data about the operating system, Azure resource monitoring data about the operation of a resource, Azure subscription monitoring data about the operation and management of a subscription plus the health of Azure itself, and Azure tenant monitoring data about tenant-level services such as Entra ID."
+ },
+ {
+  "id": "m11-12",
+  "module": "M11",
+  "type": "mc",
+  "scenario": "Before you can run VM performance queries against a newly deployed virtual machine, one setup step is required on that machine.",
+  "q": "What was it?",
+  "options": [
+   "Enable VM Insights from Azure Monitor, which installs the agent and configures data collection rules",
+   "Create an alert processing rule scoped to the resource group",
+   "Add a diagnostic setting archiving to a storage account",
+   "Enable NSG flow logs on the subnet"
+  ],
+  "answer": [
+   0
+  ],
+  "explain": "In the portal you open Monitor, select View in the VM Insights box, choose Configure Insights, select the VM and enable it, then take the defaults for subscription and data collection rules. It takes a few minutes for the agent to install and configure, and only then does performance data appear in tables such as InsightsMetrics."
+ },
+ {
+  "id": "m11-13",
+  "module": "M11",
+  "type": "sa",
+  "scenario": "A colleague says all monitoring questions can be answered from the Activity Log. You disagree and want to explain when to reach for the Activity Log, when for metrics, and when for Log Analytics.",
+  "q": "Give an example question that each one answers and state what each actually contains.",
+  "model": "The Activity Log is a subscription log that provides insight into subscription-level events in Azure. It answers control-plane questions: what operations were taken on the resources in the subscription, who started the operation, when it occurred, and the status. The example is who deleted the production virtual machine and when. It is retained for 90 days. Metrics are numerical values that describe some aspect of a system at a particular point in time; they are lightweight and support near real-time scenarios. They answer questions about current or recent performance, for example what the CPU percentage of this virtual machine was at three o'clock. Logs, queried through Log Analytics, contain different kinds of data organized into records with different sets of properties for each type, with events and traces stored alongside performance data so it can all be combined for analysis. They answer correlation and search questions across many resources, for example which virtual machines exceeded ninety percent disk utilization at any point in the last twenty-four hours, grouped by computer, which is exactly the sort of query written in Kusto against InsightsMetrics. All Azure Monitor data falls into one of the two fundamental types of metrics or logs, and the Activity Log is a specific log stream inside that.",
+  "keyTerms": [
+   "Activity Log",
+   "subscription",
+   "who",
+   "when",
+   "operations",
+   "90 days",
+   "metrics",
+   "numerical",
+   "point in time",
+   "near real-time",
+   "logs",
+   "records",
+   "combined for analysis",
+   "Log Analytics",
+   "KQL",
+   "correlate"
+  ]
+ }
 ]

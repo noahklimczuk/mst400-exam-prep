@@ -2,6 +2,7 @@
 """Render the MST400 study guide markdown into the study page HTML."""
 
 import html
+import json
 import re
 from pathlib import Path
 
@@ -12,6 +13,12 @@ SRC = HERE / "MST400-Final-Exam-Study-Guide.md"
 OUT = HERE / "mst400-study-guide.html"
 
 EXAM_URL = "https://claude.ai/code/artifact/f0879343-655d-44c9-b27c-a2d97503a664"
+
+# Counted from the banks so the cross-link never goes stale.
+BANK_COUNT = sum(
+    len(json.loads((HERE / f).read_text()))
+    for f in ("bank-a.json", "bank-b.json", "bank-c.json")
+)
 
 STYLE = """
 :root {
@@ -739,9 +746,10 @@ def main() -> None:
             ),
         )
 
-    # Short-answer section -> one reveal per question.
+    # Short-answer section -> one reveal per question. Bounded by the next H2
+    # rather than a hardcoded section number, which renumbering would break.
     sa_start = body_md.index("**Q1.")
-    sa_end = body_md.index("## 18.")
+    sa_end = body_md.index("\n## ", sa_start) + 1
     sa_md = body_md[sa_start:sa_end]
     body_md = (
         body_md[:sa_start]
@@ -803,7 +811,7 @@ def main() -> None:
     </nav>
     <a class="rail__cta" href="{EXAM_URL}" target="_blank" rel="noopener">
       <b>Practice exam &rarr;</b>
-      <span>155 scenario questions</span>
+      <span>{BANK_COUNT} scenario questions</span>
     </a>
   </aside>
 
@@ -811,9 +819,9 @@ def main() -> None:
     <header class="masthead">
       <p class="masthead__eyebrow">Thursday, August 13 · Room C2032</p>
       <h1>Everything on the MST400 final, in one pass</h1>
-      <p>Built from all eleven lecture modules and Labs 01–08. The cram sheet holds the
-        numbers that get tested; the module notes explain them; the last two sections let
-        you check whether any of it stuck.</p>
+      <p>Built from all eleven lecture modules. The cram sheet holds the numbers that get
+        tested; the module notes explain them; the last two sections let you check whether
+        any of it stuck.</p>
       <dl class="facts">
         <div><dt>Questions</dt><dd>29</dd></div>
         <div><dt>Duration</dt><dd>80 min</dd></div>
@@ -823,7 +831,7 @@ def main() -> None:
       </dl>
       <p class="cross">
         <a href="{EXAM_URL}" target="_blank" rel="noopener">Practice exam &rarr;</a>
-        <span>155 scenario questions marked as you go, random draws, 80-minute timed mock. Read here, then test there.</span>
+        <span>{BANK_COUNT} scenario questions marked as you go, random draws, 80-minute timed mock. Read here, then test there.</span>
       </p>
     </header>
 

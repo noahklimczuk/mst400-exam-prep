@@ -585,7 +585,6 @@ details.reveal .reveal__body p:first-child { margin-top: 0.9rem; }
 <li><a href="#module-9-app-service-containers">Module 9 — App Service &amp; Containers</a></li>
 <li><a href="#module-10-data-protection-backup-site-recovery">Module 10 — Data Protection: Backup &amp; Site Recovery</a></li>
 <li><a href="#module-11-monitoring-azure-monitor-alerts-log-analytics-network-watcher">Module 11 — Monitoring: Azure Monitor, Alerts, Log Analytics, Network Watcher</a></li>
-<li><a href="#lab-recap-0108">Lab Recap 01–08</a></li>
 <li><a href="#master-comparison-tables">Master Comparison Tables</a></li>
 <li><a href="#powershell-cli-command-sheet">PowerShell / CLI Command Sheet</a></li>
 <li><a href="#practice-exam-multiple-choice">Practice Exam — Multiple Choice</a></li>
@@ -595,7 +594,7 @@ details.reveal .reveal__body p:first-child { margin-top: 0.9rem; }
     </nav>
     <a class="rail__cta" href="https://claude.ai/code/artifact/f0879343-655d-44c9-b27c-a2d97503a664" target="_blank" rel="noopener">
       <b>Practice exam &rarr;</b>
-      <span>155 scenario questions</span>
+      <span>149 scenario questions</span>
     </a>
   </aside>
 
@@ -603,9 +602,9 @@ details.reveal .reveal__body p:first-child { margin-top: 0.9rem; }
     <header class="masthead">
       <p class="masthead__eyebrow">Thursday, August 13 · Room C2032</p>
       <h1>Everything on the MST400 final, in one pass</h1>
-      <p>Built from all eleven lecture modules and Labs 01–08. The cram sheet holds the
-        numbers that get tested; the module notes explain them; the last two sections let
-        you check whether any of it stuck.</p>
+      <p>Built from all eleven lecture modules. The cram sheet holds the numbers that get
+        tested; the module notes explain them; the last two sections let you check whether
+        any of it stuck.</p>
       <dl class="facts">
         <div><dt>Questions</dt><dd>29</dd></div>
         <div><dt>Duration</dt><dd>80 min</dd></div>
@@ -615,7 +614,7 @@ details.reveal .reveal__body p:first-child { margin-top: 0.9rem; }
       </dl>
       <p class="cross">
         <a href="https://claude.ai/code/artifact/f0879343-655d-44c9-b27c-a2d97503a664" target="_blank" rel="noopener">Practice exam &rarr;</a>
-        <span>155 scenario questions marked as you go, random draws, 80-minute timed mock. Read here, then test there.</span>
+        <span>149 scenario questions marked as you go, random draws, 80-minute timed mock. Read here, then test there.</span>
       </p>
     </header>
 
@@ -1340,7 +1339,7 @@ az find                                     # get help
 </table></div>
 <p><strong>Benefits of templates:</strong> repeatable/idempotent deployments, version control, consistency across environments, parameterization for reuse, faster than manual portal work.</p>
 <blockquote>
-<p><strong>Lab tie-in:</strong> In Lab 01 you exported a VNet as a template from the <strong>Automation → Export template</strong> blade, then edited <code>template.json</code> and <code>parameters.json</code> and re-deployed with <strong>Deploy a custom template → Build your own template in the editor → Load file</strong>.</p>
+<p><strong>In the portal:</strong> export an existing VNet as a template from the <strong>Automation → Export template</strong> blade, edit <code>template.json</code> and <code>parameters.json</code>, then re-deploy with <strong>Deploy a custom template → Build your own template in the editor → Load file</strong>.</p>
 </blockquote>
 <hr />
 <h2 id="module-4-virtual-networking-vnets-nsgs-firewall-dns">5. Module 4 — Virtual Networking: VNets, NSGs, Firewall, DNS</h2>
@@ -1902,7 +1901,7 @@ Because peering is non-transitive, you use <strong>user-defined routes (UDRs) an
 </tbody>
 </table></div>
 <blockquote>
-<p><strong>Lab 03 note:</strong> "The <strong>Standard SKU provides a static IP address</strong>. Static IP addresses are assigned when the resource is created and released when the resource is deleted."</p>
+<p><strong>Note:</strong> the <strong>Standard SKU provides a static IP address</strong>. Static IP addresses are assigned when the resource is created and released when the resource is deleted.</p>
 </blockquote>
 <h3 id="azure-application-gateway-layer-7">Azure Application Gateway — Layer 7</h3>
 <p>Provides <strong>Layer 7 load balancing, Web Application Firewall (WAF), SSL termination, and end-to-end encryption</strong> to the resources in its backend pool.</p>
@@ -2845,10 +2844,10 @@ Because peering is non-transitive, you use <strong>user-defined routes (UDRs) an
 <ul>
 <li>A group of <strong>identical, load-balanced VMs</strong> that can <strong>automatically increase or decrease the number of VM instances</strong> running your application — <strong>dynamically scale to meet changing demand</strong></li>
 <li><strong>Autoscaling can be scheduled</strong> to increase or decrease capacity at fixed times</li>
-<li><strong>Orchestration modes:</strong> <strong>Uniform</strong> (identical VMs from a single config — used in Lab 05) and <strong>Flexible</strong> (mix of VM types/configs)</li>
+<li><strong>Orchestration modes:</strong> <strong>Uniform</strong> (identical VMs from a single config) and <strong>Flexible</strong> (mix of VM types/configs)</li>
 <li>Can be deployed across <strong>availability zones</strong></li>
 </ul>
-<p><strong>Autoscale rule anatomy (from Lab 05):</strong> metric source → metric namespace → <strong>metric name</strong> (e.g. <em>Percentage CPU</em>) → <strong>operator</strong> (Greater than / Less than) → <strong>threshold</strong> → <strong>duration</strong> → <strong>time grain statistic</strong> (Average) → <strong>operation</strong> (Increase count by / Decrease count by / Increase percent by) → <strong>cool down</strong> → <strong>instance count</strong>. Plus <strong>instance limits: minimum, maximum, default</strong>.</p>
+<p><strong>Autoscale rule anatomy:</strong> metric source → metric namespace → <strong>metric name</strong> (e.g. <em>Percentage CPU</em>) → <strong>operator</strong> (Greater than / Less than) → <strong>threshold</strong> → <strong>duration</strong> → <strong>time grain statistic</strong> (Average) → <strong>operation</strong> (Increase count by / Decrease count by / Increase percent by) → <strong>cool down</strong> → <strong>instance count</strong>. Plus <strong>instance limits: minimum, maximum, default</strong>.</p>
 <h3 id="vm-extensions">VM Extensions</h3>
 <ul>
 <li><strong>Small applications that provide post-deployment VM configuration and automation tasks</strong></li>
@@ -2926,7 +2925,7 @@ Because peering is non-transitive, you use <strong>user-defined routes (UDRs) an
 <h3 id="continuous-deployment">Continuous Deployment</h3>
 <p>The Azure portal provides out-of-the-box CI/CD with <strong>Azure DevOps, GitHub, Bitbucket, FTP, or a local Git repository</strong> on your development machine. <strong>Whenever code updates are pushed to source control, the website or web app automatically picks up the updates.</strong></p>
 <blockquote>
-<p><strong>Lab 06 tie-in:</strong> you used <strong>Deployment Center → Settings → Source: External Git</strong> with repo <code>https://github.com/Azure-Samples/php-docs-hello-world</code>, branch <code>master</code>.</p>
+<p><strong>In the portal:</strong> configure this under <strong>Deployment Center → Settings → Source</strong>, choosing <strong>External Git</strong> and supplying the repository URL and branch.</p>
 </blockquote>
 <h3 id="deployment-slots-high-yield">Deployment Slots ⚠️ <em>high-yield</em></h3>
 <div class="table-scroll"><table>
@@ -3091,7 +3090,7 @@ Because peering is non-transitive, you use <strong>user-defined routes (UDRs) an
 </table></div>
 <p><strong>Azure container options ladder:</strong> <strong>ACI</strong> (single containers, no orchestration) → <strong>Azure Container Apps</strong> (managed serverless containers; abstracts the Kubernetes cluster) → <strong>AKS</strong> (full Kubernetes cluster you manage) → <strong>Azure Container Registry (ACR)</strong> (private image registry).</p>
 <blockquote>
-<p><strong>Lab 06 note:</strong> <em>"Azure Container Apps take the concept of a managed Kubernetes cluster a step further and manage the cluster environment as well... Unlike an Azure Kubernetes cluster, where you must still manage the cluster, an Azure Container Apps instance removes some of the complexity."</em> By default a container app <strong>accepts traffic on port 80</strong> and Azure provides a <strong>DNS name</strong> for the application.</p>
+<p><strong>Note:</strong> <em>"Azure Container Apps take the concept of a managed Kubernetes cluster a step further and manage the cluster environment as well... Unlike an Azure Kubernetes cluster, where you must still manage the cluster, an Azure Container Apps instance removes some of the complexity."</em> By default a container app <strong>accepts traffic on port 80</strong> and Azure provides a <strong>DNS name</strong> for the application.</p>
 </blockquote>
 <hr />
 <h2 id="module-10-data-protection-backup-site-recovery">11. Module 10 — Data Protection: Backup &amp; Site Recovery</h2>
@@ -3123,8 +3122,8 @@ Because peering is non-transitive, you use <strong>user-defined routes (UDRs) an
 <li>Back up <strong>on-premises VMs</strong></li>
 </ul>
 <blockquote>
-<p>Lab 07 note: <strong>Azure has two types of vaults — Recovery Services vaults and Backup vaults. The main difference is the datasources that can be backed up.</strong>
-Also: the <strong>storage replication type can only be configured if there are NO existing backup items.</strong></p>
+<p><strong>Note:</strong> Azure has two types of vaults — Recovery Services vaults and Backup vaults. The main difference is the datasources that can be backed up.<strong>
+Also: the </strong>storage replication type can only be configured if there are NO existing backup items.**</p>
 </blockquote>
 <h3 id="implementing-on-premises-file-and-folder-backup-the-4-steps">Implementing on-premises file and folder backup — the 4 steps</h3>
 <ol>
@@ -3232,7 +3231,7 @@ Also: the <strong>storage replication type can only be configured if there are N
 <h3 id="soft-delete">Soft Delete</h3>
 <p><strong>Even after a backup is deleted, it is preserved in soft-delete state for 14 additional days.</strong></p>
 <blockquote>
-<p><strong>Lab 07 practical consequence:</strong> because soft delete is enabled, <strong>simply deleting your resource groups will NOT delete the Recovery Services Vault.</strong> You must delete the backups and the RSV first (the portal offers <strong>"Delete using PowerShell script"</strong> — generate it and run it in Cloud Shell).</p>
+<p><strong>Practical consequence:</strong> because soft delete is enabled, <strong>simply deleting your resource groups will NOT delete the Recovery Services Vault.</strong> You must delete the backups and the RSV first (the portal offers <strong>"Delete using PowerShell script"</strong> — generate it and run it in Cloud Shell).</p>
 </blockquote>
 <h3 id="azure-site-recovery-asr">Azure Site Recovery (ASR)</h3>
 <p><strong>Site Recovery replicates workloads running on physical and virtual machines from a primary site to a secondary location.</strong> When an outage occurs at your primary site you <strong>fail over</strong> to the secondary location and access apps from there. After the primary location is running again, you can <strong>fail back</strong>.</p>
@@ -3409,7 +3408,7 @@ Also: the <strong>storage replication type can only be configured if there are N
 </table></div>
 <p><strong>Alert states:</strong> New / Acknowledged / Closed. <strong>Severity: Sev 0 (critical) → Sev 4 (verbose).</strong></p>
 <blockquote>
-<p><strong>Lab 08 facts:</strong> You can add <strong>up to five action groups to an alert rule</strong>. <strong>Action groups are executed concurrently, in no specific order.</strong> <strong>Multiple alert rules can use the same action group.</strong></p>
+<p><strong>Also worth knowing:</strong> you can add <strong>up to five action groups to an alert rule</strong>. <strong>Action groups are executed concurrently, in no specific order.</strong> <strong>Multiple alert rules can use the same action group.</strong></p>
 </blockquote>
 <p><strong>Alert processing rules</strong> — apply on top of fired alerts to <strong>suppress notifications</strong> (e.g. during a <strong>planned maintenance window</strong>) or to add action groups. Can run <strong>all the time</strong> or <strong>at a specific time</strong> on a schedule.</p>
 <h3 id="log-analytics">Log Analytics</h3>
@@ -3428,7 +3427,7 @@ Also: the <strong>storage replication type can only be configured if there are N
 <li>For a <strong>quick graphical view of the health of your overall environment</strong>, add <strong>visualizations for saved log searches to your dashboard</strong></li>
 <li>You can <strong>export data from the repository into tools such as Power BI or Excel</strong></li>
 </ul>
-<p><strong>KQL basics (from Lab 08):</strong></p>
+<p><strong>KQL basics:</strong></p>
 <pre><code class="language-kusto">InsightsMetrics
 | where TimeGenerated &gt; ago(2h)
 | where Name == &quot;UtilizationPercentage&quot;
@@ -3531,292 +3530,12 @@ Also: the <strong>storage replication type can only be configured if there are N
 - "Is my NSG blocking this packet?" → <strong>IP Flow Verify</strong>
 - "Which NSG rules actually apply to this VM's NIC?" → <strong>Effective Security Rules</strong>
 - "Is my UDR sending traffic to the NVA like I expect?" → <strong>Next Hop</strong>
-- "Can VM1 reach VM2 on port 3389, and what's the latency per hop?" → <strong>Connection Troubleshoot</strong> (this is what you used in <strong>Lab 02</strong>)
+- "Can VM1 reach VM2 on port 3389, and what's the latency per hop?" → <strong>Connection Troubleshoot</strong>
 - "Show me a picture of my VNet" → <strong>Topology</strong>
 - "Record the actual packets" → <strong>Packet Capture</strong></p>
 </blockquote>
 <hr />
-<h2 id="lab-recap-0108">13. Lab Recap 01–08</h2>
-<p>Short-answer questions often come straight from lab tasks. Know <strong>what you did, why, and the key values</strong>.</p>
-<h3 id="lab-01-implement-virtual-networking">Lab 01 — Implement Virtual Networking</h3>
-<p><strong>Scenario:</strong> A global organization implementing virtual networks with capacity for growth.</p>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th>Task</th>
-<th>What you did</th>
-<th>Key values</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>Create a VNet with subnets <strong>using the portal</strong></td>
-<td><code>CoreServicesVnet</code> <strong>10.20.0.0/16</strong>; <code>SharedServicesSubnet</code> <strong>10.20.10.0/24</strong>; <code>DatabaseSubnet</code> <strong>10.20.20.0/24</strong>. Deleted the default subnet. Then <strong>Automation → Export template</strong> and downloaded <code>template.json</code></td>
-</tr>
-<tr>
-<td>2</td>
-<td>Create a VNet and subnets <strong>using a template</strong></td>
-<td>Edited the exported template: <code>CoreServicesVnet</code>→<code>ManufacturingVnet</code>, <code>10.20.0.0</code>→<strong>10.30.0.0</strong>, <code>SharedServicesSubnet</code>→<code>SensorSubnet1</code> (<strong>10.30.20.0/24</strong>), <code>DatabaseSubnet</code>→<code>SensorSubnet2</code> (<strong>10.30.21.0/24</strong>). Also edited <code>parameters.json</code>. Deployed via <strong>Deploy a custom template → Build your own template in the editor → Load file</strong></td>
-</tr>
-<tr>
-<td>3</td>
-<td><strong>ASG + NSG</strong></td>
-<td>Created ASG <code>asg-web</code>; created NSG <code>NSGSecure</code> and <strong>associated it with the SharedServicesSubnet</strong>. <strong>Inbound rule:</strong> Source = <strong>Application security group</strong> (<code>asg-web</code>), destination ports <strong>80,443</strong>, TCP, <strong>Allow</strong>, <strong>priority 100</strong>, name <code>AllowASG</code>. <strong>Outbound rule:</strong> Destination = <strong>Service tag → Internet</strong>, port <strong>8080</strong>, <strong>Deny</strong>, <strong>priority 4096</strong>. Observed the default <code>AllowInternetOutboundRule</code> at <strong>priority 65001</strong> that <strong>cannot be deleted</strong></td>
-</tr>
-<tr>
-<td>4</td>
-<td><strong>Public and private DNS zones</strong></td>
-<td>Public zone <code>yourName.com</code> — noted the <strong>four Azure DNS name servers</strong>; added <strong>A record</strong> <code>www</code> → <code>10.1.1.4</code>, <strong>TTL 1</strong>; verified with <code>nslookup www.yourName.com &lt;name server&gt;</code>. Private zone <code>private.yourName.com</code> — <strong>no name server records</strong>; added a <strong>virtual network link</strong> to <code>ManufacturingVnet</code>; added A record <code>sensorvm</code></td>
-</tr>
-</tbody>
-</table></div>
-<p><strong>Concepts to be able to explain:</strong> why plan address space/subnet sizes (5 reserved IPs, no re-addressing later); benefits of templates; ASG vs. NSG; public vs. private DNS zone.</p>
-<h3 id="lab-02-implement-inter-site-connectivity">Lab 02 — Implement Inter-site Connectivity</h3>
-<p><strong>Scenario:</strong> Core IT services segmented from manufacturing; they occasionally need to communicate.</p>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th>Task</th>
-<th>What you did</th>
-<th>Key values</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1–2</td>
-<td>Create two VMs in <strong>two different VNets</strong></td>
-<td><code>CoreServicesVM</code> in <code>CoreServicesVnet</code> <strong>10.0.0.0/16</strong>, subnet <code>Core</code> <strong>10.0.0.0/24</strong>. <code>ManufacturingVM</code> in <code>ManufacturingVnet</code> <strong>172.16.0.0/16</strong>, subnet <code>Manufacturing</code> <strong>172.16.0.0/24</strong>. Windows Server 2025 Datacenter, <strong>Standard_D2s_v3</strong>, <strong>Standard HDD</strong> OS disk, <strong>public inbound ports: None</strong>, boot diagnostics disabled</td>
-</tr>
-<tr>
-<td>3</td>
-<td><strong>Network Watcher → Connection troubleshoot</strong></td>
-<td>Source VM → destination VM, <strong>TCP port 3389</strong>. Result: <strong>UnReachable</strong> — <em>because the VMs are in different virtual networks</em></td>
-</tr>
-<tr>
-<td>4</td>
-<td><strong>Configure VNet peering</strong></td>
-<td>Created bidirectional peering <code>CoreServicesVnet-to-ManufacturingVnet</code> and <code>ManufacturingVnet-to-CoreServicesVnet</code>; enabled <strong>allow access</strong> and <strong>allow forwarded traffic</strong>; peering status must show <strong>Connected</strong> on both sides</td>
-</tr>
-<tr>
-<td>5</td>
-<td><strong>Retest with PowerShell</strong></td>
-<td>On the VM: <strong>Run command → RunPowerShellScript</strong> → <code>Test-NetConnection &lt;private IP&gt; -port 3389</code>. Now <strong>succeeds because peering is configured</strong></td>
-</tr>
-<tr>
-<td>6</td>
-<td><strong>Create a custom route (UDR)</strong></td>
-<td>New subnet <code>perimeter</code> <strong>10.0.1.0/24</strong>; route table <code>rt-CoreServices</code>, <strong>Propagate gateway routes: No</strong>; route <code>PerimetertoCore</code>: destination <strong>10.0.0.0/24</strong>, <strong>next hop type = Virtual appliance</strong>, <strong>next hop address 10.0.1.7</strong>; <strong>associated the route table with the Perimeter subnet</strong></td>
-</tr>
-</tbody>
-</table></div>
-<p><strong>Concepts:</strong> peering is the cheapest/fastest VNet-to-VNet path; a UDR forces DMZ traffic through an NVA.</p>
-<h3 id="lab-03-implement-traffic-management">Lab 03 — Implement Traffic Management</h3>
-<p><strong>Scenario:</strong> Load balance public requests across VMs; serve images and videos from different VMs.</p>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th>Task</th>
-<th>What you did</th>
-<th>Key values</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td><strong>Deploy infrastructure from an ARM template</strong></td>
-<td>One VNet (<code>mst400-S64-vnet1</code>) with <strong>three subnets</strong>, one VM per subnet, one NSG. Loaded <code>template.json</code> + <code>parameters.json</code></td>
-</tr>
-<tr>
-<td>2</td>
-<td><strong>Azure Load Balancer</strong> (Layer 4)</td>
-<td><strong>SKU Standard</strong>, <strong>Type Public</strong>, <strong>Tier Regional</strong>. Frontend IP with a <strong>new Standard, Regional, Static</strong> public IP. <strong>Backend pool</strong> (configuration: <strong>NIC</strong>) with <code>vm0</code> and <code>vm1</code>. <strong>Load balancing rule:</strong> IPv4, TCP, <strong>port 80 → backend port 80</strong>, <strong>health probe TCP port 80</strong>, session persistence <strong>None</strong>, idle timeout <strong>4</strong> min, TCP reset <strong>Disabled</strong>, floating IP <strong>Disabled</strong>, SNAT <strong>Recommended</strong>. Tested by browsing the public IP and refreshing → alternates between <code>vm0</code> and <code>vm1</code></td>
-</tr>
-<tr>
-<td>3</td>
-<td><strong>Azure Application Gateway</strong> (Layer 7)</td>
-<td>Added a <strong>dedicated subnet</strong> <code>subnet-appgw</code> <strong>10.60.3.224/27</strong> (<em>App Gateway requires a dedicated subnet of /27 or larger</em>). Gateway tier <strong>Standard V2</strong>, autoscaling <strong>No</strong>, instance count <strong>2</strong>, availability zone <strong>1</strong>, HTTP2 disabled. <strong>Three backend pools:</strong> general (nic1+nic2), <strong>images</strong> (nic1), <strong>videos</strong> (nic2). <strong>Routing rule</strong> priority <strong>10</strong>, listener <strong>Basic</strong>, <strong>HTTP port 80</strong>. <strong>Path-based routing:</strong> <code>/image/*</code> → images backend, <code>/video/*</code> → videos backend. Verified <strong>Backend health = Healthy</strong> and tested <code>http://&lt;ip&gt;/image/</code> and <code>http://&lt;ip&gt;/video/</code></td>
-</tr>
-</tbody>
-</table></div>
-<p><strong>Concepts:</strong> LB = L4 vs. App Gateway = L7; health probes; path-based routing; WAF purpose.</p>
-<h3 id="lab-04-manage-azure-storage">Lab 04 — Manage Azure Storage</h3>
-<p><strong>Scenario:</strong> Move infrequently accessed on-prem files to cheaper tiers; explore protection mechanisms.</p>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th>Task</th>
-<th>What you did</th>
-<th>Key values</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td><strong>Create and configure a storage account</strong></td>
-<td><strong>Standard</strong> performance, <strong>Geo-redundant storage (GRS)</strong> + <strong>"Make read access to data available in the event of regional unavailability"</strong> (= <strong>RA-GRS</strong>). <strong>Networking: Disable public access and use private access.</strong> Data protection tab: <strong>7 days default soft delete</strong>, blob versioning available. Later changed public access to <strong>Enabled from selected virtual networks and IP addresses</strong> + <strong>Add your client IP address</strong> in the Firewall section. <strong>Lifecycle management rule <code>Movetocool</code>:</strong> if base blobs were <strong>last modified more than 30 days ago → move to cool storage</strong></td>
-</tr>
-<tr>
-<td>2</td>
-<td><strong>Secure blob storage</strong></td>
-<td>Created container <code>data</code> with <strong>Private</strong> public-access level. <strong>Access Policy → Immutable blob storage → Add policy → Time-based retention, 180 days.</strong> Uploaded a file: <strong>Block blob</strong>, <strong>block size 4 MiB</strong>, <strong>access tier Hot</strong>, upload to folder <code>securitytest</code>. Pasting the raw blob URL into an InPrivate window returned <strong><code>ResourceNotFound</code> / <code>PublicAccessNotPermitted</code></strong> — expected, since the container is Private. Then <strong>Generate SAS</strong>: signing key <strong>Key 1</strong>, permissions <strong>Read</strong>, start <strong>yesterday</strong>, expiry <strong>tomorrow</strong> → the <strong>Blob SAS URL worked</strong> in a browser</td>
-</tr>
-<tr>
-<td>3</td>
-<td><strong>Secure Azure file storage</strong></td>
-<td>Created file share <code>share1</code>, access tier <strong>Transaction optimized</strong>, backup disabled. Used <strong>Storage browser</strong> to add directories and upload. Then created a VNet, added a <strong>service endpoint for <code>Microsoft.Storage</code></strong> on the default subnet, added that VNet/subnet to the storage account's <strong>Networking</strong> blade, and <strong>deleted your client IP from the firewall</strong>. Result: Storage Browser returned <strong>"not authorized to perform this operation"</strong> because you were <strong>not connecting from the virtual network</strong></td>
-</tr>
-</tbody>
-</table></div>
-<p><strong>Concepts:</strong> GRS vs. RA-GRS; lifecycle management for cost; immutability/legal hold; SAS as delegated access; service endpoints locking storage to a VNet.</p>
-<h3 id="lab-05-manage-virtual-machines">Lab 05 — Manage Virtual Machines</h3>
-<p><strong>Scenario:</strong> Compare single VMs to scale sets; configure autoscaling.</p>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th>Task</th>
-<th>What you did</th>
-<th>Key values</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td><strong>Zone-resilient VMs</strong></td>
-<td>Created <strong>two VMs across Zone 1 and Zone 2</strong> in one deployment (checked both zones, then <strong>Edit names</strong>). <em>"Availability zones offer the highest level of uptime SLA for virtual machines at </em><em>99.99%</em><em>. To achieve this SLA you must deploy at least two VMs across different availability zones."</em></td>
-</tr>
-<tr>
-<td>2</td>
-<td><strong>Compute and storage scaling</strong></td>
-<td><strong>Resized</strong> the VM to <strong>DS1_v2</strong> (<em>resizing = vertical scaling, up or down</em>). Created and attached a <strong>data disk</strong> <code>vm1-disk1</code>, <strong>Standard HDD, 32 GiB</strong> → <strong>Detached</strong> it (<em>detaching removes the disk from the VM but keeps it in storage</em>) → changed <strong>Size + performance</strong> to <strong>Standard SSD</strong> → <strong>reattached</strong> it</td>
-</tr>
-<tr>
-<td>3</td>
-<td><strong>VM Scale Set</strong></td>
-<td><code>vmss1</code>, <strong>Zones 1, 2, 3</strong>, <strong>Orchestration mode: Uniform</strong>, Standard security, Windows Server 2025, <strong>Standard D2s_v3</strong>, <strong>Standard HDD</strong> OS disk. New VNet <strong>10.82.0.0/20</strong>, subnet <code>subnet0</code> <strong>10.82.0.0/24</strong>. NSG <code>vmss1-nsg</code> with inbound rule <strong>HTTP, Allow, priority 1020</strong>, name <code>allow-http</code>. Public IP <strong>Enabled</strong>. Load balancing: <strong>Azure load balancer</strong> → created <code>vmss-lb</code></td>
-</tr>
-<tr>
-<td>4</td>
-<td><strong>Autoscaling</strong></td>
-<td><strong>Custom autoscale → Scale based on metric.</strong> <strong>Scale-out rule:</strong> metric <strong>Percentage CPU</strong>, <strong>Greater than 10</strong>, duration <strong>1 minute</strong>, statistic <strong>Average</strong>, <strong>Increase count by 1</strong>, cool down <strong>1 minute</strong>. <strong>Scale-in rule:</strong> <strong>Less than 10</strong>, <strong>decrease count by 1</strong>. <strong>Instance limits: minimum 2, maximum 6, default 2.</strong> Generated load with PowerShell: <code>$pip = (Get-AzPublicIpAddress -ResourceGroupName $rgName -Name $lbpipName).IpAddress; while ($true) { Invoke-WebRequest -Uri "http://$pip" }</code></td>
-</tr>
-</tbody>
-</table></div>
-<p><strong>Concepts:</strong> zones → 99.99%; vertical vs. horizontal scaling; why scale sets reduce admin overhead; instance limits protect against runaway scaling/cost.</p>
-<h3 id="lab-06-implement-web-apps-container-apps">Lab 06 — Implement Web Apps &amp; Container Apps</h3>
-<p><strong>Scenario:</strong> Move PHP websites off aging on-premises Windows servers.</p>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th>Task</th>
-<th>What you did</th>
-<th>Key values</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td><strong>Create an Azure web app</strong></td>
-<td>Publish <strong>Code</strong>, <strong>Runtime stack PHP 8.2</strong>, <strong>OS Linux</strong>, region <strong>Canada Central</strong>. <em>"Azure App Services is a </em><em>Platform as a Service (PaaS)</em><em> solution... The App Service plan you select determines the web app compute, storage, and features."</em></td>
-</tr>
-<tr>
-<td>2</td>
-<td><strong>Create a deployment slot</strong></td>
-<td>Added slot <strong><code>staging</code></strong>, <strong>Clone settings: Do not clone settings</strong>. The <strong>production</strong> slot exists by default but isn't listed. The staging slot has <strong>its own URL</strong></td>
-</tr>
-<tr>
-<td>3</td>
-<td><strong>Configure deployment settings</strong></td>
-<td>On the <strong>staging slot</strong> → <strong>Deployment Center → Settings → Source: External Git</strong>, repository <code>https://github.com/Azure-Samples/php-docs-hello-world</code>, branch <code>master</code>. Staging then displays <strong>Hello World</strong></td>
-</tr>
-<tr>
-<td>4</td>
-<td><strong>Swap deployment slots</strong></td>
-<td><strong>Deployment slots → Swap → Start Swap.</strong> Production now shows the tested code. <em>"Swapping a slot allows you to use the code that you tested in staging and move it to production."</em></td>
-</tr>
-<tr>
-<td>5</td>
-<td><strong>Container App</strong></td>
-<td>Created a Container App (region <strong>Canada Central</strong>) with the <strong>quickstart image "Simple hello world container"</strong>. <em>"By default the container app accepts traffic on </em><em>port 80</em><em>... Azure Container Apps provides a </em><em>DNS name</em><em> for the application."</em> Verified via the <strong>Application URL</strong></td>
-</tr>
-</tbody>
-</table></div>
-<p><strong>Concepts:</strong> PaaS vs. IaaS; slots eliminate downtime and give instant rollback; CI/CD from source control; Container Apps vs. AKS.</p>
-<h3 id="lab-07-implement-data-protection">Lab 07 — Implement Data Protection</h3>
-<p><strong>Scenario:</strong> Evaluate backup/restore of Azure VMs and explore Site Recovery.</p>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th>Task</th>
-<th>What you did</th>
-<th>Key values</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>Deploy a VM from an <strong>ARM template</strong></td>
-<td>RG <code>...-rg-region1</code>, region <strong>East US</strong></td>
-</tr>
-<tr>
-<td>2</td>
-<td><strong>Recovery Services vault + VM-level backup</strong></td>
-<td>Vault in <strong>East US</strong> (<strong>must be the same region as the VMs</strong>). <strong>Properties → Backup Configuration:</strong> storage replication type left at <strong>Geo-redundant</strong> (<em>can only be configured if there are no existing backup items</em>). <strong>Soft delete Enabled, retention 14 days.</strong> <strong>+ Backup</strong> → workload running in <strong>Azure</strong>, back up <strong>Virtual machine</strong>. Policy sub types: <strong>Enhanced</strong> and <strong>Standard</strong> → chose <strong>Standard</strong>. New policy: <strong>Daily</strong>, <strong>12:00 AM</strong>, <strong>Eastern Time</strong>, <strong>retain instant recovery snapshots for 2 days</strong>. Added the VM → <strong>Enable backup</strong> → <strong>Backup now</strong></td>
-</tr>
-<tr>
-<td>3</td>
-<td><strong>Monitor Azure Backup</strong></td>
-<td>Created a storage account, then on the vault: <strong>Diagnostic Settings → Add diagnostic setting</strong> named "Logs and Metrics to storage", selected <strong>Azure Backup Reporting Data, Addon Azure Backup Job Data, Addon Azure Backup Alert Data, Azure Site Recovery Jobs, Azure Site Recovery Events, Health</strong>, destination <strong>Archive to a storage account</strong>. Then reviewed <strong>Backup jobs</strong> under Monitoring</td>
-</tr>
-<tr>
-<td>4</td>
-<td><strong>Enable VM replication (Site Recovery)</strong></td>
-<td>Created a <strong>second Recovery Services vault in <code>-rg-region2</code>, region West US</strong> (<strong>must be a different region than the VM</strong>). On the VM: <strong>Backup + Disaster recovery → Disaster recovery</strong>, reviewed <strong>Target region</strong>, set <strong>Churn = Normal churn</strong> and a <strong>cache storage account</strong>, then <strong>Review + Start replication → Enable replication</strong> (10–15 min). Verified under <strong>Protected items → Replicated items</strong>: replication health healthy, status goes <strong>0% → Protected</strong></td>
-</tr>
-</tbody>
-</table></div>
-<p><strong>Concepts:</strong> vault region rules (backup = same region, ASR target = different region); GRS for primary/LRS for non-primary; soft delete's effect on cleanup; Backup vs. Site Recovery.</p>
-<h3 id="lab-08-implement-monitoring">Lab 08 — Implement Monitoring</h3>
-<p><strong>Scenario:</strong> Gain insight into performance and configuration of Azure resources, especially VMs.</p>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th>Task</th>
-<th>What you did</th>
-<th>Key values</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>Deploy a VM from an <strong>ARM template</strong></td>
-<td>One VNet, one VM</td>
-</tr>
-<tr>
-<td>2</td>
-<td><strong>Alert + action group</strong></td>
-<td><strong>Monitor → VM Insights → Configure Insights</strong> → enabled on the VM (installs the agent + data collection rules). <strong>Monitor → Alerts → Alert rule → + Create</strong>: scope = the <strong>resource group</strong> (applies to any VM in it); <strong>Condition → See all signals → "Delete Virtual Machine (Virtual Machines)"</strong>; Event level <strong>All</strong>, Status <strong>All</strong>. <strong>Actions → Create action group</strong>: region <strong>Global</strong>, notification type <strong>Email/SMS message/Push/Voice</strong>, email entered. <strong>Details:</strong> alert rule name "VM was deleted"</td>
-</tr>
-<tr>
-<td>3</td>
-<td><strong>Trigger the alert</strong></td>
-<td>Deleted the VM with <strong>Apply force delete</strong>. Received an email <em>"Important notice: Azure Monitor alert VM was deleted was activated..."</em> from <code>azure-noreply@microsoft.com</code>; <strong>three verbose alerts</strong> appeared in Monitor → Alerts</td>
-</tr>
-<tr>
-<td>4</td>
-<td><strong>Alert processing rule</strong></td>
-<td><strong>Alerts → Alert processing rules → + Create</strong> → scope = resource group → <strong>Rule settings: Suppress notifications</strong> → <strong>Scheduling: At a specific time</strong>, start <strong>today 10 pm</strong>, end <strong>tomorrow 7 am</strong>, local time zone → name <strong>"Planned Maintenance"</strong></td>
-</tr>
-<tr>
-<td>5</td>
-<td><strong>Log queries</strong></td>
-<td><strong>Monitor → Logs</strong>, scope = resource group. Ran the built-in <strong>"Count heartbeats"</strong> query (uses the <strong><code>Heartbeat</code> table</strong>), then the custom KQL query on <code>InsightsMetrics</code> rendering a <strong>timechart</strong></td>
-</tr>
-</tbody>
-</table></div>
-<p><strong>Concepts:</strong> signals vs. conditions; action groups are reusable and run concurrently; alert processing rules suppress noise during maintenance; KQL basics.</p>
-<hr />
-<h2 id="master-comparison-tables">14. Master Comparison Tables</h2>
+<h2 id="master-comparison-tables">13. Master Comparison Tables</h2>
 <h3 id="which-service-do-i-choose-the-decision-table">"Which service do I choose?" — the decision table</h3>
 <div class="table-scroll"><table>
 <thead>
@@ -3983,7 +3702,7 @@ Redundancy:           LRS (3, 1 region)
 </tbody>
 </table></div>
 <hr />
-<h2 id="powershell-cli-command-sheet">15. PowerShell / CLI Command Sheet</h2>
+<h2 id="powershell-cli-command-sheet">14. PowerShell / CLI Command Sheet</h2>
 <h3 id="groups-identity">Groups &amp; identity</h3>
 <pre><code class="language-powershell">New-AzADGroup -DisplayName Developers -MailNickname Developers
 Get-AzADGroup
@@ -4011,7 +3730,7 @@ Get-AzEffectiveRouteTable                # view routing information
 Test-NetConnection &lt;private IP&gt; -port 3389      # run inside a VM (Run command → RunPowerShellScript)
 Get-AzPublicIpAddress -ResourceGroupName $rg -Name $lbpipName
 </code></pre>
-<h3 id="load-generation-lab-05">Load generation (Lab 05)</h3>
+<h3 id="load-generation">Load generation</h3>
 <pre><code class="language-powershell">$pip = (Get-AzPublicIpAddress -ResourceGroupName $rgName -Name $lbpipName).IpAddress
 while ($true) { Invoke-WebRequest -Uri &quot;http://$pip&quot; }
 </code></pre>
@@ -4026,7 +3745,7 @@ az find &quot;az vm&quot;                            # find/help
 <h3 id="verbnoun-pattern">Verb–noun pattern</h3>
 <p>Azure PowerShell = <strong><code>&lt;Verb&gt;-Az&lt;Noun&gt;</code></strong>. Verbs: <code>New</code> (create), <code>Get</code> (read), <code>Set</code> (update), <code>Remove</code> (delete), <code>Add</code>, <code>Update</code>, <code>Start</code>, <code>Stop</code>, <code>Restart</code>.</p>
 <hr />
-<h2 id="practice-exam-multiple-choice">16. Practice Exam — Multiple Choice</h2>
+<h2 id="practice-exam-multiple-choice">15. Practice Exam — Multiple Choice</h2>
 <p>Answer all 45, then check the key at the end. Aim for 40+.</p>
 <p class="mcq"><strong><span class="qnum">1.</span></strong> How many IP addresses does Azure reserve in every subnet?</p><p class="mco"><span><b>A</b>3</span><span><b>B</b>4</span><span><b>C</b>5</span><span><b>D</b>6</span></p>
 <p class="mcq"><strong><span class="qnum">2.</span></strong> A resource group tagged <code>Environment=Prod</code> contains 10 VMs. How many VMs have that tag?</p><p class="mco"><span><b>A</b>All 10</span><span><b>B</b>0</span><span><b>C</b>Only new ones</span><span><b>D</b>Depends on Azure Policy</span></p>
@@ -4075,7 +3794,7 @@ az find &quot;az vm&quot;                            # find/help
 <p class="mcq"><strong><span class="qnum">45.</span></strong> Which two things does an Azure Cloud Shell session require?</p><p class="mco"><span><b>A</b>A VM and a public IP</span><span><b>B</b>A storage account and an Azure File share (plus a resource group)</span><span><b>C</b>A VNet and an NSG</span><span><b>D</b>Nothing — it's fully serverless</span></p>
 <details class="reveal"><summary>Answer key — 45 questions</summary><div class="reveal__body"><p class="answer-key">1-C · 2-B · 3-B · 4-B · 5-B · 6-B · 7-C · 8-C · 9-B · 10-B · 11-B · 12-C · 13-C · 14-C · 15-B · 16-B · 17-C · 18-B · 19-C · 20-B · 21-C · 22-B · 23-C · 24-C · 25-B · 26-C · 27-C · 28-B · 29-B · 30-B · 31-B · 32-C · 33-B · 34-B · 35-B · 36-B · 37-C · 38-B · 39-B · 40-C · 41-C · 42-C · 43-B · 44-B · 45-B</p></div></details>
 <hr />
-<h2 id="practice-short-answer-questions">17. Practice Short-Answer Questions</h2>
+<h2 id="practice-short-answer-questions">16. Practice Short-Answer Questions</h2>
 <p>Write your answer first, then compare. Short-answer graders want <strong>the key terms</strong>, so I've <strong>bolded</strong> the words worth earning marks for.</p>
 <div class="sa"><p class="sa__q"><strong><span class="qnum">Q1.</span> Explain the difference between an Azure tenant and an Azure subscription.</strong></p><details class="reveal"><summary>Model answer</summary><div class="reveal__body"><p>A <strong>tenant (directory)</strong> is a <strong>dedicated, trusted instance of Microsoft Entra ID representing a single organization</strong> — the <strong>identity boundary</strong>. It's created <strong>automatically</strong> when an organization signs up for a Microsoft cloud service, and it holds users, groups, and app registrations. An <strong>Azure subscription</strong> is a <strong>logical container used to provision and manage Azure resources</strong> and is the <strong>unit of management, billing, and scale</strong> — it's how you <strong>pay for</strong> Azure services. A subscription trusts exactly one tenant, but one tenant can have <strong>many subscriptions</strong> (e.g. production, Dev/Test, sandbox).</p></div></details></div>
 <div class="sa"><p class="sa__q"><strong><span class="qnum">Q2.</span> List three differences between Microsoft Entra ID and Windows Server Active Directory Domain Services.</strong></p><details class="reveal"><summary>Model answer</summary><div class="reveal__body"><ol>
@@ -4104,13 +3823,13 @@ az find &quot;az vm&quot;                            # find/help
 <div class="sa"><p class="sa__q"><strong><span class="qnum">Q20.</span> Compare the MARS agent with Azure Backup Server (MABS).</strong></p><details class="reveal"><summary>Model answer</summary><div class="reveal__body"><p><strong>MARS agent:</strong> backs up <strong>files and folders on physical or virtual Windows machines</strong>; <strong>no separate backup server required</strong>; limits are <strong>3 backups per day</strong>, <strong>not application aware</strong>, <strong>file/folder/volume-level restore only</strong>, and <strong>no Linux support</strong>. It protects <strong>files and folders</strong>, storing them in a <strong>Recovery Services vault</strong>. <strong>MABS/DPM:</strong> provides <strong>app-aware snapshots</strong> (SQL Server, Exchange, SharePoint), <strong>full flexibility on backup timing</strong>, <strong>recovery granularity</strong>, <strong>Linux support on Hyper-V and VMware VMs</strong>, and can <strong>back up and restore VMware VMs</strong> without a System Center license. Limits: <strong>cannot back up Oracle workloads</strong>, <strong>always requires a live Azure subscription</strong>, and <strong>no tape backup support</strong>. It protects <strong>files, folders, volumes, VMs, applications, and workloads</strong>, storing to a <strong>Recovery Services vault and locally attached disk</strong>.</p></div></details></div>
 <div class="sa"><p class="sa__q"><strong><span class="qnum">Q21.</span> Explain the difference between metrics and logs in Azure Monitor, and give an example question each answers.</strong></p><details class="reveal"><summary>Model answer</summary><div class="reveal__body"><p><strong>Metrics are numerical values that describe some aspect of a system at a particular point in time</strong> — lightweight and capable of supporting <strong>near real-time</strong> scenarios (e.g. <em>"What was the VM's CPU percentage at 3:00 pm?"</em>). <strong>Logs contain different kinds of data organized into records with different sets of properties for each type</strong>; events and traces are stored as logs <strong>in addition to performance data so it can all be combined for analysis</strong>, and they're queried with <strong>KQL in Log Analytics</strong> (e.g. <em>"Show me every VM whose disk utilization exceeded 90% in the last 24 hours, by computer"</em>). <strong>All data collected by Azure Monitor fits into one of these two fundamental types.</strong></p></div></details></div>
 <div class="sa"><p class="sa__q"><strong><span class="qnum">Q22.</span> Name five Network Watcher diagnostic tools and what each does.</strong></p><details class="reveal"><summary>Model answer</summary><div class="reveal__body"><p><strong>IP Flow Verify</strong> — checks <strong>if a packet is allowed or denied to or from a virtual machine</strong>. <strong>Next Hop</strong> — determines <strong>whether traffic is being routed to the intended destination</strong> by showing the next hop. <strong>Effective Security Rules</strong> — details the <strong>effective inbound and outbound security rules of a VM's NIC</strong>. <strong>VPN Troubleshoot</strong> — troubleshoots <strong>multiple gateways and connections simultaneously</strong>. <strong>Packet Capture</strong> — <strong>captures inbound and outbound traffic from a VM</strong>. <strong>Connection Troubleshoot</strong> — checks <strong>connectivity between a source VM and a destination</strong>, identifies configuration issues, provides <strong>hop-by-hop paths and latency</strong>, and shows a graphical topology. <strong>NSG Flow Logs</strong> — shows <strong>inbound and outbound IP traffic through any NSG</strong>. <strong>Topology</strong> — generates a <strong>visual diagram of VNet resources and their relationships</strong>.</p></div></details></div>
-<div class="sa"><p class="sa__q"><strong><span class="qnum">Q23.</span> In Lab 02, Connection Troubleshoot reported "UnReachable" before you configured peering. Explain why, and what changed after.</strong></p><details class="reveal"><summary>Model answer</summary><div class="reveal__body"><p>The two VMs were in <strong>separate virtual networks</strong> (<code>CoreServicesVnet</code> 10.0.0.0/16 and <code>ManufacturingVnet</code> 172.16.0.0/16). <strong>Azure routes traffic between subnets within a VNet by default, but separate VNets are isolated</strong> — there was <strong>no route and no connectivity</strong> between them, so the TCP 3389 test failed. After creating a <strong>bidirectional VNet peering</strong> (with <em>allow access</em> and <em>allow forwarded traffic</em> enabled on both links, status <strong>Connected</strong>), the VNets could communicate <strong>privately over the Microsoft backbone</strong>, and <code>Test-NetConnection &lt;private IP&gt; -port 3389</code> succeeded.</p></div></details></div>
-<div class="sa"><p class="sa__q"><strong><span class="qnum">Q24.</span> In Lab 04, after adding a service endpoint you could no longer browse your file share from Storage Browser. Why?</strong></p><details class="reveal"><summary>Model answer</summary><div class="reveal__body"><p>You added a <strong><code>Microsoft.Storage</code> service endpoint</strong> on the VNet's default subnet, added that <strong>VNet/subnet to the storage account's Networking blade</strong>, and then <strong>removed your client IP from the storage firewall</strong>. The storage account was then configured to <strong>only accept traffic originating from that virtual network</strong>. Because the portal's Storage Browser connects from <strong>your workstation's public IP — not from inside the VNet</strong> — the request was rejected with <strong>"not authorized to perform this operation."</strong></p></div></details></div>
+<div class="sa"><p class="sa__q"><strong><span class="qnum">Q23.</span> Connection Troubleshoot reports "UnReachable" between two VMs on TCP 3389. After one change the same test succeeds. Explain why it failed and what changed.</strong></p><details class="reveal"><summary>Model answer</summary><div class="reveal__body"><p>The two VMs were in <strong>separate virtual networks</strong> (<code>CoreServicesVnet</code> 10.0.0.0/16 and <code>ManufacturingVnet</code> 172.16.0.0/16). <strong>Azure routes traffic between subnets within a VNet by default, but separate VNets are isolated</strong> — there was <strong>no route and no connectivity</strong> between them, so the TCP 3389 test failed. After creating a <strong>bidirectional VNet peering</strong> (with <em>allow access</em> and <em>allow forwarded traffic</em> enabled on both links, status <strong>Connected</strong>), the VNets could communicate <strong>privately over the Microsoft backbone</strong>, and <code>Test-NetConnection &lt;private IP&gt; -port 3389</code> succeeded.</p></div></details></div>
+<div class="sa"><p class="sa__q"><strong><span class="qnum">Q24.</span> After adding a service endpoint, a file share can no longer be browsed from the portal's Storage Browser. Why?</strong></p><details class="reveal"><summary>Model answer</summary><div class="reveal__body"><p>You added a <strong><code>Microsoft.Storage</code> service endpoint</strong> on the VNet's default subnet, added that <strong>VNet/subnet to the storage account's Networking blade</strong>, and then <strong>removed your client IP from the storage firewall</strong>. The storage account was then configured to <strong>only accept traffic originating from that virtual network</strong>. Because the portal's Storage Browser connects from <strong>your workstation's public IP — not from inside the VNet</strong> — the request was rejected with <strong>"not authorized to perform this operation."</strong></p></div></details></div>
 <div class="sa"><p class="sa__q"><strong><span class="qnum">Q25.</span> Describe the steps to implement a site-to-site VPN connection.</strong></p><details class="reveal"><summary>Model answer</summary><div class="reveal__body"><ol>
 <li><strong>Create the VNets and subnets</strong> (for S2S you connect to an on-premises location). 2. <strong>Optionally specify a DNS server</strong> if you need name resolution for resources in the VNet. 3. <strong>Create the gateway subnet</strong> — it holds the IP addresses used by the virtual network gateway, should be <strong><code>/27</code> or <code>/28</code></strong>, <strong>must be named <code>GatewaySubnet</code></strong>, and must <strong>never contain other resources</strong>. 4. <strong>Create the VPN gateway</strong> — choose the <strong>VPN type (route-based)</strong> based on your VPN device make/model, choose a <strong>SKU</strong> (which determines the <strong>number of tunnels and aggregate throughput</strong>), associate the VNet containing the gateway subnet, and assign a <strong>public IP</strong>. 5. <strong>Create the local network gateway</strong>, representing the on-premises site — its <strong>public IP or FQDN</strong> and its <strong>address space in CIDR notation</strong>. 6. <strong>Create the VPN connection</strong> between the gateways and verify it <strong>in the portal or with PowerShell</strong>. High availability options are <strong>Active/Standby</strong> and <strong>Active/Active</strong>.</li>
 </ol>
 <hr /></div></details></div>
-<h2 id="night-before-checklist-exam-strategy">18. Night-Before Checklist &amp; Exam Strategy</h2>
+<h2 id="night-before-checklist-exam-strategy">17. Night-Before Checklist &amp; Exam Strategy</h2>
 <h3 id="the-15-facts-to-review-in-the-hallway">The 15 facts to review in the hallway</h3>
 <ol>
 <li><strong>5 reserved IPs</strong> per subnet: <code>.0</code> network, <code>.1</code> gateway, <code>.2</code>/<code>.3</code> DNS, <code>.255</code> broadcast</li>
@@ -4134,7 +3853,7 @@ az find &quot;az vm&quot;                            # find/help
 <li><strong>Budget:</strong> ~2 min per multiple choice, ~5 min per short answer. Take <strong>one fast pass</strong> answering everything you're sure of, then return to the rest.</li>
 <li><strong>Multiple choice:</strong> eliminate first. Watch for absolute words ("always", "never", "cannot") — in Azure, the true absolutes are things like <em>"SSE cannot be disabled"</em>, <em>"blob type cannot be changed"</em>, <em>"tags are not inherited"</em>, <em>"peering is non-transitive"</em>, <em>"resource groups cannot be renamed"</em>.</li>
 <li><strong>Short answer:</strong> lead with the <strong>definition sentence</strong>, then give <strong>specific named features/numbers</strong>. Graders scan for keywords — write <strong>"non-transitive"</strong>, <strong>"Layer 7"</strong>, <strong>"GatewaySubnet"</strong>, <strong>"99.99%"</strong>, <strong>"180 days"</strong>, not paraphrases.</li>
-<li>If a question describes a <strong>lab scenario</strong> (peering test, load balancer path routing, SAS URL, backup vault region, alert action group), answer with <strong>what you actually configured and why</strong> — that's what these questions are testing.</li>
+<li>If a question describes a <strong>hands-on scenario</strong> (peering test, load balancer path routing, SAS URL, backup vault region, alert action group), answer with <strong>what you would configure and why</strong> — that's what these questions are testing.</li>
 <li>If you blank on a service, ask: <strong>what layer does it work at? what is it protecting against? is it regional or global?</strong> That usually narrows it to one answer.</li>
 </ul>
 <p>Good luck Thursday. 🎯</p>

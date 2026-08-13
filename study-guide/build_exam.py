@@ -22,7 +22,6 @@ MODULES = [
     ("M9", "App Service & Containers"),
     ("M10", "Data Protection"),
     ("M11", "Monitoring"),
-    ("Labs", "Lab Practicals"),
 ]
 
 STYLE = """
@@ -885,7 +884,7 @@ SCRIPT = r"""
 
     h += '<div class="qmeta">';
     h += '<span class="tag tag--type">' + (q.type === 'mc' ? 'Multiple choice' : 'Short answer') + '</span>';
-    h += '<span class="tag">' + esc(q.module === 'Labs' ? 'Labs' : q.module) + ' · ' + esc(MODNAME[q.module]) + '</span>';
+    h += '<span class="tag">' + esc(q.module) + ' · ' + esc(MODNAME[q.module]) + '</span>';
     h += '</div>';
 
     h += '<div class="scenario"><p>' + esc(q.scenario) + '</p></div>';
@@ -1313,7 +1312,7 @@ def main() -> None:
 
     <p class="cross">
       <a href="{GUIDE_URL}" target="_blank" rel="noopener">Study guide &rarr;</a>
-      <span>All eleven modules, the lab recap, and the cram sheet of numbers. Read there, then test here.</span>
+      <span>All eleven modules and the cram sheet of numbers. Read there, then test here.</span>
     </p>
   </section>
 
