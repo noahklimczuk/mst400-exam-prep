@@ -1,0 +1,1372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<title>MST400 Practice Exam</title>
+<style>
+:root {
+  color-scheme: light dark;
+
+  --ground:  #f3f6f6;
+  --surface: #ffffff;
+  --sunken:  #e9eff0;
+  --ink:     #131a1c;
+  --muted:   #55666a;
+  --faint:   #7c8e91;
+  --rule:    #d7e0e0;
+  --rule-soft: #e6eded;
+  --accent:  #0e6e75;
+  --accent-soft: #dcedee;
+  --good:    #14663f;
+  --good-soft: #dcefe3;
+  --bad:     #9c3418;
+  --bad-soft: #f8e4dd;
+  --warn:    #8a5300;
+  --warn-soft: #fbedd6;
+
+  --font-display: Georgia, "Iowan Old Style", "Source Serif 4", "Times New Roman", serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:  #0e1416;
+    --surface: #151d20;
+    --sunken:  #1c2528;
+    --ink:     #e3eaea;
+    --muted:   #93a4a6;
+    --faint:   #74868a;
+    --rule:    #253133;
+    --rule-soft: #1e282b;
+    --accent:  #4ec3ca;
+    --accent-soft: #10393c;
+    --good:    #5fc98f;
+    --good-soft: #123326;
+    --bad:     #f0907a;
+    --bad-soft: #3a1f18;
+    --warn:    #e2b264;
+    --warn-soft: #33270f;
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground:  #0e1416;
+  --surface: #151d20;
+  --sunken:  #1c2528;
+  --ink:     #e3eaea;
+  --muted:   #93a4a6;
+  --faint:   #74868a;
+  --rule:    #253133;
+  --rule-soft: #1e282b;
+  --accent:  #4ec3ca;
+  --accent-soft: #10393c;
+  --good:    #5fc98f;
+  --good-soft: #123326;
+  --bad:     #f0907a;
+  --bad-soft: #3a1f18;
+  --warn:    #e2b264;
+  --warn-soft: #33270f;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+
+.page { max-width: 54rem; margin: 0 auto; padding: 0 1.5rem 6rem; }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 0.7rem;
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 4vw, 2.7rem);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+  margin: 0 0 0.9rem;
+  text-wrap: balance;
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0 0 0.9rem;
+  text-wrap: balance;
+}
+
+h3 {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--faint);
+  font-weight: 600;
+  margin: 0 0 0.7rem;
+}
+
+p { margin: 0 0 1rem; }
+.lede { color: var(--muted); max-width: 46ch; }
+
+.screen { display: none; }
+.screen.is-active { display: block; }
+
+/* ---------- setup ---------- */
+
+.setup-head { padding: 4rem 0 2rem; border-bottom: 2px solid var(--ink); margin-bottom: 2.25rem; }
+
+.modes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.9rem;
+  margin: 0 0 2rem;
+}
+
+.mode {
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--rule);
+  padding: 1.1rem 1.2rem;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.mode:hover { border-color: var(--accent); }
+
+.mode[aria-pressed="true"] {
+  border-color: var(--accent);
+  border-left-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.mode b { font-size: 1.02rem; font-weight: 650; }
+.mode small { color: var(--muted); font-size: 0.87rem; line-height: 1.45; }
+
+.mode .spec {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.cross {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 2.5rem;
+  padding: 0.85rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  font-size: 0.93rem;
+}
+
+.cross a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.cross a:hover { border-bottom-color: var(--accent); }
+.cross span { color: var(--muted); }
+
+.picker { margin: 0 0 2rem; }
+.picker[hidden] { display: none; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 0.8rem; }
+
+.chip {
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background: var(--surface);
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: baseline;
+}
+
+.chip:hover { border-color: var(--accent); color: var(--ink); }
+
+.chip[aria-pressed="true"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.chip i {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 0.72em;
+  color: var(--faint);
+}
+
+.btn {
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--ground);
+  padding: 0.7rem 1.4rem;
+  border-radius: 2px;
+}
+
+.btn:hover { filter: brightness(1.08); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn--ghost {
+  background: transparent;
+  color: var(--accent);
+}
+
+.btn--quiet {
+  background: var(--surface);
+  border-color: var(--rule);
+  color: var(--muted);
+  font-weight: 500;
+}
+.btn--quiet:hover { color: var(--ink); border-color: var(--accent); }
+
+.btn--sm { padding: 0.4rem 0.85rem; font-size: 0.85rem; }
+
+.btn--end:hover { color: var(--bad); border-color: var(--bad); }
+
+/* ---------- exam bar ---------- */
+
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--ground);
+  border-bottom: 1px solid var(--rule);
+  padding: 0.85rem 0;
+  margin-bottom: 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.bar__stat {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+/* display:flex above outranks the UA [hidden] rule, so restore it explicitly */
+.bar__stat[hidden] { display: none; }
+
+.bar__stat b {
+  font-size: 1.05rem;
+  letter-spacing: 0;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+#clock.is-warn b { color: var(--warn); }
+#clock.is-crit b { color: var(--bad); }
+#runningScore b { color: var(--accent); }
+
+.verdictline {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 1.15rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+.verdictline.ok { color: var(--good); }
+.verdictline.no { color: var(--bad); }
+
+.bar__spacer { flex: 1; }
+
+.meter {
+  flex-basis: 100%;
+  height: 3px;
+  background: var(--rule);
+  overflow: hidden;
+}
+.meter span { display: block; height: 100%; background: var(--accent); width: 0; transition: width 0.2s; }
+@media (prefers-reduced-motion: reduce) { .meter span { transition: none; } }
+
+/* ---------- question card ---------- */
+
+.qcard {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  padding: 1.5rem 1.6rem 1.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.qmeta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--rule);
+  color: var(--muted);
+}
+
+.tag--type { color: var(--accent); border-color: var(--accent); }
+
+.scenario {
+  background: var(--sunken);
+  border-left: 3px solid var(--accent);
+  padding: 0.9rem 1.1rem;
+  margin: 0 0 1.15rem;
+  font-size: 0.96rem;
+}
+.scenario p { margin: 0; }
+
+.qtext { font-size: 1.08rem; font-weight: 650; margin: 0 0 1.1rem; text-wrap: balance; }
+
+.opts { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.opt {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr;
+  gap: 0.6rem;
+  align-items: start;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  background: var(--surface);
+  color: inherit;
+  border: 1px solid var(--rule);
+  padding: 0.7rem 0.9rem;
+  line-height: 1.5;
+}
+
+.opt:hover { border-color: var(--accent); }
+
+.opt em {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--faint);
+  padding-top: 0.12rem;
+}
+
+.opt[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.opt[aria-pressed="true"] em { color: var(--accent); }
+
+.opt.is-right { border-color: var(--good); background: var(--good-soft); }
+.opt.is-right em { color: var(--good); }
+.opt.is-wrong { border-color: var(--bad); background: var(--bad-soft); }
+.opt.is-wrong em { color: var(--bad); }
+.opt[disabled] { cursor: default; }
+
+.opt .mine {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid currentColor;
+  padding: 0.05rem 0.35rem;
+  margin-left: 0.5rem;
+  white-space: nowrap;
+  vertical-align: 0.08em;
+}
+.opt.is-right .mine { color: var(--good); }
+.opt.is-wrong .mine { color: var(--bad); }
+
+textarea {
+  width: 100%;
+  min-height: 9rem;
+  font: inherit;
+  font-size: 0.96rem;
+  line-height: 1.6;
+  padding: 0.8rem 0.9rem;
+  background: var(--sunken);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  resize: vertical;
+}
+textarea:focus { border-color: var(--accent); }
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--faint);
+  margin: 0.6rem 0 0;
+}
+
+.nav-row { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+.nav-row .grow { flex: 1; }
+
+/* ---------- navigator ---------- */
+
+.navigator { margin-top: 2rem; padding-top: 1.4rem; border-top: 1px solid var(--rule); }
+
+.dots { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+
+.dot {
+  width: 2rem;
+  height: 2rem;
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  cursor: pointer;
+  background: var(--surface);
+  color: var(--faint);
+  border: 1px solid var(--rule);
+  position: relative;
+  padding: 0;
+}
+
+.dot:hover { border-color: var(--accent); color: var(--ink); }
+.dot.is-answered { background: var(--sunken); color: var(--ink); border-color: var(--rule); }
+.dot.is-current { border-color: var(--accent); color: var(--accent); font-weight: 700; box-shadow: inset 0 0 0 1px var(--accent); }
+.dot.is-ok { border-color: var(--good); color: var(--good); background: var(--good-soft); }
+.dot.is-no { border-color: var(--bad); color: var(--bad); background: var(--bad-soft); }
+.dot.is-part { border-color: var(--warn); color: var(--warn); background: var(--warn-soft); }
+.dot.is-flagged::after {
+  content: "";
+  position: absolute;
+  top: 2px; right: 2px;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--warn);
+}
+
+.legend {
+  display: flex;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+  margin-top: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
+.legend i { width: 0.7rem; height: 0.7rem; border: 1px solid var(--rule); font-style: normal; }
+.legend i.f { background: var(--sunken); }
+.legend i.g { border-color: var(--accent); }
+.legend i.w { background: var(--warn); border-color: var(--warn); border-radius: 50%; }
+.legend i.ok { background: var(--good-soft); border-color: var(--good); }
+.legend i.no { background: var(--bad-soft); border-color: var(--bad); }
+.legend .only-immediate { display: none; }
+.legend.is-immediate .only-immediate { display: inline-flex; }
+.legend.is-immediate .only-end { display: none; }
+
+/* ---------- results ---------- */
+
+.scoreline {
+  display: flex;
+  align-items: baseline;
+  gap: 1.4rem;
+  flex-wrap: wrap;
+  padding: 2.5rem 0 1.5rem;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 2rem;
+}
+
+.bigscore {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 9vw, 4.6rem);
+  line-height: 0.95;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.bigscore small { font-size: 0.32em; color: var(--muted); font-weight: 400; }
+
+.verdict { font-size: 1rem; color: var(--muted); max-width: 34ch; }
+
+.bars { display: flex; flex-direction: column; gap: 0.55rem; margin: 0 0 2.25rem; }
+
+.brow {
+  display: grid;
+  grid-template-columns: minmax(8rem, 12rem) 1fr 3.6rem;
+  gap: 0.8rem;
+  align-items: center;
+  font-size: 0.89rem;
+}
+
+.brow .name { color: var(--muted); }
+.brow .track {
+  display: block;
+  height: 0.75rem;
+  background: var(--rule-soft);
+  border: 1px solid var(--rule);
+  overflow: hidden;
+}
+.brow .fill { display: block; height: 100%; background: var(--accent); min-width: 2px; }
+.brow .fill.low { background: var(--bad); }
+.brow .fill.mid { background: var(--warn); }
+.brow .val { font-family: var(--font-mono); font-size: 0.8rem; text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+
+.callout {
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--warn);
+  background: var(--warn-soft);
+  padding: 1rem 1.15rem;
+  margin: 0 0 2.25rem;
+  font-size: 0.95rem;
+}
+.callout h3 { color: var(--warn); margin-bottom: 0.45rem; }
+.callout p:last-child { margin-bottom: 0; }
+.callout a { color: var(--ink); }
+
+.review { display: flex; flex-direction: column; gap: 0.7rem; }
+
+.rev {
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--rule);
+  background: var(--surface);
+}
+.rev.ok { border-left-color: var(--good); }
+.rev.no { border-left-color: var(--bad); }
+.rev.part { border-left-color: var(--warn); }
+
+.rev > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0.75rem 1rem;
+  display: grid;
+  grid-template-columns: 2rem 1fr auto;
+  gap: 0.7rem;
+  align-items: baseline;
+  font-size: 0.94rem;
+}
+.rev > summary::-webkit-details-marker { display: none; }
+.rev > summary:hover { background: var(--sunken); }
+.rev > summary .n { font-family: var(--font-mono); font-size: 0.78rem; color: var(--faint); }
+.rev > summary .mark { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.rev.ok .mark { color: var(--good); }
+.rev.no .mark { color: var(--bad); }
+.rev.part .mark { color: var(--warn); }
+
+.rev__body { padding: 0.4rem 1rem 1.1rem; border-top: 1px solid var(--rule-soft); }
+
+.explain {
+  background: var(--sunken);
+  border-left: 3px solid var(--accent);
+  padding: 0.85rem 1rem;
+  margin: 0.9rem 0 0;
+  font-size: 0.93rem;
+}
+.explain strong { color: var(--accent); }
+
+.model { font-size: 0.94rem; }
+.yours {
+  white-space: pre-wrap;
+  background: var(--sunken);
+  border: 1px solid var(--rule);
+  padding: 0.75rem 0.9rem;
+  font-size: 0.92rem;
+  margin: 0 0 1rem;
+}
+.yours:empty::before { content: "(left blank)"; color: var(--faint); }
+
+.terms { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.7rem 0 0; }
+.terms b {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0.18rem 0.5rem;
+  border: 1px solid var(--rule);
+  color: var(--muted);
+}
+.terms b.hit { border-color: var(--good); color: var(--good); background: var(--good-soft); }
+
+.grade { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0 0; }
+.grade button[aria-pressed="true"] { background: var(--accent); color: var(--ground); border-color: var(--accent); }
+
+/* ---------- in-page confirm ----------
+   The artifact renders in a sandboxed iframe without allow-modals, so
+   window.confirm() is ignored and returns false. This replaces it. */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+}
+.modal[hidden] { display: none; }
+
+.modal__box {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--warn);
+  padding: 1.4rem 1.5rem 1.5rem;
+  max-width: 26rem;
+  width: 100%;
+}
+
+.modal__box h3 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink);
+  margin: 0 0 0.5rem;
+}
+
+.modal__box p { color: var(--muted); font-size: 0.94rem; margin: 0 0 1.2rem; }
+
+.themer {
+  position: fixed;
+  right: 1.1rem;
+  bottom: 1.1rem;
+  z-index: 20;
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.45rem 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.themer:hover { color: var(--ink); border-color: var(--accent); }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@media (max-width: 40rem) {
+  .qcard { padding: 1.15rem 1.1rem 1.25rem; }
+  .brow { grid-template-columns: 1fr; gap: 0.25rem; }
+  .brow .val { text-align: left; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div class="page">
+
+  <section id="setup" class="screen is-active">
+    <div class="setup-head">
+      <p class="eyebrow">MST400 &middot; Practice engine &middot; 155 questions</p>
+      <h1>Draw a practice test</h1>
+      <p class="lede">Every test is a fresh random draw, and the answer options are reshuffled each
+        time, so you cannot memorise position. Questions are scenario-based: you are given a
+        situation and asked what you would actually do. By default each answer is marked
+        straight away, with the reasoning, before you move on.</p>
+    </div>
+
+    <h2>Choose a test</h2>
+    <div class="modes">
+      <button class="mode" type="button" data-mode="full" aria-pressed="true">
+        <span class="spec">29 questions &middot; 80 min</span>
+        <b>Full mock exam</b>
+        <small>Matches Thursday exactly: 29 questions, 25 multiple choice and 4 short answer,
+          on an 80-minute countdown that submits automatically.</small>
+      </button>
+      <button class="mode" type="button" data-mode="quick" aria-pressed="false">
+        <span class="spec">10 questions &middot; untimed</span>
+        <b>Quick drill</b>
+        <small>A short untimed set for a spare fifteen minutes. Mixed modules, mostly
+          multiple choice.</small>
+      </button>
+      <button class="mode" type="button" data-mode="focus" aria-pressed="false">
+        <span class="spec">15 questions &middot; untimed</span>
+        <b>Module focus</b>
+        <small>Drill only the modules you pick. Use this after a full mock shows you where
+          the gaps are.</small>
+      </button>
+    </div>
+
+    <div class="picker" id="picker" hidden>
+      <h3>Modules to include</h3>
+      <div class="chips">
+<button class="chip" type="button" data-mod="M1" aria-pressed="false">Users, Groups & Identities <i>12</i></button>
+<button class="chip" type="button" data-mod="M2" aria-pressed="false">Governance & Cost <i>11</i></button>
+<button class="chip" type="button" data-mod="M3" aria-pressed="false">Azure Administration <i>12</i></button>
+<button class="chip" type="button" data-mod="M4" aria-pressed="false">Virtual Networking <i>18</i></button>
+<button class="chip" type="button" data-mod="M5" aria-pressed="false">Intersite Connectivity <i>12</i></button>
+<button class="chip" type="button" data-mod="M6" aria-pressed="false">Traffic Management <i>13</i></button>
+<button class="chip" type="button" data-mod="M7" aria-pressed="false">Azure Storage <i>18</i></button>
+<button class="chip" type="button" data-mod="M8" aria-pressed="false">Virtual Machines <i>15</i></button>
+<button class="chip" type="button" data-mod="M9" aria-pressed="false">App Service & Containers <i>13</i></button>
+<button class="chip" type="button" data-mod="M10" aria-pressed="false">Data Protection <i>12</i></button>
+<button class="chip" type="button" data-mod="M11" aria-pressed="false">Monitoring <i>13</i></button>
+<button class="chip" type="button" data-mod="Labs" aria-pressed="false">Lab Practicals <i>6</i></button>
+      </div>
+    </div>
+
+    <h2>Marking</h2>
+    <div class="modes">
+      <button class="mode" type="button" data-fb="immediate" aria-pressed="true">
+        <span class="spec">Learn as you go</span>
+        <b>Check as I go</b>
+        <small>Marks each question the moment you answer it and shows the correct answer and
+          the reasoning before you move on. Best for learning the material.</small>
+      </button>
+      <button class="mode" type="button" data-fb="end" aria-pressed="false">
+        <span class="spec">Exam conditions</span>
+        <b>Grade at the end</b>
+        <small>No feedback until you submit, so nothing tips you off mid-test. Best for a
+          realistic dress rehearsal.</small>
+      </button>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn" id="start" type="button">Start test</button>
+      <span class="hint" id="startNote"></span>
+    </div>
+
+    <p class="cross">
+      <a href="https://claude.ai/code/artifact/21b14a1c-59f3-472f-a832-1356ef344e92" target="_blank" rel="noopener">Study guide &rarr;</a>
+      <span>All eleven modules, the lab recap, and the cram sheet of numbers. Read there, then test here.</span>
+    </p>
+  </section>
+
+  <section id="exam" class="screen">
+    <div class="bar">
+      <span class="bar__stat" id="clock" hidden>Time left <b id="clockVal">80:00</b></span>
+      <span class="bar__stat">Question <b id="counter">1 / 29</b></span>
+      <span class="bar__stat">Answered <b id="answered">0 / 29</b></span>
+      <span class="bar__stat" id="runningScore" hidden>Score <b id="runningVal">0 / 0</b></span>
+      <span class="bar__spacer"></span>
+      <button class="btn btn--sm" id="submit" type="button">End test</button>
+      <span class="meter"><span id="progress"></span></span>
+    </div>
+
+    <div class="qcard" id="qcard"></div>
+
+    <div class="nav-row">
+      <button class="btn btn--quiet" id="prev" type="button">&larr; Previous</button>
+      <button class="btn btn--quiet" id="next" type="button">Next &rarr;</button>
+      <button class="btn btn--quiet" id="flag" type="button" aria-pressed="false">Flag for review</button>
+      <span class="grow"></span>
+      <button class="btn btn--quiet btn--end" id="endTest" type="button">End test &amp; see results</button>
+    </div>
+
+    <div class="navigator">
+      <h3>Test</h3>
+      <div class="dots" id="dots"></div>
+      <div class="legend" id="legend">
+        <span class="only-end"><i class="f"></i> answered</span>
+        <span class="only-immediate"><i class="ok"></i> correct</span>
+        <span class="only-immediate"><i class="no"></i> wrong</span>
+        <span><i class="g"></i> current</span>
+        <span><i class="w"></i> flagged</span>
+        <span>keys: A&ndash;D to answer, &larr; &rarr; to move</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="results" class="screen">
+    <div class="scoreline">
+      <span class="bigscore" id="scoreNum">0<small>%</small></span>
+      <span>
+        <p class="eyebrow" id="scoreSub"></p>
+        <p class="verdict" id="verdict"></p>
+      </span>
+    </div>
+
+    <h2>By module</h2>
+    <div class="bars" id="bars"></div>
+
+    <div class="callout" id="weak" hidden>
+      <h3>Where to spend tonight</h3>
+      <p id="weakList"></p>
+    </div>
+
+    <h2>Review every question</h2>
+    <div class="review" id="review"></div>
+
+    <div class="nav-row" style="margin-top:2rem">
+      <button class="btn" id="retake" type="button">Draw another test</button>
+      <span class="hint">A new random selection, with options reshuffled again.</span>
+    </div>
+  </section>
+
+</div>
+
+<div class="modal" id="confirmEnd" hidden>
+  <div class="modal__box" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <h3 id="confirmTitle">End the test?</h3>
+    <p id="confirmMsg"></p>
+    <div class="nav-row">
+      <button class="btn" id="confirmYes" type="button">End test &amp; see results</button>
+      <button class="btn btn--quiet" id="confirmNo" type="button">Keep going</button>
+    </div>
+  </div>
+</div>
+
+<button class="themer" type="button" aria-label="Cycle colour theme">theme <span>system</span></button>
+
+<script>
+window.__BANK__ = [{"id":"m1-01","module":"M1","type":"mc","scenario":"Contoso has offices in Toronto and Vancouver in a single Entra ID tenant. The Toronto helpdesk must be able to reset passwords and edit user properties for Toronto staff only. They must not be able to touch Vancouver accounts.","q":"What should you configure?","options":["Create an administrative unit containing the Toronto users, then assign a role scoped to that administrative unit","Assign the Toronto helpdesk the Global Administrator role and rely on written policy","Create a dynamic security group of Toronto users and assign the helpdesk as group owners","Create a second Entra ID tenant for the Toronto office"],"answer":[0],"explain":"Administrative units delegate admin permissions over a subset of the directory. The four steps are: create the AU, populate it with users or groups, create a role scoped to the AU, then add IT members to that role. AUs require Entra ID P1 or P2, and you need Privileged Role Administrator or Global Administrator to create one. Group ownership does not grant password-reset rights, and Global Administrator is tenant-wide."},{"id":"m1-02","module":"M1","type":"mc","scenario":"You open a user account in the Entra admin center. The Source field reads Windows Server AD. The user has just been promoted and their job title needs updating.","q":"Where must the change be made?","options":["In on-premises Active Directory, so it syncs up through Entra Connect","Directly in the Entra ID portal; the change syncs down to on-premises AD","In either location, since Entra Connect performs two-way synchronization by default","In the Azure subscription properties for that user"],"answer":[0],"explain":"A Source of Windows Server AD means this is a directory-synchronized identity. Entra Connect synchronizes from on-premises AD into Entra ID, so the on-premises directory is authoritative for these attributes. The other two source values you should recognize are Azure Active Directory (a cloud identity) and Invited user (a guest)."},{"id":"m1-03","module":"M1","type":"mc","scenario":"Security wants to automatically block sign-ins that Entra ID assesses as high risk, based on signals like impossible travel and leaked credentials. Budget approval requires you to name the minimum license.","q":"Which Entra ID plan is the minimum that supports this?","options":["Entra ID P2","Entra ID P1","Entra ID Free","Any plan, if MFA is enabled"],"answer":[0],"explain":"Risk-based Conditional Access (sign-in risk and user risk) is a P2 feature, as is Privileged Identity Management and governance. P1 gives you plain Conditional Access, advanced group management, automated provisioning to apps, and administrative units. Free covers unlimited SSO, cloud and federated authentication, the self-service account management portal, and MFA."},{"id":"m1-04","module":"M1","type":"mc","scenario":"As laptops are enrolled, they must automatically join a group used to target a compliance policy. No administrator should have to add them manually.","q":"What group type and membership type do you create?","options":["A security group with Dynamic Device membership","A Microsoft 365 group with Dynamic Device membership","A security group with Assigned membership","A Microsoft 365 group with Dynamic User membership"],"answer":[0],"explain":"Dynamic Device membership is available only for security groups, not Microsoft 365 groups. The three membership types are Assigned, Dynamic User, and Dynamic Device, and only the last is restricted by group type. This is a favourite exam distinction."},{"id":"m1-05","module":"M1","type":"mc","scenario":"An external design agency needs access to a SharePoint site in your tenant. You invite one of their staff using their existing work email address.","q":"What will the Source field show for the new account?","options":["Invited user","Windows Server AD","Azure Active Directory","External Identity Provider"],"answer":[0],"explain":"Guest users exist outside Azure, such as accounts from other cloud providers or other organizations, and their source is shown as Invited user. Cloud identities show Azure Active Directory; synchronized identities show Windows Server AD."},{"id":"m1-06","module":"M1","type":"mc","scenario":"Helpdesk volume is dominated by password resets. You are enabling self-service password reset and want users to be challenged by two separate factors before a reset succeeds.","q":"Which SSPR setting controls this?","options":["The number of authentication methods required","Whether users are required to register for SSPR","Which users are in scope for SSPR","The password writeback setting in Entra Connect"],"answer":[0],"explain":"SSPR configuration has three decisions: determine who can use it, choose the number of authentication methods required and which methods are available (email, phone, questions), and decide whether to require users to register (the same process as MFA registration)."},{"id":"m1-07","module":"M1","type":"mc","scenario":"A developer asks why they cannot apply a Group Policy Object to a group of cloud-only users in Entra ID.","q":"What is the correct explanation?","options":["Entra ID users and groups are created in a flat structure with no OUs or GPOs","GPOs require the Entra ID P2 license, which the tenant does not have","GPOs can only be applied to devices, never to users","Entra Connect must be installed before GPOs can be applied to cloud users"],"answer":[0],"explain":"Entra ID is primarily an identity solution with a flat structure: there are no organizational units and no Group Policy Objects. Device configuration in the cloud is handled by Intune compliance and configuration policies instead. AD DS is the hierarchical directory with OUs, GPOs, domains, and forests."},{"id":"m1-08","module":"M1","type":"mc","scenario":"You are scripting the creation of a Developers group and need to add a user to it from Azure Cloud Shell.","q":"Which cmdlet adds the member?","options":["Add-AzADGroupMember","New-AzADGroupMember","Set-AzADGroup -AddMember","Add-AzRoleAssignment"],"answer":[0],"explain":"The sequence is New-AzADGroup to create, Get-AzADGroup and Get-AzADUser to retrieve object IDs, Add-AzADGroupMember to add the user, and Get-AzADGroupMember to verify. Add-AzRoleAssignment grants RBAC permissions, which is a different operation."},{"id":"m1-09","module":"M1","type":"mc","scenario":"A project team needs a shared mailbox, a shared calendar, and a shared document library, all provisioned from one group object.","q":"Which group type do you create?","options":["A Microsoft 365 group","A security group","A distribution list in on-premises Exchange","An administrative unit"],"answer":[0],"explain":"Microsoft 365 groups are the collaboration group type and provision a mailbox, calendar, and files. Security groups manage access to resources but bring no collaboration workload with them."},{"id":"m1-10","module":"M1","type":"sa","scenario":"Contoso acquires Fabrikam. Leadership wants one identity for all staff so people sign in once, but the two divisions must be billed separately and their resources kept in separate management boundaries.","q":"Explain how tenants and subscriptions let you satisfy both requirements, and define each term.","model":"A tenant (directory) is a dedicated, trusted instance of Microsoft Entra ID representing a single organization. It is the identity boundary, is created automatically when the organization signs up for a Microsoft cloud service, and holds the users and groups. An Azure subscription is a logical container used to provision and manage Azure resources, and it is the unit of management, billing, and scale that pays for Azure services. Because one tenant can trust many subscriptions, Contoso keeps a single tenant so every user has one identity and gets single sign-on, and then creates two subscriptions, one per division, so each division has its own billing unit and its own management and scale boundary. Resources cannot span subscriptions, so the separation is enforced structurally.","keyTerms":["tenant","directory","single organization","identity","subscription","billing","management","one tenant many subscriptions","single sign-on"]},{"id":"m1-11","module":"M1","type":"mc","scenario":"Your organization runs Windows Server AD on-premises and wants users to reach Entra ID-managed SaaS apps without extra authentication prompts, even when their laptops are off the corporate network.","q":"Which benefit of Entra ID and on-premises AD join describes this?","options":["Single Sign-On","Enterprise compliant roaming","Seamless on-premises resource access","Compliance policy enforcement"],"answer":[0],"explain":"Single Sign-On lets users access Entra ID-managed SaaS apps and services without additional authentication prompts even when not connected to the domain network. Seamless on-premises resource access is the opposite direction and requires line of sight to a domain controller. Enterprise compliant roaming is about user settings following the user across joined devices."},{"id":"m1-12","module":"M1","type":"mc","scenario":"An architect asks which component actually performs the synchronization between your on-premises Windows Server AD and Entra ID.","q":"What is the correct answer?","options":["Microsoft Entra Connect","Microsoft Entra Domain Services","Azure AD Application Proxy","The Azure Backup MARS agent"],"answer":[0],"explain":"Entra Connect performs the directory synchronization. Entra Domain Services is a separate managed service that provides domain join, LDAP, and Kerberos in Azure without you deploying domain controllers."},{"id":"m2-01","module":"M2","type":"mc","scenario":"Finance wants to charge cloud spend back by department. You apply the tag CostCenter=Marketing to the marketing resource group, which contains 14 virtual machines. A week later the cost report shows no tagged VM spend.","q":"What is the cause?","options":["Tags applied to a resource group are not inherited by the resources inside it","Cost analysis only reports tags applied at the subscription level","The resource group exceeded the 50-tag limit","Tags take 30 days to appear in Cost Management"],"answer":[0],"explain":"This is one of the most commonly tested facts in the course: tags applied to a resource group are not inherited by the resources in that resource group. To bill back by tag you must tag the resources themselves, typically enforced with Azure Policy. Each resource or resource group can carry a maximum of 50 tag name/value pairs."},{"id":"m2-02","module":"M2","type":"mc","scenario":"A production resource group must be protected from accidental deletion, but the operations team still needs to resize VMs and change configuration inside it.","q":"Which lock do you apply?","options":["A Delete (CanNotDelete) lock on the resource group","A ReadOnly lock on the resource group","A ReadOnly lock on each virtual machine","A Delete lock on the subscription"],"answer":[0],"explain":"A Delete lock prevents deletion while still allowing changes. A ReadOnly lock prevents any changes at all, which would block the resizing the team needs. Locks can be applied at subscription, resource group, or resource scope and are inherited by child resources."},{"id":"m2-03","module":"M2","type":"mc","scenario":"A Contributor on the subscription reports that they cannot remove a management lock that is blocking their work.","q":"Which roles can create or delete management locks?","options":["Owner and User Access Administrator","Owner and Contributor","Contributor and Reader","Any role with write permission on the resource"],"answer":[0],"explain":"Only the Owner and User Access Administrator roles can create or delete management locks. Contributor can create and manage all resources but cannot grant access, and lock management is treated as an access operation."},{"id":"m2-04","module":"M2","type":"mc","scenario":"A new junior administrator must be able to create, modify, and delete virtual machines in the Dev resource group, but must never be able to give anyone else permissions.","q":"Which built-in role do you assign, and at what scope?","options":["Contributor, scoped to the Dev resource group","Owner, scoped to the Dev resource group","User Access Administrator, scoped to the Dev resource group","Contributor, scoped to the subscription"],"answer":[0],"explain":"Contributor can create and manage all resources but cannot grant access to others, which is exactly the requirement. Owner adds the ability to delegate access. Scope it at the resource group so the permission does not extend to the rest of the subscription, since resources inherit role assignments from their parent."},{"id":"m2-05","module":"M2","type":"mc","scenario":"Compliance requires that no resource may be deployed outside Canada Central and Canada East, regardless of who is deploying.","q":"What do you implement?","options":["An Azure Policy restricting allowed locations","An RBAC role assignment limited to those regions","A ReadOnly lock on all other regions","A resource tag named AllowedRegion"],"answer":[0],"explain":"Azure Policy enforces organizational standards and compliance: what may be deployed and with what settings. RBAC governs who can deploy, not where. Tags label resources but enforce nothing on their own."},{"id":"m2-06","module":"M2","type":"mc","scenario":"You assign the Reader role to an auditor at the subscription scope.","q":"What access does the auditor have to a resource group created later inside that subscription?","options":["Read access, because resources inherit role assignments from their parent","No access, because the assignment predates the resource group","Read access only if the assignment is repeated at the resource group scope","Full access, because subscription-level assignments always elevate"],"answer":[0],"explain":"A role assignment binds a role to a security principal at a particular scope, and a resource inherits role assignments from its parent resources. The scope hierarchy flows management group, subscription, resource group, resource, and inheritance runs downward, including to resources created afterwards."},{"id":"m2-07","module":"M2","type":"mc","scenario":"Your organization signs an Enterprise Agreement and makes an upfront monetary commitment that is consumed across Azure services during the year. The service desk asks what monthly SLA the agreement carries.","q":"What do you tell them?","options":["99.95%","99.9%","99.99%","100%"],"answer":[0],"explain":"Enterprise agreements carry a 99.95% monthly SLA. The other subscription routes covered in the module are reseller (Open Licensing), partners, and the personal free account, which is not charged until you choose to upgrade."},{"id":"m2-08","module":"M2","type":"mc","scenario":"The CFO wants to be notified automatically when the Dev subscription passes 80 percent of its planned monthly spend.","q":"Which Cost Management feature do you use?","options":["Budgets","Cost analysis","Recommendations","Exporting cost management data"],"answer":[0],"explain":"Budgets set spending thresholds with alerts. Cost analysis is for exploring and analyzing spend after the fact, Recommendations advise on reducing cost, and export pushes data out for external reporting."},{"id":"m2-09","module":"M2","type":"mc","scenario":"An architect asks why Azure replicates geo-redundant storage to one specific other region rather than any region you choose.","q":"What concept explains this?","options":["Each Azure region is paired with another region within the same geography, forming a regional pair","Azure replicates to whichever region currently has the most free capacity","Replication always targets the region alphabetically closest in name","Regional pairing is configured per storage account at creation"],"answer":[0],"explain":"A region is a geographical area containing at least one, and potentially multiple, datacenters. Each region is paired with another within the same geography. Pairing keeps replicated data inside the same geography for residency, and platform updates roll out to only one region of a pair at a time."},{"id":"m2-10","module":"M2","type":"sa","scenario":"A team lead argues that because their developers already hold the Contributor role, there is no need for the new Azure Policy that blocks expensive VM SKUs.","q":"Explain the difference between what RBAC controls and what Azure Policy controls, and why both are needed here.","model":"RBAC governs who can perform actions on Azure resources: a role assignment binds a role to a security principal at a particular scope, granting access, and resources inherit role assignments from their parent. Contributor lets the developers create and manage all resources but not grant access to others. Azure Policy governs what may be deployed and with what settings, enforcing organizational standards and compliance, for example allowed VM SKUs, required tags, or permitted regions. The two are complementary: RBAC says the developers are allowed to create virtual machines at all, and Policy constrains which virtual machines they are allowed to create. Without the policy, the Contributor role by itself permits any SKU in the subscription.","keyTerms":["RBAC","who","role assignment","security principal","scope","inherit","Azure Policy","what","standards","compliance","complementary"]},{"id":"m2-11","module":"M2","type":"mc","scenario":"You are documenting the difference between Azure RBAC roles and Entra ID roles for a new hire.","q":"Which statement is correct?","options":["Azure RBAC roles control access to Azure resources and can be scoped to a resource group; Entra ID roles control access to Entra ID resources and are tenant-wide","Both role systems are scoped identically and the names are interchangeable","Entra ID roles can be scoped to a single virtual machine","Azure RBAC roles are tenant-wide and Entra ID roles are resource-scoped"],"answer":[0],"explain":"Azure RBAC roles (Owner, Contributor, Reader, User Access Administrator) apply to Azure resources at management group, subscription, resource group, or resource scope. Entra ID roles (Global Administrator, User Administrator, Billing Administrator) apply to directory objects such as users, groups, licenses, and domains, and are tenant-wide."},{"id":"m3-01","module":"M3","type":"mc","scenario":"You must deploy an identical virtual network with the same three subnets into Dev, Test, and Prod, and be able to redeploy any of them from scratch after a failure.","q":"What is the appropriate approach?","options":["Author an ARM template and deploy it three times with different parameters","Create the first VNet in the portal and manually recreate it twice","Script the portal clicks with a browser automation tool","Create one VNet and move it between resource groups as needed"],"answer":[0],"explain":"An ARM template is a JSON file that declaratively defines one or more resources to deploy to a resource group. Declarative syntax means you define the properties of the infrastructure you want without writing programming commands to create it, which gives you repeatable, version-controlled, parameterized deployments."},{"id":"m3-02","module":"M3","type":"mc","scenario":"You are editing an exported ARM template so that the administrator username and password are supplied at deployment time rather than hard-coded.","q":"Which template section do these values belong in?","options":["parameters","variables","resources","outputs"],"answer":[0],"explain":"The parameters section specifies which values you can input when deploying the resources; the classic example is a virtual machine username and password. Variables hold values reused inside the template, resources holds what actually gets deployed, and outputs returns values after deployment."},{"id":"m3-03","module":"M3","type":"mc","scenario":"After a corporate rebrand you are asked to rename the resource group rg-oldname to rg-newname, keeping all 30 resources in place.","q":"What do you tell the requester?","options":["Resource groups cannot be renamed; you must create a new one and move the resources","Rename it from the Overview blade; the change is instant","Rename it with Set-AzResourceGroup -NewName","Rename it, but only if no resource has a lock"],"answer":[0],"explain":"Resource groups cannot be renamed. The workaround is to create the new group and move resources into it. Note that during a move both the source and target resource groups are locked: write and delete operations are blocked on both until the move completes, although the resources themselves stay available."},{"id":"m3-04","module":"M3","type":"mc","scenario":"A move of 12 resources between resource groups is in progress. A colleague messages to ask whether the web app being moved is currently down.","q":"What is the correct answer?","options":["No. Both resource groups are locked against write and delete operations, but the resources remain available","Yes. Moved resources are offline until the operation completes","Yes, but only resources in the target resource group are offline","No, and you can also add new resources to both groups during the move"],"answer":[0],"explain":"When moving resources, both the source group and the target group are locked during the operation. Write and delete operations are blocked, so you cannot add, update, or delete resources in either group, but the lock does not mean the resources are unavailable."},{"id":"m3-05","module":"M3","type":"mc","scenario":"A colleague opens Cloud Shell for the first time and is prompted to create supporting resources before the shell will start.","q":"What does Cloud Shell require?","options":["A resource group, a storage account, and an Azure File share","A virtual machine and a public IP address","A virtual network with a dedicated subnet","An App Service plan"],"answer":[0],"explain":"Cloud Shell is an interactive, browser-accessible shell that authenticates automatically. It requires a resource group, a storage account, and an Azure File share, and it persists your $HOME directory using a 5-GB image held in that file share. Bash and PowerShell are both available."},{"id":"m3-06","module":"M3","type":"mc","scenario":"You need to delete a large resource group from Cloud Shell but do not want the console to block while it runs.","q":"Which command do you use?","options":["Remove-AzResourceGroup -Name \"rg-lab\" -Force -AsJob","Remove-AzResourceGroup -Name \"rg-lab\" -Wait","Delete-AzResourceGroup -Name \"rg-lab\"","Remove-AzResource -ResourceGroupName \"rg-lab\" -Recurse"],"answer":[0],"explain":"Remove-AzResourceGroup deletes the group; -Force suppresses the confirmation prompt and -AsJob runs it in the background so the shell returns immediately. Get-AzResourceGroup lists groups. Azure PowerShell always follows the Verb-AzNoun pattern."},{"id":"m3-07","module":"M3","type":"mc","scenario":"A deployment fails because your subscription has hit the documented maximum limit for a resource type, not the default limit.","q":"What is your option?","options":["Nothing can be done for that subscription; when you are at the maximum limit it cannot be increased","Use the Request Increase link to raise it beyond the maximum","Open a support ticket to have the maximum waived","Move the resources to another region, which resets the maximum"],"answer":[0],"explain":"The limits shown are the limits for your subscription. Where a default limit applies there is a Request Increase link, but all resources also have a maximum limit listed in Azure limits, and if you are at the maximum it cannot be increased. The practical answer in that case is a second subscription."},{"id":"m3-08","module":"M3","type":"mc","scenario":"You are explaining what happens between clicking Create in the portal and the virtual machine appearing.","q":"Which sequence is correct?","options":["The tool calls the ARM API, ARM authenticates and authorizes the request, then routes it to the appropriate resource provider","The portal writes directly to the datacenter fabric, bypassing ARM for speed","The request goes to the resource provider first, which then calls ARM for authorization","PowerShell and CLI bypass ARM; only the portal uses it"],"answer":[0],"explain":"All Azure tools interact with the Azure Resource Manager API. ARM authenticates and authorizes the request and then routes it to the appropriate resource provider, for example Microsoft.Compute for virtual machines, Microsoft.Storage for storage accounts, or Microsoft.Web for web apps. This is why RBAC, tagging, and locks behave identically no matter which tool you use."},{"id":"m3-09","module":"M3","type":"mc","scenario":"An audit asks which resource provider supplies the virtual machine resource type.","q":"What is the answer?","options":["Microsoft.Compute","Microsoft.Storage","Microsoft.Web","Microsoft.Network"],"answer":[0],"explain":"Microsoft.Compute supplies the VM resource, Microsoft.Storage supplies the storage account resource, and Microsoft.Web supplies resources related to web apps."},{"id":"m3-10","module":"M3","type":"mc","scenario":"A team proposes putting a production database, a short-lived test VM, and a shared corporate DNS server in the same resource group for convenience.","q":"What is the design principle they are violating?","options":["All resources in a group should share the same lifecycle: you deploy, update, and delete them together","A resource group may only contain one resource type","A resource group may only contain resources from a single region","A resource group may hold no more than 50 resources"],"answer":[0],"explain":"A resource group is a logical container for related resources, and all resources in the group should share the same lifecycle. Resource groups can freely span types and regions, and a resource can only exist in one resource group. Grouping items with different lifecycles makes deletion and redeployment dangerous."},{"id":"m3-11","module":"M3","type":"mc","scenario":"You place a ReadOnly lock on a storage account, then attempt to delete it.","q":"What happens?","options":["The deletion is blocked, because a ReadOnly lock prevents any changes to the resource","The deletion succeeds, because ReadOnly only blocks configuration edits","The deletion succeeds after a warning prompt","The deletion is blocked only if a Delete lock also exists"],"answer":[0],"explain":"There are two lock types: ReadOnly, which prevents any changes to the resource, and Delete, which prevents deletion. ReadOnly is the stricter of the two and blocks deletion as well as modification."},{"id":"m3-12","module":"M3","type":"sa","scenario":"In Lab 01 you built the CoreServicesVnet in the portal, exported it as a template, edited template.json and parameters.json, and redeployed it as the ManufacturingVnet.","q":"Explain why exporting and editing a template is preferable to building the second VNet by hand in the portal.","model":"The exported ARM template is a JSON file that declaratively defines the resources, so it captures the exact configuration of the working CoreServicesVnet including address space, subnets, and their properties. Redeploying it guarantees the second network is structurally identical rather than depending on an administrator repeating every portal click correctly, which removes configuration drift and human error. Because the values that change between environments live in parameters, the same template can be reused for many deployments, kept in version control, reviewed, and redeployed to rebuild the environment after a failure. Deployment is also faster and repeatable or idempotent, and the template documents the infrastructure.","keyTerms":["ARM template","JSON","declarative","identical","repeatable","parameters","reuse","version control","human error","redeploy"]},{"id":"m4-01","module":"M4","type":"mc","scenario":"You size a subnet as 10.20.30.0/27 for a small application tier and plan to place 30 virtual machines in it.","q":"How many virtual machines can actually be addressed?","options":["27","30","32","31"],"answer":[0],"explain":"Azure reserves five IP addresses in every subnet: x.0 as the network address, x.1 for the Azure default gateway, x.2 and x.3 to map the Azure DNS IPs into the VNet space, and the last address as the network broadcast address. A /27 has 32 addresses, so 32 minus 5 leaves 27 usable."},{"id":"m4-02","module":"M4","type":"mc","scenario":"A VM cannot be reached on port 443 from another subnet. You check the NIC NSG and find an inbound rule at priority 300 that allows TCP 443 from any source. The subnet NSG contains a rule at priority 200 that denies TCP 443.","q":"Why is traffic still blocked, and where is it blocked?","options":["NSGs are evaluated independently and an allow rule must exist at both levels; the subnet NSG is evaluated first for inbound traffic and denies it","The NIC rule should win because it is more specific to the VM","The rules cancel out and traffic is allowed by the default VirtualNetwork rule","The NIC NSG priority 300 is higher than 200, so it overrides the subnet rule"],"answer":[0],"explain":"NSGs are evaluated independently and an allow rule must exist at both levels for traffic to pass. For incoming traffic the subnet NSG is evaluated first, then the NIC NSG; for outgoing traffic it is the reverse. Also note that lower priority numbers are evaluated first, so 200 beats 300 within a single NSG. Use the Effective security rules view to see the combined result."},{"id":"m4-03","module":"M4","type":"mc","scenario":"An NSG contains a rule at priority 150 denying TCP 3389 from any source, and a rule at priority 400 allowing TCP 3389 from your office IP range.","q":"Can you RDP from the office?","options":["No. Rules are processed in priority order and the lower number wins, so the deny at 150 matches first","Yes. Allow rules always take precedence over deny rules","Yes. The more specific source range makes the allow rule win","It depends on whether the NSG is attached to the subnet or the NIC"],"answer":[0],"explain":"Rules are processed in priority order and the lower the number, the higher the priority. Processing stops at the first match, so the deny at 150 wins. To fix it, give the allow rule a number lower than 150. Custom rules use the range 100 to 4096."},{"id":"m4-04","module":"M4","type":"mc","scenario":"Your web tier scales up and down constantly. Security rules must permit the web VMs to reach the database VMs on port 1433, but you refuse to maintain a list of IP addresses that changes every day.","q":"What do you implement?","options":["Application security groups referenced as the source and destination in the NSG rule","A single NSG rule using the VirtualNetwork service tag on both sides","A user-defined route between the two subnets","An Azure Firewall network rule listing each VM IP"],"answer":[0],"explain":"An application security group is a logical grouping of network interfaces by application role. It contains no rules itself; you reference it as the source or destination inside an NSG rule, so membership changes automatically apply and no IP addresses need to be maintained. The VirtualNetwork service tag would be far too broad, permitting every VM in the network."},{"id":"m4-05","module":"M4","type":"mc","scenario":"A server administrator sets a static IP address inside the guest operating system of an Azure VM to match the private IP shown in the portal. The VM immediately loses network connectivity.","q":"What went wrong?","options":["IP addresses are never managed from within a virtual machine; they must be configured in Azure","The static address must be one number higher than the portal value","The VM needed a reboot for the guest OS change to register with Azure","Static addresses are only permitted on Standard SKU public IPs"],"answer":[0],"explain":"IP addresses are never managed from within a virtual machine. Assign addresses in Azure, choosing static or dynamic (DHCP) on the NIC. It is also good practice to separate dynamically and statically assigned resources into different subnets."},{"id":"m4-06","module":"M4","type":"mc","scenario":"Virtual machines behind Azure Firewall must be able to reach *.windowsupdate.com over HTTPS, and nothing else on the internet.","q":"Which rule type do you create?","options":["An application rule, which defines the FQDNs that can be accessed from a subnet","A network rule specifying TCP 443 to any destination","A NAT rule translating port 443 to the update servers","A service endpoint for Microsoft.Update"],"answer":[0],"explain":"Application rules define fully qualified domain names that can be accessed from a subnet, support wildcards, and support FQDN tags representing groups of FQDNs for well-known Microsoft services such as Windows Update, App Service Environment, and Azure Backup. Network rules filter by IP, port, and protocol and cannot match on domain name."},{"id":"m4-07","module":"M4","type":"mc","scenario":"You need to publish an internal web server, which has only a private IP, to the internet through the public IP of your Azure Firewall.","q":"What must you configure?","options":["A NAT (DNAT) rule, which must also be matched by a network rule to allow traffic to pass","An application rule listing the server FQDN","A network rule alone, since NAT is automatic for inbound traffic","A user-defined route with the firewall as next hop, and nothing else"],"answer":[0],"explain":"Azure Firewall DNAT translates and filters inbound traffic to Azure subnets, translating the firewall public IP and port to a private IP and port. The NAT rule must be matched by a network rule to allow the traffic through. Its settings include source address, destination address (the firewall external address), destination ports, translated address, and translated port."},{"id":"m4-08","module":"M4","type":"mc","scenario":"Azure Firewall has just been deployed in front of a subnet and no rules have been created. Users report that nothing works.","q":"Is this expected?","options":["Yes. By default Azure Firewall blocks all traffic until rules are created","No. Azure Firewall allows all outbound traffic by default","No. Azure Firewall inherits the NSG rules of the subnet it protects","Yes, but only for inbound traffic; outbound is open by default"],"answer":[0],"explain":"By default Azure Firewall blocks all traffic. Rules are processed in the order NAT, then network, then application, and once a rule is found that allows the traffic through, no more rules are checked."},{"id":"m4-09","module":"M4","type":"mc","scenario":"You add contoso.ca as a custom domain in your Entra ID tenant. It shows as unverified.","q":"Which DNS record type can you add to verify ownership?","options":["MX or TXT","A or AAAA","CNAME or SRV","NS or SOA"],"answer":[0],"explain":"Verification is performed by adding a DNS record, which can be an MX or TXT record. Once Azure verifies the record it adds the domain name to the subscription. Only one directory can use a domain name: the organization that owns it. Note the contrast with mapping a custom domain to a web app, which uses a CNAME or A record."},{"id":"m4-10","module":"M4","type":"mc","scenario":"You create a private DNS zone named private.contoso.ca and add an A record for a VM, but no virtual machine can resolve the name.","q":"What is missing?","options":["A virtual network link from the private DNS zone to each VNet that needs private name resolution","A set of name server records, which private zones create automatically once populated","A public DNS zone with the same name to delegate from","A service endpoint for Microsoft.Network on the subnet"],"answer":[0],"explain":"A private DNS zone is only accessible from the virtual networks it is linked to and cannot be reached from the internet. You must add a virtual network link for each VNet needing resolution. Private zones have no name server records, which is the visible difference from a public zone on the Overview blade."},{"id":"m4-11","module":"M4","type":"mc","scenario":"Two different teams each create a DNS zone named contoso.ca, in two different resource groups in the same subscription.","q":"What happens?","options":["Both are created successfully, and each instance is assigned different name server addresses","The second creation fails because zone names must be globally unique","The second zone silently overwrites the first","Both are created and share the same name servers"],"answer":[0],"explain":"The name of the zone must be unique within the resource group, and the same zone name can be reused in a different resource group. Where multiple zones share the same name, each instance is assigned different name server addresses, so only the zone whose name servers the registrar points to is authoritative."},{"id":"m4-12","module":"M4","type":"mc","scenario":"You are asked how many network security groups can be attached to a single subnet.","q":"What is the correct answer?","options":["Zero or one","Exactly one, always","Up to five","Unlimited, evaluated in priority order"],"answer":[0],"explain":"You can associate zero or one network security group to each subnet, and the same is true for each network interface. A single NSG can, however, be associated many times across different subnets and NICs, which is how you reuse one rule set."},{"id":"m4-13","module":"M4","type":"mc","scenario":"In Lab 01 you reviewed the outbound rules of a new NSG and found AllowInternetOutbound at priority 65001, which could not be deleted. You need to block outbound access to the internet on TCP 8080.","q":"What do you do?","options":["Add a custom deny rule with a priority number lower than 65001, using the Internet service tag as the destination","Delete the default rule and recreate it as a deny","Raise the default rule priority above 65001","Apply the deny rule to the NIC instead, since defaults only apply to subnets"],"answer":[0],"explain":"Default rules cannot be deleted, but any custom rule with a lower priority number is evaluated first and therefore overrides them. In the lab the deny rule used destination Service tag Internet, port 8080, action Deny, priority 4096. Custom priorities run from 100 to 4096, all of which are below the 65000-range defaults."},{"id":"m4-14","module":"M4","type":"mc","scenario":"A new subnet must be created but the only unallocated space left in the VNet is a /29.","q":"How many usable IP addresses will that subnet provide?","options":["3","5","6","8"],"answer":[0],"explain":"A /29 contains 8 addresses and Azure reserves five in every subnet, leaving 3 usable. This is why the module stresses planning for service requirements: some services require their own subnet, so you need enough unallocated address space."},{"id":"m4-15","module":"M4","type":"mc","scenario":"Your subscription already has 50 virtual networks in East US and a new project needs more.","q":"What is the situation?","options":["50 per subscription per region is the default limit and it can be raised to 500 by contacting Azure support","50 is the hard maximum and cannot be raised","The limit is per subscription overall, so deploying in another region will not help","You must create a second subscription; VNet limits cannot be increased"],"answer":[0],"explain":"By default you can create up to 50 virtual networks per subscription per region, and this limit can be increased to 500 by contacting Azure support. Note the limit is per region, so another region gets its own allowance."},{"id":"m4-16","module":"M4","type":"mc","scenario":"You want a single Azure Firewall to enforce and log rules for workloads that live in several different subscriptions and virtual networks.","q":"Is this supported?","options":["Yes. Azure Firewall network filtering rules are enforced and logged across multiple subscriptions and virtual networks","No. A firewall instance is limited to the virtual network it is deployed in","Yes, but only if all virtual networks are in the same resource group","No. Cross-subscription enforcement requires one firewall per subscription"],"answer":[0],"explain":"Azure Firewall is fully stateful and its rules are enforced and logged across multiple subscriptions and virtual networks. Other features include built-in high availability with no extra load balancers, availability zone support, unrestricted cloud scalability, FQDN filtering, threat intelligence based filtering from the Microsoft Threat Intelligence feed, and up to 100 associated public IP addresses."},{"id":"m4-17","module":"M4","type":"sa","scenario":"A colleague has created an NSG rule allowing TCP 443 inbound on the NIC of a web server, but external traffic still does not reach it. The subnet the NIC lives in also has an NSG attached.","q":"Describe how you would troubleshoot this, naming the evaluation order and the tools you would use.","model":"NSGs are evaluated independently and an allow rule must exist at both levels for traffic to pass. For inbound traffic the subnet NSG is evaluated first and then the NIC NSG, so even a correct NIC rule is useless if the subnet NSG denies the traffic. Within each NSG, rules are processed in priority order and the lower the number, the higher the priority, with processing stopping at the first match, so a low-numbered deny can shadow a higher-numbered allow. I would open the Effective security rules view on the network interface to see the combined result of both NSGs, and use Network Watcher IP Flow Verify to confirm whether the packet is allowed or denied and which rule is responsible. If the packet is allowed but still not arriving, I would then check routing with Next Hop and end-to-end reachability with Connection Troubleshoot.","keyTerms":["both levels","subnet first","then NIC","priority order","lower number","first match","Effective security rules","IP Flow Verify","Network Watcher","Next Hop"]},{"id":"m4-18","module":"M4","type":"mc","scenario":"You are documenting DNS terminology and need to define a record set.","q":"Which definition is correct?","options":["A collection of records in a zone that have the same name and are the same type, and which cannot contain two identical records","All records in a zone regardless of name or type","A group of zones sharing the same name servers","A pair of a public and a private zone with the same name"],"answer":[0],"explain":"A record set is a collection of records in a zone that have the same name and are the same type, and it cannot contain two identical records. The configuration page changes depending on which record type you select."},{"id":"m5-01","module":"M5","type":"mc","scenario":"HubVNet is peered with SpokeA and separately peered with SpokeB. A developer reports that a VM in SpokeA cannot reach a VM in SpokeB.","q":"What explains this and what is the standard fix?","options":["VNet peering is non-transitive; configure user-defined routes and service chaining through an NVA or gateway in the hub","Peering is transitive but takes up to 24 hours to propagate; wait","Peering failed because the spokes are in different regions; recreate them in one region","Add a third peering directly between SpokeA and SpokeB, which is the only supported option"],"answer":[0],"explain":"VNet peering is non-transitive. To provide transitivity you configure user-defined routes and service chaining, directing traffic to the IP address of a virtual appliance in a peered VNet or a VPN gateway as the next hop. This is what enables a multi-level hub-and-spoke architecture and helps overcome the limit on peerings per VNet. Direct spoke-to-spoke peering works but does not scale and is not the architecture the module teaches."},{"id":"m5-02","module":"M5","type":"mc","scenario":"You attempt to peer VNet1 (10.0.0.0/16) with VNet2 (10.0.0.0/16). The operation fails.","q":"Why?","options":["The address spaces of connected networks must not overlap","Peering requires both VNets to be in the same subscription","Peering requires a gateway in at least one of the VNets","A /16 is too large to peer; use /24 or smaller"],"answer":[0],"explain":"Address spaces of connected networks should not overlap. Peering works across subscriptions, deployment models, and Azure regions, requires no gateway, and causes no downtime to create."},{"id":"m5-03","module":"M5","type":"mc","scenario":"Spoke VNets need to reach the on-premises network through the VPN gateway that lives in the hub VNet. You do not want to deploy a gateway in each spoke.","q":"What must you enable on the peering?","options":["Allow Gateway Transit on the hub, so the peered VNet can use the remote gateway","Allow Forwarded Traffic only, on both sides","A user-defined route with next hop type Internet in each spoke","A second local network gateway per spoke"],"answer":[0],"explain":"A peered virtual network uses a remote gateway to gain access to the resources in the other VNet. Use Allow Gateway Transit in the virtual network that owns the gateway so the peer can access resources outside the peering, such as the on-premises network."},{"id":"m5-04","module":"M5","type":"mc","scenario":"You create a subnet for a VPN gateway and name it VPNSubnet. Gateway creation fails.","q":"What is wrong?","options":["The gateway subnet must be named exactly GatewaySubnet","The subnet must be at least a /24","The subnet must be created after the gateway, not before","Gateway subnets must be in a separate virtual network"],"answer":[0],"explain":"The gateway subnet must be named GatewaySubnet. It contains the IP addresses used by the virtual network gateway, should use a CIDR block of /28 or /27 to allow for future configurations, and must never contain other resources such as additional VMs."},{"id":"m5-05","module":"M5","type":"mc","scenario":"You are building a site-to-site VPN and must create an object in Azure that represents the on-premises datacenter, including its public IP and the address ranges behind it.","q":"Which object is this?","options":["The local network gateway","The virtual network gateway","The connection object","The GatewaySubnet"],"answer":[0],"explain":"The local network gateway represents your on-premises location. Its name typically refers to that location, and you specify the public IP address or FQDN of the on-premises VPN device plus the address space of the local network in CIDR notation. The virtual network gateway is the Azure-side gateway, which needs a public IP and lives in the GatewaySubnet."},{"id":"m5-06","module":"M5","type":"mc","scenario":"A remote employee needs to connect their single laptop directly into an Azure virtual network from home.","q":"Which VPN gateway connection type is appropriate?","options":["Point-to-site (User VPN)","Site-to-site","VNet-to-VNet","ExpressRoute Global Reach"],"answer":[0],"explain":"Point-to-site connections connect individual devices to Azure virtual networks. Site-to-site connects on-premises datacenters to Azure VNets, and VNet-to-VNet connects Azure virtual networks to each other."},{"id":"m5-07","module":"M5","type":"mc","scenario":"Your organization needs a private, high-bandwidth connection into Microsoft that also reaches Microsoft 365 and Dynamics 365, without traversing the public internet.","q":"What do you deploy?","options":["ExpressRoute","A site-to-site VPN with a high-throughput gateway SKU","VNet peering to a Microsoft-managed VNet","A point-to-site VPN with certificate authentication"],"answer":[0],"explain":"ExpressRoute offers Layer 3 connectivity using BGP routes, redundancy through dual connections to Microsoft Enterprise Edge routers, bandwidth from 50 Mbps to 100 Gbps, and connectivity to Microsoft cloud services including Azure, Microsoft 365, and Dynamics 365. A VPN gateway crosses the public internet and does not reach Microsoft 365 that way."},{"id":"m5-08","module":"M5","type":"mc","scenario":"Your ExpressRoute circuit is billed monthly with all inbound data free and outbound charged per gigabyte.","q":"Which billing model is in use?","options":["Metered data","Unlimited data","Premium add-on","Global Reach"],"answer":[0],"explain":"Metered data bills a monthly fee, with all inbound data transfer free and outbound charged per GB. Unlimited data bills a monthly fee with both inbound and outbound free. The premium add-on adds increased routing table limits, more VNets, global connectivity, and connections to Microsoft 365 and Dynamics 365."},{"id":"m5-09","module":"M5","type":"mc","scenario":"Management wants a backup path in case the ExpressRoute circuit goes down, without buying a second circuit.","q":"What is the recommended configuration?","options":["Configure a coexisting site-to-site VPN for the same virtual network as a secure failover path for ExpressRoute","Configure a second local network gateway on the same circuit","Enable Allow Gateway Transit on all spokes","Rely on the ExpressRoute SLA; no failover configuration is supported"],"answer":[0],"explain":"Configuring site-to-site VPN and ExpressRoute connections for the same virtual network gives you a site-to-site VPN as a secure failover path for ExpressRoute, and lets you use site-to-site links to reach sites that are not part of your network but are connected through ExpressRoute."},{"id":"m5-10","module":"M5","type":"mc","scenario":"A team asks whether traffic between two peered VNets travels over the public internet and whether they need to encrypt it.","q":"What do you tell them?","options":["Traffic stays on the Microsoft backbone network; no public internet, gateways, or encryption is required","Traffic crosses the public internet, so IPsec is required","Traffic stays private only if both VNets are in the same region","Traffic is routed through the nearest ExpressRoute circuit"],"answer":[0],"explain":"Network traffic between peered virtual networks is private and stays on the Microsoft backbone network. No public internet, gateways, or encryption is required. The other stated benefits are low-latency high-bandwidth performance, communication between resources, seamless transfer across subscriptions, deployment models and regions, and no downtime when creating the peering."},{"id":"m5-11","module":"M5","type":"sa","scenario":"In Lab 02 you deployed CoreServicesVM in CoreServicesVnet (10.0.0.0/16) and ManufacturingVM in ManufacturingVnet (172.16.0.0/16). Network Watcher Connection Troubleshoot on TCP 3389 returned UnReachable. After one configuration change the same test succeeded.","q":"Explain why the first test failed, what you changed, and why the second test succeeded.","model":"The first test failed because the two virtual machines were in separate virtual networks. Azure routes traffic between all subnets within a virtual network by default, but separate VNets are isolated from each other, so there was no route and no connectivity between them and the TCP 3389 test returned UnReachable. The change was to create a virtual network peering between CoreServicesVnet and ManufacturingVnet, configured in both directions with allow access and allow forwarded traffic, and confirmed by a peering status of Connected on both sides. After peering, resources in one virtual network can communicate with resources in the other privately over the Microsoft backbone network with no gateways or encryption required, so Test-NetConnection to the private IP on port 3389 succeeded. The address spaces did not overlap, which peering requires.","keyTerms":["different virtual networks","isolated","no route","peering","both directions","Connected","Microsoft backbone","private","Test-NetConnection","non-overlapping"]},{"id":"m5-12","module":"M5","type":"mc","scenario":"You are choosing a VPN gateway SKU and need to justify the cost to management.","q":"What does the SKU choice affect?","options":["The number of tunnels you can have and the aggregate throughput benchmark","The maximum size of the GatewaySubnet","Whether the gateway supports IPsec","The number of virtual networks that can be peered"],"answer":[0],"explain":"Your choice of SKU affects the number of tunnels you can have and the aggregate throughput benchmark. The VPN type you pick, route-based or policy-based, depends on the make and model of your VPN device and the kind of connection you intend to create."},{"id":"m6-01","module":"M6","type":"mc","scenario":"A public website must send requests for /images/* to one pair of servers and /videos/* to another, and must terminate TLS at the edge so the backend servers do not handle certificates.","q":"Which service do you deploy?","options":["Azure Application Gateway","Azure Load Balancer, Standard SKU","Azure Traffic Manager","Azure Firewall with application rules"],"answer":[0],"explain":"Application Gateway provides Layer 7 load balancing, Web Application Firewall, SSL termination, and end-to-end encryption, including URL path-based routing. Azure Load Balancer works at Layer 4 on IP and port only and cannot see the URL path. Traffic Manager is DNS-based and global, routing users to a region rather than a path."},{"id":"m6-02","module":"M6","type":"mc","scenario":"You are creating an Application Gateway and the portal refuses your chosen subnet, which is a /29 shared with two virtual machines.","q":"What are the two problems?","options":["The gateway needs its own dedicated subnet, and that subnet must be /27 or larger","The subnet must be named ApplicationGatewaySubnet, and must be /28 or larger","The subnet must be in a different virtual network, and must be /24","The subnet must have a route table attached, and must be /29 or smaller"],"answer":[0],"explain":"The Application Gateway requires a dedicated subnet of /27 or larger. In Lab 03 you created subnet-appgw as 10.60.3.224/27 specifically for this. Contrast this with the VPN GatewaySubnet, which must carry that exact name and is recommended at /28 or /27."},{"id":"m6-03","module":"M6","type":"mc","scenario":"An internal line-of-business application must be load balanced across three VMs, and must be reachable only from inside the virtual network, never from the internet.","q":"What do you deploy?","options":["An internal load balancer with a private frontend IP","A public load balancer with an NSG blocking the internet","An Application Gateway with a private listener and WAF enabled","A user-defined route pointing at the three VMs"],"answer":[0],"explain":"An internal load balancer has only a private frontend IP and is used inside the VNet, for example balancing traffic from the web tier to the business or database tier. A public load balancer maps the public IP address and port of incoming traffic to the private IP address and port of the VM, and provides the mapping for return traffic as well."},{"id":"m6-04","module":"M6","type":"mc","scenario":"In Lab 03 you created a load balancer and selected the Standard SKU, then created its public IP.","q":"What did the Standard SKU give you for that public IP?","options":["A static IP address, assigned when the resource is created and released when it is deleted","A dynamic IP address that survives reboots","A globally anycast IP address","An IP address shared with the backend pool members"],"answer":[0],"explain":"The Standard SKU provides a static IP address; static addresses are assigned when the resource is created and released when the resource is deleted. Standard also supports availability zones, larger backend pools, HTTPS health probes, a 99.99% SLA, and is closed to inbound traffic unless an NSG allows it."},{"id":"m6-05","module":"M6","type":"mc","scenario":"You configure a load balancing rule for TCP 80 but one backend VM keeps receiving traffic even though its web service has crashed.","q":"Which component is responsible for removing it from rotation, and what should you check?","options":["The health probe; verify its protocol, port, and interval are correct for the application","The load balancing rule; add session persistence","The backend pool; remove and re-add the NIC","Floating IP; enable it on the rule"],"answer":[0],"explain":"The health probe determines which backend instances are healthy and eligible to receive traffic. In Lab 03 the probe was TCP on port 80. If the probe targets a port or path that responds even when the app is down, unhealthy instances stay in rotation. The load balancer flow is frontend IP, load balancing rule, backend pool, health probe."},{"id":"m6-06","module":"M6","type":"mc","scenario":"All traffic leaving the Perimeter subnet must be inspected by a network virtual appliance whose private IP is 10.0.1.7 before reaching the Core subnet.","q":"What do you configure?","options":["A route table with a route whose next hop type is Virtual appliance and next hop address 10.0.1.7, associated with the Perimeter subnet","An NSG rule on the Perimeter subnet allowing traffic only to 10.0.1.7","A service endpoint on the Perimeter subnet","A peering between the Perimeter and Core subnets"],"answer":[0],"explain":"This is Lab 02 Task 6. User-defined routes control network traffic by defining the next hop of the traffic flow, and the hop can be a virtual network gateway, virtual network, internet, or virtual appliance. Create the route table, create the custom route, then associate the route table with the subnet. NSGs filter traffic but cannot redirect it."},{"id":"m6-07","module":"M6","type":"mc","scenario":"A colleague wants to associate a second route table with a subnet that already has one, so both sets of routes apply.","q":"What do you tell them?","options":["A subnet can only be associated with a single route table; consolidate the routes into one table","A subnet supports up to five route tables, evaluated in order","Route tables merge automatically when both are associated","Associate the second table to the NIC instead"],"answer":[0],"explain":"Each route table can be associated to multiple subnets, but a subnet can only be associated to a single route table. There are also no charges for creating route tables in Azure."},{"id":"m6-08","module":"M6","type":"mc","scenario":"You want traffic destined for a decommissioned network range to be silently dropped rather than routed anywhere.","q":"Which next hop type do you use?","options":["None","Internet","Virtual network","Virtual appliance"],"answer":[0],"explain":"A next hop type of None drops the traffic, acting as a black hole. The other next hop types are Virtual appliance, which requires you to supply the next hop address, Virtual network gateway, Virtual network, and Internet."},{"id":"m6-09","module":"M6","type":"mc","scenario":"A storage account must be reachable only from one subnet in your virtual network. You are told the solution must be free and you do not need on-premises access to it.","q":"What do you configure?","options":["A service endpoint for Microsoft.Storage on that subnet, then restrict the storage account firewall to that VNet and subnet","A private endpoint mapping the storage account into the subnet","An NSG rule denying the Internet service tag on the subnet","An Application Gateway in front of the storage account"],"answer":[0],"explain":"This is Lab 04 Task 3. A service endpoint provides an identity to your virtual network for the service, improving security for the resource, providing optimal routing, taking traffic directly from your VNet to the service on the Microsoft backbone, and being simple to set up with less management overhead. It is free. Private endpoints cost money but are the choice when you need access from on-premises or peered networks, or protection against data exfiltration."},{"id":"m6-10","module":"M6","type":"mc","scenario":"An Azure SQL database must be reachable from your on-premises network across an ExpressRoute circuit, at a private IP address, with no exposure to the public internet.","q":"What do you deploy?","options":["A private endpoint, using Azure Private Link","A service endpoint for Microsoft.Sql","A site-to-site VPN with forced tunnelling","A public IP with an NSG restricted to your office range"],"answer":[0],"explain":"A Private Link brings services to your private virtual network by mapping them to a private endpoint, eliminating data exposure to the public internet. Its features are private connectivity to services on Azure, integration with on-premises and peered networks, protection against data exfiltration, and delivery of services directly to customers' virtual networks. Service endpoints cannot be used from on-premises."},{"id":"m6-11","module":"M6","type":"mc","scenario":"In Lab 03 you configured the Application Gateway routing rule and saw options for Cookie-based affinity and Connection draining in the backend settings.","q":"What does connection draining do?","options":["Gracefully removes backend members during maintenance by letting in-flight requests finish","Keeps a given user pinned to the same backend server for the whole session","Terminates TLS at the gateway and re-encrypts to the backend","Drops idle TCP connections after the configured timeout"],"answer":[0],"explain":"Connection draining gracefully removes backend pool members during planned maintenance. Cookie-based affinity is the feature that keeps a user on the same backend server. SSL termination is the TLS feature, and the idle timeout setting on a load balancing rule handles idle connections."},{"id":"m6-12","module":"M6","type":"mc","scenario":"A global e-commerce site runs identical deployments in Canada Central and West Europe. Users should be sent to whichever region is healthy and closest to them.","q":"Which service handles this?","options":["Traffic Manager, which is DNS-based and global","Azure Load Balancer, Standard SKU with zone redundancy","Application Gateway with multi-site listeners","VNet peering between the two regional networks"],"answer":[0],"explain":"Load Balancer and Application Gateway are both regional. Traffic Manager works at the DNS level and is global, returning the address of the appropriate regional endpoint based on the routing method. Load Balancer routes on IP and port within a region; Application Gateway routes on URL path and host header within a region."},{"id":"m6-13","module":"M6","type":"sa","scenario":"A colleague proposes replacing your Application Gateway with a Standard Load Balancer to save money, arguing that both distribute traffic across the same virtual machines.","q":"Explain what capability would be lost, referring to the OSI layer each service operates at.","model":"Azure Load Balancer operates at Layer 4 and distributes traffic based only on IP address and port, using a frontend IP, load balancing rules, a backend pool, and health probes. Application Gateway operates at Layer 7 on HTTP and HTTPS, so it can read the request itself. Replacing it would lose URL path-based routing, so requests for /images and /videos could no longer be sent to different backend pools; multi-site hosting on host header; SSL and TLS termination and end-to-end encryption, so backend servers would have to handle certificates themselves; the Web Application Firewall, which protects against attacks such as SQL injection and cross-site scripting; cookie-based session affinity; and connection draining for graceful maintenance. It would also lose the dedicated /27 subnet requirement, which is a cost saving rather than a capability. If the application only needs traffic spread across VMs on a port, the Load Balancer is the right choice; if any routing decision depends on the contents of the HTTP request, it is not.","keyTerms":["Layer 4","IP and port","Layer 7","HTTP","path-based routing","SSL termination","Web Application Firewall","WAF","cookie-based affinity","connection draining","multi-site"]},{"id":"m7-01","module":"M7","type":"mc","scenario":"Regulatory requirements say your data must survive the complete loss of an Azure region, and the application must still be able to read the data while the primary region is down.","q":"Which redundancy option do you choose?","options":["RA-GRS","GRS","ZRS","LRS"],"answer":[0],"explain":"GRS keeps six replicas across two regions and protects against major regional disasters, but the secondary is not readable. RA-GRS adds read access to the secondary through a separate secondary endpoint, and the RPO delay to the secondary can be queried. Whenever a question mentions reading during an outage, the answer starts with RA-."},{"id":"m7-02","module":"M7","type":"mc","scenario":"A workload must survive the failure of an entire datacenter within its region, but the organization has a data residency rule that forbids replication to any other region.","q":"Which redundancy option fits?","options":["ZRS","GRS","LRS","RA-GZRS"],"answer":[0],"explain":"ZRS keeps three replicas across three availability zones in one region with synchronous writes, protecting against disk, node, rack, and zone failures without leaving the region. LRS keeps three replicas in a single location and does not survive a zone loss. GRS and GZRS both replicate to a second region, which the residency rule forbids."},{"id":"m7-03","module":"M7","type":"mc","scenario":"An application appends entries to a diagnostic log file in blob storage thousands of times per hour.","q":"Which blob type is designed for this?","options":["Append blob","Block blob","Page blob","Table blob"],"answer":[0],"explain":"Append blobs are optimized for append operations, which makes them useful for logging scenarios. Block blobs are the default and suit text and binary data such as files, images, and videos. Page blobs can be up to 8 TB and are efficient for frequent read and write operations, which is why Azure VMs use them for OS and data disks."},{"id":"m7-04","module":"M7","type":"mc","scenario":"A developer uploaded a file as a block blob and now wants it to be a page blob so it can back a VM disk.","q":"What do you tell them?","options":["Once a blob has been created its type cannot be changed; upload it again as a page blob","Change the type from the blob properties blade","Change the access tier to Premium, which converts the type","Types convert automatically when the blob is attached to a VM"],"answer":[0],"explain":"Once the blob has been created, its type cannot be changed. Note the contrast with the access tier, which you can switch at any time between Hot, Cool, and Archive."},{"id":"m7-05","module":"M7","type":"mc","scenario":"Compliance data must be retained for seven years and is expected to be read at most once. Cost of storage matters far more than retrieval speed.","q":"Which access tier do you use, and what is the tradeoff?","options":["Archive; storage is cheapest but retrieval takes several hours and the minimum storage duration is 180 days","Cool; storage is cheap and retrieval is immediate, with a 30-day minimum","Hot; access charges are lowest and there is no minimum duration","Premium; it is the only tier that supports long retention"],"answer":[0],"explain":"Archive is for rarely accessed data, has a minimum storage duration of 180 days, and has several hours of retrieval latency. Cool has a 30-day minimum and immediate retrieval. The general tradeoff is that as the tier gets cooler the per-gigabyte storage cost decreases while data access and transaction costs increase, and changing the storage tier itself incurs a charge."},{"id":"m7-06","module":"M7","type":"mc","scenario":"In Lab 04 you configured a lifecycle management rule named Movetocool.","q":"What did that rule do, and why?","options":["Moved base blobs to cool storage if they were last modified more than 30 days ago, reducing storage cost for infrequently accessed data","Deleted blobs older than 30 days to free space","Replicated blobs to a second region after 30 days","Changed the blob type from block to append after 30 days"],"answer":[0],"explain":"The lab scenario was an organization storing infrequently accessed on-premises files that wanted to minimize cost by placing them in lower-priced tiers. The rule moved base blobs last modified more than 30 days ago into the cool tier, which matches the cool tier minimum storage duration of 30 days."},{"id":"m7-07","module":"M7","type":"mc","scenario":"You must give an external partner read access to one specific blob for 48 hours, without giving them a storage account key and without making the container public.","q":"What do you issue?","options":["A shared access signature (SAS) URL scoped to that blob with read permission and a near-term expiry","The storage account access key with instructions to delete it afterwards","A container-level anonymous access setting, reverted after two days","An Entra ID guest account with the Reader role on the storage account"],"answer":[0],"explain":"A SAS is a URI that grants restricted access rights to Azure Storage resources; it is a signed URI made of the storage resource URI plus the SAS token, with parameters for services, resource types, start and expiry time, resource, permissions, IP range, protocol, and signature. Best practice is to always use HTTPS, be specific about the resource, and use near-term expiration times on an unplanned SAS."},{"id":"m7-08","module":"M7","type":"mc","scenario":"Your security lead wants the ability to revoke a shared access signature immediately if it leaks, without regenerating the storage account keys.","q":"Which best practice addresses this?","options":["Reference stored access policies where possible","Use near-term expiration times on an unplanned SAS","Always use HTTPS to create or distribute a SAS","Have clients automatically renew the SAS"],"answer":[0],"explain":"Referencing stored access policies lets you change or revoke the policy centrally, which invalidates every SAS issued against it. The other listed items are all genuine best practices from the module, but only stored access policies give you immediate revocation without a key rotation."},{"id":"m7-09","module":"M7","type":"mc","scenario":"An auditor asks whether you can disable encryption at rest on a storage account holding non-sensitive test data, to improve performance.","q":"What is the correct answer?","options":["No. Storage Service Encryption uses 256-bit AES, is enabled for all new and existing storage accounts, and cannot be disabled","Yes, from the Encryption blade, if the account holds no production data","Yes, but only for accounts using the Standard performance tier","No, unless customer-managed keys are configured first"],"answer":[0],"explain":"SSE automatically encrypts and decrypts your data using 256-bit AES, is enabled for all new and existing storage accounts, cannot be disabled, and is transparent to users. Customer-managed keys change who controls the key, not whether encryption happens."},{"id":"m7-10","module":"M7","type":"mc","scenario":"Six virtual machines running a legacy application all need to read and write the same set of files, and the application expects a mapped drive over SMB.","q":"Which storage service do you use?","options":["Azure Files","Azure Blob storage in a block blob container","Azure Tables","Azure Queues"],"answer":[0],"explain":"Azure Files offers shared storage for applications using the industry standard SMB protocol, with a hierarchical directory structure. It is the right answer for lift and shift of an application that expects a file share, storing shared data across multiple virtual machines, and storing tools accessed from many VMs. Blob storage has a flat namespace and is for streaming and random-access scenarios at massive scale."},{"id":"m7-11","module":"M7","type":"mc","scenario":"You attempt to delete an Azure file share and the operation is refused.","q":"What is the most likely reason?","options":["The share has share snapshots; you cannot delete a share until all its snapshots are deleted first","File shares can only be deleted from Storage Explorer, not the portal","The share is mounted by a virtual machine","Soft delete is enabled and the share must first be undeleted"],"answer":[0],"explain":"File share snapshots capture a point-in-time, read-only copy of your data. The snapshot capability is provided at the file share level while retrieval is provided at the individual file level, and you cannot delete a share that has share snapshots unless you delete all the share snapshots first."},{"id":"m7-12","module":"M7","type":"mc","scenario":"A branch office needs local file-server performance, but head office wants a single authoritative copy of the files in Azure with the branch caching only what it uses.","q":"What do you deploy?","options":["Azure File Sync, with the Azure file share as the cloud endpoint and the branch server folder as a server endpoint","Azure Blob storage with object replication to the branch","A second storage account in the branch region with GRS","Azure Import/Export to ship the files monthly"],"answer":[0],"explain":"Azure File Sync centralizes file shares in Azure Files while keeping the flexibility, performance, and compatibility of an on-premises file server. Its uses include lift and shift, branch offices, backup and disaster recovery, and file archiving. The six components are the Storage Sync Service, the registered server, the agent, the server endpoint, the cloud endpoint, and the sync group."},{"id":"m7-13","module":"M7","type":"mc","scenario":"You need to move 30 TB of archived data into Azure from a site with a slow internet link.","q":"Which tool is designed for this?","options":["Azure Data Box Disk, which ships 1 to 5 disks with a maximum capacity of 35 TB","AzCopy running overnight","Blobfuse mounted on a Linux jump box","Azure Storage Explorer with parallel uploads"],"answer":[0],"explain":"With Azure Data Box Disk, Microsoft ships you 1 to 5 disks with a maximum storage capacity of 35 TB; you copy your data and ship them back to be uploaded into blob storage. The Azure Import/Export service is the related option where you supply your own hard drives, typically for exporting data out."},{"id":"m7-14","module":"M7","type":"mc","scenario":"You must configure object replication between two storage accounts so block blobs in a container are asynchronously copied.","q":"Which prerequisite must be satisfied?","options":["Blob versioning must be enabled on both the source and destination accounts, and both must be in the hot or cool tier","Both accounts must use RA-GRS redundancy","The destination account must be in the same region as the source","Blob snapshots must exist on the source container"],"answer":[0],"explain":"Object replication asynchronously copies block blobs in a container according to configured rules. The considerations are that blob versioning must be enabled on source and destination accounts, object replication does not support blob snapshots, and source and destination accounts must be in the hot or cool tier. A replication policy containing one or more rules must be created."},{"id":"m7-15","module":"M7","type":"mc","scenario":"A developer pastes a blob URL into a private browser window and receives an XML message reading PublicAccessNotPermitted.","q":"What does this indicate?","options":["The container public access level is Private, so anonymous access is not allowed; a SAS URL is needed instead","The storage account firewall is blocking the client IP","The blob is in the Archive tier and must be rehydrated","The blob type is a page blob and cannot be served over HTTP"],"answer":[0],"explain":"This is exactly what happened in Lab 04. Anonymous access can optionally be enabled at the container or blob level, but the lab container was created as Private. Generating a SAS with read permission and a valid start and expiry time produced a URL that worked."},{"id":"m7-16","module":"M7","type":"mc","scenario":"You need to give the address a script should use to reach the file service of a storage account named contosofiles.","q":"Which endpoint is correct?","options":["https://contosofiles.file.core.windows.net","https://contosofiles.blob.core.windows.net","https://file.contosofiles.core.windows.net","https://contosofiles.core.windows.net/file"],"answer":[0],"explain":"Every object in Azure Storage has a unique URL address and the storage account name forms the subdomain. The four service endpoints are blob, table, queue, and file, each as accountname.service.core.windows.net. A custom domain name can also be configured."},{"id":"m7-17","module":"M7","type":"sa","scenario":"Your organization stores 40 TB of medical imaging. Images are read constantly for the first month, occasionally for the following year, and then effectively never, but must be retained for a decade. A regional outage must not lose the data.","q":"Design the storage configuration, naming the tiers, the mechanism that moves data between them, and the redundancy option, and justify each.","model":"Use a single general purpose storage account with blob containers. Store new images in the Hot tier, which is for frequent access and has the lowest access and transaction costs, matching the first month of constant reads. Configure a lifecycle management rule to move base blobs to the Cool tier once they have not been modified for 30 days, which matches the Cool tier minimum storage duration of 30 days and suits infrequent access over the following year. Add a second lifecycle rule to move blobs to the Archive tier after about a year; Archive has the lowest per-gigabyte storage cost, a minimum storage duration of 180 days, and several hours of retrieval latency, which is acceptable because the data is effectively never read but must be retained for ten years. For redundancy choose GRS, which keeps six replicas across two regions with an asynchronous copy to the secondary and protects against major regional disasters; choose RA-GRS instead if the images must remain readable during a regional outage, since that adds read access through a separate secondary endpoint. The overall tradeoff being managed is that as the tier gets cooler the storage cost decreases while access and transaction costs increase, and changing tier itself incurs a charge, so lifecycle rules should move data only once per stage.","keyTerms":["Hot","Cool","30 days","Archive","180 days","lifecycle management","GRS","RA-GRS","six replicas","two regions","retrieval latency","storage cost decreases","access cost increases"]},{"id":"m7-18","module":"M7","type":"mc","scenario":"You must categorize where different data lives. A key/value autoscaling NoSQL store is needed for structured, non-relational data.","q":"Which Azure Storage service is this?","options":["Azure Tables","Azure Queues","Azure Containers","Azure Files"],"answer":[0],"explain":"Azure Tables are ideal for storing structured, non-relational data and are described as a key/value autoscaling NoSQL store. Queues are a messaging store for reliable messaging between application components, Containers are the massively scalable object store for text and binary data, and Files are managed SMB file shares."},{"id":"m8-01","module":"M8","type":"mc","scenario":"An application owner needs the highest uptime SLA Azure offers for virtual machines and has budget for redundancy.","q":"What must you deploy, and what SLA does it carry?","options":["Two or more VM instances across two or more availability zones in the same region, for 99.99%","Two or more VM instances in an availability set, for 99.99%","A single VM using premium storage, for 99.95%","Two or more VM instances in one availability zone, for 99.99%"],"answer":[0],"explain":"The three SLA tiers are 99.99% for two or more VMs across two or more availability zones in the same region, 99.95% for two or more VMs in an availability set, and 99.9% for a single VM using premium storage. This was the point of Lab 05 Task 1, where you selected both Zone 1 and Zone 2 in one deployment."},{"id":"m8-02","module":"M8","type":"mc","scenario":"A team stored an application cache on the D: drive of a Windows VM. After Azure performed host maintenance the directory was empty.","q":"What happened?","options":["That is the temporary disk, which is not a managed disk and is only intended for data such as page or swap files","The OS disk was reimaged during maintenance and lost the cache","The data disk was detached automatically during maintenance","Managed disks are wiped when a VM is deallocated"],"answer":[0],"explain":"Every VM contains a temporary disk, which is not a managed disk. It provides short-term storage for applications and processes and is intended only to store data such as page or swap files. Every VM also has one OS disk, registered as a SATA drive and labelled C: by default, and optionally data disks, which are managed disks for application data you need to keep."},{"id":"m8-03","module":"M8","type":"mc","scenario":"During planned platform maintenance, Azure must never reboot more than one group of your availability set VMs at a time.","q":"Which construct provides this, and what is the default count?","options":["Update domains; five by default, configurable up to 20","Fault domains; three by default, configurable up to 20","Availability zones; three by default","Scale set instances; two by default"],"answer":[0],"explain":"During planned maintenance only one update domain is rebooted at a time. By default there are five non-user-configurable update domains, but you can configure up to 20. A fault domain, by contrast, defines a group of VMs sharing a common set of hardware and switches, such as a server rack with shared power or networking, and therefore a single point of failure."},{"id":"m8-04","module":"M8","type":"mc","scenario":"You are designing a three-tier application with web, business, and database tiers, all requiring redundancy within one datacenter.","q":"What is the recommended availability set design?","options":["Configure each application tier into separate availability sets, and combine them with a load balancer","Place all nine VMs in one availability set so Azure spreads them evenly","Use one availability set per virtual machine","Skip availability sets and use a single large VM per tier with premium storage"],"answer":[0],"explain":"The guidance is that VMs in an availability set should perform an identical set of functions and have the same software installed, each application tier should be configured into separate availability sets, availability sets should be combined with a load balancer, and managed disks should be used."},{"id":"m8-05","module":"M8","type":"mc","scenario":"In Lab 05 you changed a running VM from its original size to Standard DS1_v2.","q":"What kind of scaling is this, and what is its main limitation?","options":["Vertical scaling (scale up or down); it generally has more limitations, being bounded by the largest available size and requiring a restart","Horizontal scaling (scale out or in); it is limited by the load balancer backend pool size","Reprovisioning; it destroys and recreates the VM automatically","Autoscaling; it only works on scale sets"],"answer":[0],"explain":"Vertical scaling, also known as scale up and scale down, means increasing or decreasing virtual machine sizes in response to a workload, and generally has more limitations. Horizontal scaling, or scale out and scale in, alters the number of VMs and is more flexible in a cloud situation. Reprovisioning means removing an existing VM and replacing it with a new one."},{"id":"m8-06","module":"M8","type":"mc","scenario":"Demand on a web application swings from 2 servers overnight to 6 at peak, and you want Azure to add and remove instances automatically based on CPU.","q":"What do you deploy?","options":["A virtual machine scale set with a custom autoscale rule based on the Percentage CPU metric, plus instance limits","Six VMs in an availability set, manually stopped and started","A single large VM resized on a schedule","An Application Gateway with autoscaling enabled"],"answer":[0],"explain":"A scale set can automatically increase or decrease the number of VM instances running your application so you can dynamically scale to meet changing demand, and autoscaling can also be scheduled to change capacity at fixed times. Lab 05 configured a scale-out rule on Percentage CPU greater than 10 over 1 minute increasing count by 1, a scale-in rule under the threshold decreasing count by 1, and instance limits of minimum 2, maximum 6, default 2."},{"id":"m8-07","module":"M8","type":"mc","scenario":"A runaway autoscale rule could theoretically create dozens of VM instances and generate an enormous bill.","q":"Which setting prevents this?","options":["Instance limits: the minimum, maximum, and default instance counts on the scaling blade","The cool down period on the scale-out rule","The time grain statistic on the metric","The orchestration mode of the scale set"],"answer":[0],"explain":"Instance limits ensure you do not scale out beyond the maximum number of instances or scale in beyond the minimum. The cool down period only delays how soon the next scale action can occur; it does not cap the total."},{"id":"m8-08","module":"M8","type":"mc","scenario":"Security requires that administrators be able to RDP and SSH to VMs across a virtual network without any of those VMs having a public IP address and without opening 3389 to the internet.","q":"What do you deploy?","options":["Azure Bastion","A jump box VM with a public IP and an NSG restricting source addresses","A point-to-site VPN for each administrator","Windows Remote Management over the public IP"],"answer":[0],"explain":"Bastion provides secure RDP and SSH connectivity to all VMs in the virtual network in which it is provisioned, from the browser, so the VMs need no public IP. The other connection methods covered are RDP and WinRM for Windows, which establishes a command-line session, and SSH clients such as PuTTY for Linux."},{"id":"m8-09","module":"M8","type":"mc","scenario":"After deploying a VM from the gallery you must automatically install and configure IIS with no manual steps and no custom image.","q":"What do you use?","options":["A VM extension such as the Custom Script Extension","An ARM template outputs section","A managed disk snapshot of a pre-built server","Azure Site Recovery replication"],"answer":[0],"explain":"Extensions are small applications that provide post-deployment VM configuration and automation tasks. They are managed with Azure CLI, PowerShell, ARM templates, and the portal, can be bundled with a new VM deployment or run against an existing system, and differ between Windows and Linux. Cloud-init is the Linux equivalent applied at provisioning time."},{"id":"m8-10","module":"M8","type":"mc","scenario":"In Lab 05 you created a 32 GiB Standard HDD data disk, detached it, changed it to Standard SSD, and reattached it.","q":"What does detaching a disk do?","options":["Removes the disk from the VM but keeps it in storage for later use","Deletes the disk and its data permanently","Converts the disk to a snapshot in the same resource group","Moves the disk to the temporary storage tier"],"answer":[0],"explain":"Detaching removes the disk from the VM but keeps it in storage for later use, which is why you could then change its size and performance tier independently under the Disks resource and reattach it. Note that the NIC, disk, and public IP are all independently created and managed resources."},{"id":"m8-11","module":"M8","type":"mc","scenario":"You need a VM naming convention that identifies environment, role, and location at a glance, as the module recommends.","q":"Which example follows the pattern taught, and why does the name matter?","options":["deveus-webvm01, because the VM name is used as the computer name and should be meaningful and consistent","vm-00000001, because unique GUIDs prevent collisions","WEBSERVER, because short names are easier to type","Any name; the VM name is independent of the guest computer name"],"answer":[0],"explain":"The VM name is used as the computer name, so choose names that are meaningful and consistent. The example given is deveus-webvm01, representing the first development web server hosted in the US South Central location."},{"id":"m8-12","module":"M8","type":"mc","scenario":"An architect asks which of the three impact scenarios describes Azure predicting that hardware associated with a physical machine is about to fail.","q":"Which is it?","options":["Unplanned hardware maintenance","Unexpected downtime","Planned maintenance","Fault domain rebalancing"],"answer":[0],"explain":"An unplanned hardware maintenance event occurs when the Azure platform predicts that the hardware or any platform component associated to a physical machine is about to fail. Unexpected downtime is when hardware or physical infrastructure fails without warning, and planned maintenance is periodic Microsoft updates to the underlying platform."},{"id":"m8-13","module":"M8","type":"mc","scenario":"You need to change a running VM to a size that is not offered in the resize list.","q":"What does the module say about this?","options":["When you stop and deallocate the VM you can select any size available in your region","Sizes can never be changed after creation; redeploy instead","Only sizes in the same family are ever available","Resizing requires the VM to be in an availability set"],"answer":[0],"explain":"The resize list for a running VM is constrained by the hardware cluster it currently sits on. When you stop and deallocate the VM, you can select any size available in your region, because Azure is then free to place it on different hardware."},{"id":"m8-14","module":"M8","type":"mc","scenario":"In Lab 05 you created the scale set and were asked to choose an orchestration mode, selecting Uniform.","q":"What does Uniform mode mean?","options":["All instances are identical, created from a single VM configuration","Instances are spread uniformly across all availability zones only","Instances can mix VM sizes and configurations within one scale set","Instances are updated all at once rather than in batches"],"answer":[0],"explain":"Uniform orchestration creates identical VMs from a single configuration, which is the classic scale set model. Flexible orchestration is the alternative and allows a mix of VM types and configurations in one scale set."},{"id":"m8-15","module":"M8","type":"sa","scenario":"A client currently runs two VMs in a single availability set and is asking whether moving them to availability zones is worth the migration effort.","q":"Explain the difference in what each protects against, and quote the SLA for each.","model":"An availability set protects against rack-level hardware failure and planned maintenance inside a single datacenter. It works through fault domains, which group VMs sharing a common set of hardware and switches such as a server rack with shared power or networking, and update domains, of which there are five by default configurable up to 20, where only one update domain is rebooted at a time during planned maintenance. Two or more VM instances in an availability set carry a 99.95% SLA. Availability zones are unique physical locations within an Azure region, each made up of one or more datacenters with independent power, cooling, and networking, with a minimum of three separate zones in every enabled region. The physical separation protects applications and data from a whole datacenter failure, which an availability set cannot survive. Two or more VM instances deployed across two or more availability zones in the same region carry a 99.99% SLA, the industry best VM uptime SLA. So the migration buys datacenter-level fault tolerance and moves the SLA from 99.95% to 99.99%.","keyTerms":["availability set","fault domain","update domain","rack","planned maintenance","99.95","availability zone","independent power","cooling","networking","datacenter failure","99.99","three zones"]},{"id":"m9-01","module":"M9","type":"mc","scenario":"A web app on the Basic tier needs a staging environment where a new build can be validated and then promoted with no downtime.","q":"What must change first?","options":["Scale up the App Service plan to Standard or higher, because Free, Shared, and Basic support zero deployment slots","Nothing; Basic supports up to five slots","Move the app to a different region where slots are available","Enable continuous deployment, which creates slots automatically"],"answer":[0],"explain":"Slot availability by tier is Free, Shared, and Basic zero; Standard up to five; Premium up to 20; Isolated up to 20. Slots are live apps with their own hostnames that let you validate changes before sending them to production, avoid a cold start, eliminate downtime, and fall back to a last known good site."},{"id":"m9-02","module":"M9","type":"mc","scenario":"After swapping a staging slot into production, the operations team is surprised that the custom domain and SSL certificate did not move with the code.","q":"Why?","options":["Endpoints, custom domain names, SSL certificates, and scaling are not sticky to the slot and stay with the slot they were configured on","Custom domains can only be configured on the production slot","The swap was performed with Auto Swap, which excludes networking settings","The certificate expired during the swap"],"answer":[0],"explain":"Slot settings fall into three categories: slot-specific app settings and connection strings, continuous deployment settings, and App Service authentication settings. Not all settings are sticky, and the module names endpoints, custom domain names, SSL certificates, and scaling as the ones that do not follow the swap in the way you might expect."},{"id":"m9-03","module":"M9","type":"mc","scenario":"Traffic to a web app is rising and response times are climbing, but the app is single-threaded and cannot use more CPU cores effectively.","q":"Which scaling workflow is appropriate?","options":["Scale out: increase the number of VM instances that run the app","Scale up: change the pricing tier for more CPU and memory","Reprovision the app in a larger region","Enable deployment slots to distribute traffic"],"answer":[0],"explain":"Scale up gets more CPU, memory, disk space, and extra features by changing the App Service plan, which will not help an app that cannot use more cores. Scale out increases the number of VM instances running the app, which adds parallel capacity. Autoscaling can scale on a metric such as CPU percentage, memory percentage, or HTTP requests, or on a schedule."},{"id":"m9-04","module":"M9","type":"mc","scenario":"A web app must be backed up nightly along with its connected database, and the app currently runs on a Basic plan.","q":"What do you tell the owner?","options":["App Service backup requires a Standard or Premium plan and supports up to 10 GB of app and database content","Backup is available on all tiers but limited to 1 GB on Basic","Backups require the Isolated tier only","Backup only covers file content, never the connected database"],"answer":[0],"explain":"App Service backup can run manually or on a schedule, backs up the configuration, file content, and database connected to the app, requires a Standard or Premium plan, is limited to 10 GB of app and database content, supports partial backups with exclusions, and can restore on demand to a previous state or into a new app."},{"id":"m9-05","module":"M9","type":"mc","scenario":"In Lab 06 you pointed the staging slot at an external Git repository so that pushes to the branch would appear in the slot automatically.","q":"Which App Service feature is this?","options":["Continuous deployment, configured in the Deployment Center","Deployment slots auto swap","Application Insights release annotations","App Service authentication"],"answer":[0],"explain":"The portal provides out-of-the-box continuous integration and deployment with Azure DevOps, GitHub, Bitbucket, FTP, or a local Git repository. Whenever code updates are pushed to source control, the website or web app automatically picks up the updates. In the lab you selected External Git with the php-docs-hello-world repository on the master branch."},{"id":"m9-06","module":"M9","type":"mc","scenario":"You need a production web app to answer at www.contoso.ca rather than contoso.azurewebsites.net.","q":"What are the configuration steps?","options":["Register the domain, then create DNS records mapping it to the web app using a CNAME or A record","Rename the web app to www.contoso.ca in the Overview blade","Add the domain as a custom domain in Entra ID and verify it with a TXT record","Create a private DNS zone named contoso.ca and link it to the app service plan"],"answer":[0],"explain":"When you create a web app Azure assigns it a subdomain of azurewebsites.net. To use a custom domain you register the domain name, create DNS records that map the domain to your Azure web app, and create a CNAME or A record with the mapping. Note that the MX or TXT record answer belongs to Entra ID custom domain verification, which is a different task."},{"id":"m9-07","module":"M9","type":"mc","scenario":"A team must host two applications from competing client companies on the same infrastructure, and the contract requires a strong security boundary between them.","q":"Which hosting model does the module recommend, and why?","options":["Virtual machines, because they provide complete isolation from the host OS and other VMs, which matters when a strong security boundary is critical","Containers, because their lightweight isolation is sufficient for any multi-tenant workload","Containers in separate container groups on the same host","Either, since isolation is identical"],"answer":[0],"explain":"Containers typically provide lightweight isolation from the host and other containers but do not provide as strong a security boundary as a virtual machine. VMs provide complete isolation from the host operating system and other VMs, which the module explicitly says is useful when hosting apps from competing companies on the same server or cluster."},{"id":"m9-08","module":"M9","type":"mc","scenario":"A developer needs to run a single containerized batch job in Azure without provisioning virtual machines and without standing up an orchestrator.","q":"Which service fits?","options":["Azure Container Instances","Azure Kubernetes Service","Azure App Service on a Premium plan","A virtual machine scale set running Docker"],"answer":[0],"explain":"Azure Container Instances let you run a container in Azure without managing virtual machines and without a higher-level service. Azure Container Apps go a step further by managing the cluster environment for you, unlike AKS where you must still manage the cluster."},{"id":"m9-09","module":"M9","type":"mc","scenario":"You need two containers scheduled together on the same host, sharing a single public IP with one exposed port and mounting Azure file shares as volumes.","q":"What construct is this?","options":["A container group","A Kubernetes namespace","A container registry","A container image layer"],"answer":[0],"explain":"A container group is a collection of containers scheduled on the same host machine. It is assigned a DNS name label, exposes a single public IP address with one exposed port, and can include Azure file shares as volume mounts, with each container mounting one of the shares locally."},{"id":"m9-10","module":"M9","type":"mc","scenario":"A build pipeline needs to take a Dockerfile and produce an image, then place that image in a registry for deployment.","q":"Which two Docker operations are involved, in order?","options":["Build, then push","Pull, then build","Push, then pull","Build, then pull"],"answer":[0],"explain":"Build refers to the action of building a container image based on the information and context provided by the Dockerfile. Push refers to uploading a container image to a container registry, and pull refers to downloading one from a registry. A Dockerfile is a text file of build instructions, where the first line identifies the base image."},{"id":"m9-11","module":"M9","type":"mc","scenario":"You need live telemetry on request rates, response times, failure rates, page load performance, and exceptions for a production web app.","q":"What do you enable?","options":["Application Insights, a feature of Azure Monitor","Azure Backup Center reporting","Log Analytics connected sources","Network Watcher connection monitor"],"answer":[0],"explain":"Application Insights, a feature of Azure Monitor, monitors your live applications and shows request rates, deny rates, response time and failure rates, page views and load performance, user and session counts, performance counters, and diagnostics and exceptions."},{"id":"m9-12","module":"M9","type":"mc","scenario":"Two web apps and one API in the same region will run on shared compute to reduce cost.","q":"Which statement about App Service plans is correct?","options":["One or more apps can be configured to run on the same computing resources in a single App Service plan","Each app requires its own App Service plan","App Service plans define the runtime stack, which all apps on the plan must share","App Service plans are global and span regions"],"answer":[0],"explain":"An App Service plan defines a set of compute resources for a web app to run, and one or more apps can be configured to run on the same computing resources in the plan. Each plan defines a region, a number of VM instances, and the size of those instances. Runtime stack is a per-app setting, not a plan setting."},{"id":"m9-13","module":"M9","type":"sa","scenario":"In Lab 06 you created a staging slot with Do not clone settings, pointed it at an external Git repository, verified the Hello World page on the staging URL, and then swapped.","q":"Explain what swapping achieves that deploying straight to production does not, and one precaution to take before swapping.","model":"Deployment slots are live apps with their own hostnames, so the new build runs on real App Service infrastructure at a separate URL where it can be validated before any user sees it. Swapping then promotes the tested code into production, which avoids a cold start and eliminates downtime because the instances are already warmed up and running, whereas deploying directly to production restarts the production app and serves a cold, unverified build to live users. Swapping also gives an instant rollback path, since you can swap back to fall back to a last known good site. Auto Swap is available when pre-swap validation is not needed. The precaution is to check which settings are slot-specific versus which follow the swap: slot-specific app settings and connection strings, continuous deployment settings, and App Service authentication settings are configured per slot, while endpoints, custom domain names, SSL certificates, and scaling are not sticky, so verify that connection strings point at the right database before promoting.","keyTerms":["live apps","own hostnames","validate","before","no downtime","cold start","roll back","last known good","slot-specific","connection strings","not sticky"]},{"id":"m10-01","module":"M10","type":"mc","scenario":"A ransomware attack encrypts files on an on-premises Windows file server. You need to restore individual folders from before the attack.","q":"Which backup component protects this workload?","options":["The Azure Backup MARS agent, which backs up files and folders on physical or virtual Windows machines with no separate backup server required","Azure Site Recovery replication of the file server","A managed disk snapshot of the server volume","Azure Backup Server (MABS), which is the only option for file-level restore"],"answer":[0],"explain":"The MARS agent backs up files and folders on physical or virtual Windows OS, on-premises or in Azure, and requires no separate backup server. Its limits are backup three times per day, not application aware, file, folder, and volume-level restore only, and no support for Linux. MABS is also capable here but adds app-aware snapshots and Linux support on Hyper-V and VMware, which this scenario does not require."},{"id":"m10-02","module":"M10","type":"mc","scenario":"You must back up SQL Server and Exchange with application-consistent, app-aware snapshots and also protect VMware virtual machines, without buying a System Center license.","q":"Which component do you deploy?","options":["Azure Backup Server (MABS)","The MARS agent on each application server","Azure Site Recovery","Managed disk snapshots on a schedule"],"answer":[0],"explain":"MABS and DPM provide app-aware backups optimized for common apps including SQL Server, Exchange, and SharePoint, offer full flexibility on backup timing and recovery granularity, support Linux on Hyper-V and VMware VMs, can back up and restore VMware VMs, and do not require a System Center license. Its limits are that it cannot back up Oracle workloads, always requires a live Azure subscription, and has no support for tape backup."},{"id":"m10-03","module":"M10","type":"mc","scenario":"An entire Azure region hosting your production application goes offline. The business needs the application running again in a different region within minutes.","q":"Which service is designed for this?","options":["Azure Site Recovery, which replicates workloads to a secondary location so you can fail over and later fail back","Azure Backup, restoring the latest recovery point into a new region","Managed disk snapshots copied to the second region","Geo-redundant storage on the VM disks"],"answer":[0],"explain":"Azure Site Recovery protects VMs from a major disaster scenario when a whole region experiences an outage; you recover with a single click and replicate to an Azure region of your choice. When an outage occurs you fail over to the secondary location, and after the primary is running again you fail back. Azure Backup protects against data loss such as accidental deletion or corruption, which is a different problem."},{"id":"m10-04","module":"M10","type":"mc","scenario":"In Lab 07 you created the first Recovery Services vault in East US and the second one in West US.","q":"Why did the regions differ?","options":["A backup vault must be in the same region as the VMs it protects, while the Site Recovery target vault must be in a different region than the VM","Vaults are always created in pairs across regions for redundancy","The second vault was in West US only to reduce cost","Site Recovery requires the target vault to be in the same region as the source for low latency"],"answer":[0],"explain":"The lab instructions state explicitly that for backup you must specify the same region into which you deployed virtual machines, and for the replication vault you must specify a different region than the virtual machine. That difference reflects the purpose of each: backup protects data locally, replication protects against the loss of the whole region."},{"id":"m10-05","module":"M10","type":"mc","scenario":"You delete a backup item by mistake and immediately try to reclaim the storage cost.","q":"What happens to the deleted backup?","options":["It is preserved in a soft-delete state for 14 additional days","It is deleted immediately and cannot be recovered","It is retained for 90 days matching the activity log","It is retained for 7 days, matching the storage account default"],"answer":[0],"explain":"Even after a backup is deleted it is preserved in a soft-delete state for 14 additional days. This has a practical consequence seen in Lab 07: simply deleting resource groups will not delete the Recovery Services vault, and you must delete the backups and the vault first, which the portal supports through a generated PowerShell script run in Cloud Shell."},{"id":"m10-06","module":"M10","type":"mc","scenario":"Azure is the primary backup storage endpoint for a production workload, and the business wants protection if the region is lost.","q":"Which vault storage replication type should you choose, and when would the alternative apply?","options":["Geo-redundant, which is the default; choose locally redundant when Azure is a non-primary backup endpoint, to reduce cost","Locally redundant, which is the default; choose geo-redundant only for on-premises workloads","Zone-redundant, which is the only option for Recovery Services vaults","Read-access geo-redundant, which is required for all VM backups"],"answer":[0],"explain":"If you are using Azure as a primary backup storage endpoint use the default geo-redundant storage. If Azure is a non-primary backup storage endpoint, choose locally redundant storage, which reduces the cost of storing data in Azure. Note that the storage replication type can only be configured if there are no existing backup items in the vault."},{"id":"m10-07","module":"M10","type":"mc","scenario":"An Azure VM backup job is running. You are asked whether a restore can begin before the data reaches the vault.","q":"What is correct?","options":["Yes. Snapshots taken as part of a backup job are available for recovery without waiting for data transfer to the vault to finish","No. The backup must complete its transfer to the vault first","Yes, but only for VMs smaller than 32 TB in total disk size","No, unless the instant restore retention is set to 5 days"],"answer":[0],"explain":"An Azure backup job has two phases: a VM snapshot is taken, then the snapshot is transferred to the Recovery Services vault. Retaining snapshots locally reduces backup and restore times, the default retention is two days and is configurable between 1 and 5 days, disk sizes up to 32 TB are supported, and snapshots are usable for recovery without waiting for the vault transfer to complete."},{"id":"m10-08","module":"M10","type":"mc","scenario":"You enable backup on a VM that was built from a custom image several years ago, and the backup extension fails to install.","q":"What is the most likely prerequisite that is missing?","options":["The Azure VM Agent, which must be installed for the Backup extension to work","A Recovery Services vault in a different region","Soft delete enabled on the vault","Geo-redundant storage on the OS disk"],"answer":[0],"explain":"The Azure VM Agent must be installed on the Azure virtual machine for the Backup extension to work. If the VM was created from the Azure gallery the agent is already present, which is why custom or older images are the usual cause of this failure."},{"id":"m10-09","module":"M10","type":"mc","scenario":"A development team needs a fast, simple way to capture the state of a managed disk before a risky change, with no vault and no policy.","q":"Which VM data protection option fits?","options":["Managed disk snapshots, which exist independently of the source disk and can be used to create new managed disks","Azure Backup with a daily policy","Azure Site Recovery replication","An image captured from a generalized VM"],"answer":[0],"explain":"For development and test environments, snapshots provide a quick and simple option for backing up VMs that use managed disks; you can back up at any point in time and the snapshots exist independently of the source disk and can be used to create new managed disks. Images, by contrast, are captured from a custom VHD or a generalized sysprepped VM and are used to create many VMs."},{"id":"m10-10","module":"M10","type":"mc","scenario":"A backup administrator must oversee backups spanning several vaults, subscriptions, regions, and tenants from one place, and produce detailed reports.","q":"What do you point them at?","options":["Backup Center, which provides a single pane of glass and integrates with Azure Workbooks and Azure Monitor Logs","Each individual Recovery Services vault Overview blade","Azure Site Recovery replicated items","Storage account diagnostic settings"],"answer":[0],"explain":"Backup Center provides unified management to govern, monitor, operate, and analyze backups at scale, spanning multiple workload types, vaults, subscriptions, regions, and tenants. It supports datasource-centric management with filtering by subscription, resource group, and tags, and uses Azure Workbooks and Azure Monitor Logs for detailed reports."},{"id":"m10-11","module":"M10","type":"mc","scenario":"You are installing the MARS agent on an on-premises server and the registration step fails.","q":"Which two items from the vault does the installation require?","options":["The downloaded agent installer and the credential file from the vault, which registers the agent","The vault access key and a service principal","An Entra ID app registration and a client secret","The vault ARM template and a parameters file"],"answer":[0],"explain":"The four steps are create the vault, download the agent and credential file, install and register the agent, and configure the backup. The installer wizard configures the installation location, proxy server, and passphrase, and the downloaded credential file is used to register the agent. Agent versions below 2.0.9083.0 must be upgraded by uninstalling and reinstalling."},{"id":"m10-12","module":"M10","type":"sa","scenario":"A client asks why they should pay for both Azure Backup and Azure Site Recovery when, in their words, both keep a copy of the VM somewhere else.","q":"Explain what each protects against and how the recovery operation differs.","model":"Azure Backup protects against data loss: accidental or malicious deletion, corruption, and ransomware. It takes recovery points at scheduled intervals, storing them in a Recovery Services vault, and supports application-consistent backups for both Windows and Linux VMs. The operation is a restore, and it can be granular, recovering a file, folder, volume, or whole VM to a chosen point in time. The vault sits in the same region as the protected VMs. Azure Site Recovery protects against a major disaster when a whole region experiences an outage. It continuously replicates workloads running on physical and virtual machines from a primary site to a secondary location, so the recovery point objective is much lower and recovery is fast. The operation is a failover to the secondary location, with a fail back once the primary site is running again, and the target vault must be in a different region from the source. Backup cannot bring an application back online in minutes after a region loss, and Site Recovery cannot recover a single file deleted three weeks ago, so the two address different failures and are complementary.","keyTerms":["data loss","deletion","corruption","recovery points","restore","granular","same region","region outage","disaster","replicates","fail over","fail back","different region","complementary"]},{"id":"m11-01","module":"M11","type":"mc","scenario":"A production virtual machine disappeared overnight. Management wants to know who deleted it and exactly when.","q":"Where do you look?","options":["The Azure Activity Log, a subscription-level log retained for 90 days","Azure Monitor metrics for the virtual machine","Log Analytics InsightsMetrics table","Network Watcher NSG flow logs"],"answer":[0],"explain":"The Activity Log is a subscription log providing insight into subscription-level events. It tells you what operations were taken on resources, who started the operation, when it occurred, the status, and other properties. Activity logs are kept for 90 days and can be filtered in the portal by many fields."},{"id":"m11-02","module":"M11","type":"mc","scenario":"You need to chart CPU utilization for a virtual machine over the last hour with near real-time granularity.","q":"Which Azure Monitor data type is this, and why?","options":["Metrics, because they are numerical values describing a system at a point in time and are lightweight enough for near real-time scenarios","Logs, because performance data is always stored as log records","Activity log entries, because they include resource health","Traces, because they include performance counters"],"answer":[0],"explain":"All data collected by Azure Monitor fits into one of two fundamental types. Metrics are numerical values that describe some aspect of a system at a particular point in time; they are lightweight and capable of supporting near real-time scenarios. Logs contain different kinds of data organized into records with different sets of properties for each type, including events and traces alongside performance data so it can all be combined for analysis."},{"id":"m11-03","module":"M11","type":"mc","scenario":"In Lab 08 you built an alert that fired when a VM was deleted, and attached an email notification.","q":"Which component holds the email address, and what is true about it?","options":["The action group, a collection of notification preferences; up to five can be attached to an alert rule, they run concurrently in no specific order, and multiple rules can share one","The alert rule itself, which can hold one email address","The monitor condition, which resolves when the email is delivered","The alert processing rule, which is where notification targets are defined"],"answer":[0],"explain":"Alerts consist of alert rules, action groups, and monitor conditions. An action group is a collection of notification preferences, supporting email, SMS, push, voice, webhooks, Logic Apps, Functions, runbooks, and ITSM. You can add up to five action groups to an alert rule, they are executed concurrently in no specific order, and multiple alert rules can use the same action group."},{"id":"m11-04","module":"M11","type":"mc","scenario":"Overnight maintenance runs from 10 pm to 7 am and generates a flood of alert emails that the on-call team must ignore.","q":"What do you configure so the rules keep evaluating but nobody is paged?","options":["An alert processing rule that suppresses notifications, scheduled to apply at that specific time","Disable each alert rule at 10 pm and re-enable it at 7 am with automation","Delete the action group for the duration of the window","Set the alert severity to Sev 4 for the maintenance window"],"answer":[0],"explain":"This is Lab 08 Task 4. Alert processing rules apply on top of fired alerts and can suppress notifications or add action groups. By default the rule works all the time unless you disable it or configure a schedule, and you can apply it at a specific time with a start, an end, and a time zone."},{"id":"m11-05","module":"M11","type":"mc","scenario":"A VM cannot reach a database server. You want to know immediately whether an NSG rule is blocking the packet, and which rule is responsible.","q":"Which Network Watcher tool do you use?","options":["IP Flow Verify","Next Hop","Topology","Packet Capture"],"answer":[0],"explain":"IP Flow Verify checks if a packet is allowed or denied to or from a virtual machine and identifies the rule responsible. Effective Security Rules shows the combined inbound and outbound rules applying to the NIC, Next Hop tells you whether traffic is being routed to the intended destination, and Connection Troubleshoot tests end-to-end reachability with hop-by-hop latency."},{"id":"m11-06","module":"M11","type":"mc","scenario":"You have added a user-defined route sending traffic through a network virtual appliance, and you need to confirm Azure is actually sending traffic to that appliance.","q":"Which Network Watcher tool answers this directly?","options":["Next Hop","IP Flow Verify","NSG Flow Logs","VPN Troubleshoot"],"answer":[0],"explain":"Next Hop helps determine whether traffic is being directed to the intended destination by showing the next hop. IP Flow Verify answers a firewall question rather than a routing question, and NSG flow logs map IP traffic through a network security group after the fact."},{"id":"m11-07","module":"M11","type":"mc","scenario":"In Lab 02 you needed to know whether CoreServicesVM could reach ManufacturingVM on TCP 3389, and wanted latency and the path if it could.","q":"Which Network Watcher tool did you use?","options":["Connection Troubleshoot","IP Flow Verify","Topology","Effective Security Rules"],"answer":[0],"explain":"Connection Troubleshoot checks connectivity between a source VM and a destination, identifies configuration issues impacting reachability, provides all possible hop-by-hop paths, reviews hop-by-hop latency including minimum, maximum, and average, and shows a graphical topology from source to destination. In the lab it returned UnReachable before peering and succeeded afterwards."},{"id":"m11-08","module":"M11","type":"mc","scenario":"An administrator opens Network Watcher in West Europe and cannot see the tools for a virtual machine running in East US.","q":"What explains this?","options":["Network Watcher is a regional service and must be used in the region containing the resources","Network Watcher requires a Log Analytics workspace in each region before it appears","Network Watcher only supports the subscription default region","The VM must have a public IP address to appear in Network Watcher"],"answer":[0],"explain":"Network Watcher is described as a regional service that provides various network diagnostic and monitoring tools. You work with it in the region where the resources live."},{"id":"m11-09","module":"M11","type":"mc","scenario":"You must query performance data collected from many virtual machines, correlate it with events, and chart the result.","q":"Which service and what does it require?","options":["Log Analytics, which requires a workspace: an Azure resource and a container where data is collected, aggregated, analyzed, and presented","Metrics Explorer, which requires a diagnostic setting per VM","Application Insights, which requires an instrumentation key per VM","Backup Center, which requires a Recovery Services vault"],"answer":[0],"explain":"Log Analytics helps you collect and analyze data generated by resources in cloud and on-premises environments. A workspace is an Azure resource and a container where data is collected, aggregated, analyzed, and presented; it provides a geographic location, data isolation, and scope, and you can have multiple workspaces per subscription."},{"id":"m11-10","module":"M11","type":"mc","scenario":"In Lab 08 you ran a query that filtered InsightsMetrics to the last two hours, averaged a value in five-minute buckets per computer, and drew a chart.","q":"Which operator produced the five-minute buckets?","options":["bin()","summarize","render","ago()"],"answer":[0],"explain":"In that query, ago(2h) set the time range, where filtered rows, summarize performed the aggregation, bin(TimeGenerated, 5m) grouped the timestamps into five-minute buckets, and render timechart drew the chart. Common tables include Heartbeat for agent check-ins and InsightsMetrics for VM Insights performance data."},{"id":"m11-11","module":"M11","type":"mc","scenario":"You must monitor data about the operation of tenant-level Azure services such as Entra ID.","q":"Which Azure Monitor data tier is this?","options":["Azure tenant monitoring data","Azure subscription monitoring data","Azure resource monitoring data","Guest OS monitoring data"],"answer":[0],"explain":"The five tiers are application monitoring data about code you have written, guest OS monitoring data about the operating system, Azure resource monitoring data about the operation of a resource, Azure subscription monitoring data about the operation and management of a subscription plus the health of Azure itself, and Azure tenant monitoring data about tenant-level services such as Entra ID."},{"id":"m11-12","module":"M11","type":"mc","scenario":"Before you could run VM performance queries in Lab 08, you had to complete one setup step on the virtual machine.","q":"What was it?","options":["Enable VM Insights from Azure Monitor, which installs the agent and configures data collection rules","Create an alert processing rule scoped to the resource group","Add a diagnostic setting archiving to a storage account","Enable NSG flow logs on the subnet"],"answer":[0],"explain":"In Lab 08 you opened Monitor, selected View in the VM Insights box, chose Configure Insights, selected the VM and enabled it, then took the defaults for subscription and data collection rules. It takes a few minutes for the agent to install and configure, and only then does performance data appear in tables such as InsightsMetrics."},{"id":"m11-13","module":"M11","type":"sa","scenario":"A colleague says all monitoring questions can be answered from the Activity Log. You disagree and want to explain when to reach for the Activity Log, when for metrics, and when for Log Analytics.","q":"Give an example question that each one answers and state what each actually contains.","model":"The Activity Log is a subscription log that provides insight into subscription-level events in Azure. It answers control-plane questions: what operations were taken on the resources in the subscription, who started the operation, when it occurred, and the status. The example is who deleted the production virtual machine and when. It is retained for 90 days. Metrics are numerical values that describe some aspect of a system at a particular point in time; they are lightweight and support near real-time scenarios. They answer questions about current or recent performance, for example what the CPU percentage of this virtual machine was at three o'clock. Logs, queried through Log Analytics, contain different kinds of data organized into records with different sets of properties for each type, with events and traces stored alongside performance data so it can all be combined for analysis. They answer correlation and search questions across many resources, for example which virtual machines exceeded ninety percent disk utilization at any point in the last twenty-four hours, grouped by computer, which is exactly the sort of query written in Kusto against InsightsMetrics. All Azure Monitor data falls into one of the two fundamental types of metrics or logs, and the Activity Log is a specific log stream inside that.","keyTerms":["Activity Log","subscription","who","when","operations","90 days","metrics","numerical","point in time","near real-time","logs","records","combined for analysis","Log Analytics","KQL","correlate"]},{"id":"lab-01","module":"Labs","type":"mc","scenario":"In Lab 01 you created an Application Security Group named asg-web, an NSG named NSGSecure associated with the SharedServicesSubnet, and an inbound rule at priority 100 allowing TCP 80 and 443 with the ASG as the source.","q":"What did using the ASG as the source achieve?","options":["The rule applies to whichever network interfaces are members of the ASG, so no IP addresses have to be maintained as VMs change","The rule applies to the whole subnet, replacing the need for a subnet association","The rule automatically opens the same ports outbound","The rule takes precedence over the default rules regardless of priority"],"answer":[0],"explain":"An ASG is a logical grouping of network interfaces by application role and holds no rules itself. Referencing it as the source or destination inside an NSG rule means membership changes automatically apply, removing the need to hard-code or maintain IP addresses."},{"id":"lab-02","module":"Labs","type":"mc","scenario":"In Lab 03 you deployed the infrastructure by loading mst400-03-vms-template.json and then separately loading mst400-03-vms-parameters.json.","q":"Why are these two separate files?","options":["The template declares the resources and their structure; the parameters file supplies the environment-specific values, so one template can be reused across deployments","The parameters file is a backup copy of the template","Azure requires two files for any deployment over five resources","The parameters file contains the RBAC assignments for the deployment"],"answer":[0],"explain":"In the parameters section of a template you specify which values you can input when deploying the resources, the classic example being a VM username and password. Keeping them separate is what makes the same template reusable across Dev, Test, and Prod, which is exactly what you did in Lab 01 when you edited both files to turn CoreServicesVnet into ManufacturingVnet."},{"id":"lab-03","module":"Labs","type":"mc","scenario":"In Lab 04 you set the storage account networking to disable public access, then later re-enabled it from selected virtual networks and IP addresses, adding your client IP to the firewall. In the final task you removed your client IP after adding a service endpoint.","q":"What was the observable result, and why?","options":["Storage Browser returned a not authorized message, because the portal connects from your workstation public IP rather than from inside the virtual network","Storage Browser continued to work, because the portal is exempt from storage firewalls","The storage account was deleted, because removing the last firewall entry deletes the account","Only blob access failed; file shares remained reachable"],"answer":[0],"explain":"Once the account only accepts traffic from the virtual network, requests from your workstation are rejected. This demonstrates that the storage firewall filters on the actual network origin of the request, and that portal tools are not exempt. Note also that subnets and virtual networks must exist in the same Azure region or region pair as the storage account."},{"id":"lab-04","module":"Labs","type":"mc","scenario":"In Lab 07 you finished the lab and tried to clean up by deleting the resource groups, but the Recovery Services vault would not delete.","q":"What is the cause and the documented workaround?","options":["Soft delete preserves deleted backups for 14 additional days; delete the backups and the vault first, using the portal option to delete using a generated PowerShell script run in Cloud Shell","The vault was locked with a ReadOnly lock applied automatically at creation","The vault was in a different region from the resource group and had to be moved first","Vaults can only be deleted after 90 days, matching activity log retention"],"answer":[0],"explain":"Even after a backup is deleted it is preserved in a soft-delete state for 14 additional days, and the lab notes that because soft delete is enabled, simply deleting your resource groups will not delete the Recovery Services vault. The portal offers Delete using PowerShell script; you generate it and run it in Cloud Shell, then delete the resource groups normally."},{"id":"lab-05","module":"Labs","type":"mc","scenario":"In Lab 05 the scale-out rule fired on Percentage CPU greater than 10 over a one-minute period, increasing the instance count by 1 with a one-minute cool down, and instance limits were minimum 2, maximum 6, default 2.","q":"You generate continuous load with a PowerShell loop. What is the maximum number of instances the scale set can reach?","options":["6","10","2","Unlimited until the cool down expires"],"answer":[0],"explain":"Instance limits ensure you do not scale out beyond the maximum number of instances, which was set to 6. The lab explicitly notes the CPU threshold of 10 percent over one minute is for demonstration and is not practical in real environments; a production rule would use a higher threshold and a longer duration."},{"id":"lab-06","module":"Labs","type":"sa","scenario":"Every lab in this course ended with the same instruction: delete all resource groups except the Odl-Seneca-lab default resource group.","q":"Explain the two reasons this matters and name the mechanism that makes deleting a resource group an effective cleanup.","model":"The first reason is cost: removing unused Azure resources ensures there are no unexpected charges and helps manage the Azure credit allocated for the course. Compute is billed while a virtual machine is running, but storage such as managed disks, public IP addresses, and storage accounts continues to be billed even when the VM is stopped, so leaving resources behind keeps consuming credit. The second reason is hygiene: leftover resources make later labs ambiguous and can collide on names that must be unique, such as storage account names and web app names. Deleting the resource group works as cleanup because a resource group is a logical container and all resources in a group should share the same lifecycle, being deployed, updated, and deleted together, and a resource can exist in only one resource group, so deleting the group deletes everything it holds. The exception seen in Lab 07 is that a Recovery Services vault with backup items will block the deletion because soft delete preserves deleted backups for 14 days, so the backups and vault must be removed first.","keyTerms":["cost","unexpected charges","credit","storage still billed","logical container","same lifecycle","deleted together","only one resource group","Recovery Services vault","soft delete"]}];
+window.__MODULES__ = [["M1", "Users, Groups & Identities"], ["M2", "Governance & Cost"], ["M3", "Azure Administration"], ["M4", "Virtual Networking"], ["M5", "Intersite Connectivity"], ["M6", "Traffic Management"], ["M7", "Azure Storage"], ["M8", "Virtual Machines"], ["M9", "App Service & Containers"], ["M10", "Data Protection"], ["M11", "Monitoring"], ["Labs", "Lab Practicals"]];
+window.__GUIDE__ = "https://claude.ai/code/artifact/21b14a1c-59f3-472f-a832-1356ef344e92";
+</script>
+<script>
+(function () {
+  'use strict';
+
+  var BANK = window.__BANK__;
+  var MODULES = window.__MODULES__;
+  var GUIDE = window.__GUIDE__;
+  var MODNAME = {};
+  MODULES.forEach(function (m) { MODNAME[m[0]] = m[1]; });
+
+  var $ = function (s) { return document.querySelector(s); };
+
+  // ---------- theme ----------
+  var root = document.documentElement;
+  var themer = $('.themer');
+  var themes = ['system', 'light', 'dark'];
+  var themeIx = 0;
+  themer.addEventListener('click', function () {
+    themeIx = (themeIx + 1) % themes.length;
+    var t = themes[themeIx];
+    if (t === 'system') root.removeAttribute('data-theme');
+    else root.setAttribute('data-theme', t);
+    themer.querySelector('span').textContent = t;
+  });
+
+  // ---------- helpers ----------
+  function shuffle(a) {
+    var out = a.slice();
+    for (var i = out.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = out[i]; out[i] = out[j]; out[j] = t;
+    }
+    return out;
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function show(id) {
+    ['setup', 'exam', 'results'].forEach(function (s) {
+      $('#' + s).classList.toggle('is-active', s === id);
+    });
+    window.scrollTo(0, 0);
+  }
+
+  // ---------- setup ----------
+  var MODES = {
+    full:   { label: 'Full mock exam', count: 29, sa: 4, minutes: 80 },
+    quick:  { label: 'Quick drill',    count: 10, sa: 1, minutes: 0  },
+    focus:  { label: 'Module focus',   count: 15, sa: 2, minutes: 0  }
+  };
+  var mode = 'full';
+  var feedback = 'immediate';
+  var picked = {};
+
+  Array.prototype.forEach.call(document.querySelectorAll('.mode[data-fb]'), function (b) {
+    b.addEventListener('click', function () {
+      feedback = b.dataset.fb;
+      Array.prototype.forEach.call(document.querySelectorAll('.mode[data-fb]'), function (o) {
+        o.setAttribute('aria-pressed', String(o === b));
+      });
+    });
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.mode[data-mode]'), function (b) {
+    b.addEventListener('click', function () {
+      mode = b.dataset.mode;
+      Array.prototype.forEach.call(document.querySelectorAll('.mode[data-mode]'), function (o) {
+        o.setAttribute('aria-pressed', String(o === b));
+      });
+      $('#picker').hidden = mode !== 'focus';
+      syncStart();
+    });
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.chip'), function (c) {
+    c.addEventListener('click', function () {
+      var on = c.getAttribute('aria-pressed') === 'true';
+      c.setAttribute('aria-pressed', String(!on));
+      picked[c.dataset.mod] = !on;
+      syncStart();
+    });
+  });
+
+  function chosenModules() {
+    return Object.keys(picked).filter(function (k) { return picked[k]; });
+  }
+
+  function syncStart() {
+    var ok = mode !== 'focus' || chosenModules().length > 0;
+    $('#start').disabled = !ok;
+    $('#startNote').textContent = ok
+      ? (mode === 'focus'
+          ? chosenModules().length + ' module(s) selected'
+          : MODES[mode].count + ' questions' + (MODES[mode].minutes ? ' · ' + MODES[mode].minutes + ' minutes' : ' · untimed'))
+      : 'Select at least one module';
+  }
+
+  // ---------- exam state ----------
+  var paper = [];
+  var cur = 0;
+  var deadline = 0;
+  var ticker = null;
+
+  function draw() {
+    var cfg = MODES[mode];
+    var pool = BANK.filter(function (q) {
+      return mode !== 'focus' || picked[q.module];
+    });
+    var mcPool = shuffle(pool.filter(function (q) { return q.type === 'mc'; }));
+    var saPool = shuffle(pool.filter(function (q) { return q.type === 'sa'; }));
+
+    var wantSA = Math.min(cfg.sa, saPool.length);
+    var wantMC = Math.min(cfg.count - wantSA, mcPool.length);
+    var picks = mcPool.slice(0, wantMC).concat(saPool.slice(0, wantSA));
+
+    paper = shuffle(picks).map(function (q) {
+      var item = { q: q, flagged: false, chosen: null, text: '', grade: null, revealed: false };
+      if (q.type === 'mc') {
+        var order = shuffle(q.options.map(function (_, i) { return i; }));
+        item.order = order;
+        item.correct = order.indexOf(0);
+      }
+      return item;
+    });
+    cur = 0;
+  }
+
+  function startExam() {
+    closeConfirm();
+    draw();
+    var mins = MODES[mode].minutes;
+    if (mins) {
+      deadline = Date.now() + mins * 60000;
+      $('#clock').hidden = false;
+      ticker = setInterval(tick, 1000);
+      tick();
+    } else {
+      $('#clock').hidden = true;
+    }
+    $('#legend').classList.toggle('is-immediate', feedback === 'immediate');
+    show('exam');
+    renderQuestion();
+    renderDots();
+  }
+
+  function tick() {
+    var left = Math.max(0, deadline - Date.now());
+    var m = Math.floor(left / 60000);
+    var s = Math.floor((left % 60000) / 1000);
+    $('#clockVal').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    var el = $('#clock');
+    el.classList.toggle('is-warn', left <= 600000 && left > 120000);
+    el.classList.toggle('is-crit', left <= 120000);
+    if (left === 0) { clearInterval(ticker); finish(); }
+  }
+
+  function answeredCount() {
+    return paper.filter(function (it) {
+      return it.q.type === 'mc' ? it.chosen !== null : it.text.trim().length > 0;
+    }).length;
+  }
+
+  function renderQuestion() {
+    var it = paper[cur];
+    var q = it.q;
+    var h = '';
+
+    h += '<div class="qmeta">';
+    h += '<span class="tag tag--type">' + (q.type === 'mc' ? 'Multiple choice' : 'Short answer') + '</span>';
+    h += '<span class="tag">' + esc(q.module === 'Labs' ? 'Labs' : q.module) + ' · ' + esc(MODNAME[q.module]) + '</span>';
+    h += '</div>';
+
+    h += '<div class="scenario"><p>' + esc(q.scenario) + '</p></div>';
+    h += '<p class="qtext">' + esc(q.q) + '</p>';
+
+    var shown = feedback === 'immediate' && it.revealed;
+
+    if (q.type === 'mc') {
+      h += '<div class="opts">';
+      it.order.forEach(function (srcIx, pos) {
+        var k = '';
+        if (shown) {
+          if (pos === it.correct) k = ' is-right';
+          else if (pos === it.chosen) k = ' is-wrong';
+        }
+        h += '<button class="opt' + k + '" type="button" data-pos="' + pos + '"' +
+             (shown ? ' disabled' : '') + ' aria-pressed="' + (it.chosen === pos) + '"><em>' +
+             'ABCD'[pos] + '</em><span>' + esc(q.options[srcIx]) +
+             (shown && pos === it.chosen ? '<i class="mine">your answer</i>' : '') +
+             '</span></button>';
+      });
+      h += '</div>';
+
+      if (shown) {
+        var right = it.chosen === it.correct;
+        h += '<p class="verdictline ' + (right ? 'ok' : 'no') + '">' +
+             (right ? '✓ Correct' : '✗ Not quite — ' + 'ABCD'[it.correct] + ' is right') + '</p>';
+        h += '<div class="explain"><strong>Why:</strong> ' + esc(q.explain) + '</div>';
+      }
+    } else {
+      h += '<textarea id="sa"' + (shown ? ' disabled' : '') +
+           ' placeholder="Write your answer. Aim for the key terms — graders scan for them.">' +
+           esc(it.text) + '</textarea>';
+
+      if (!shown) {
+        h += '<div class="nav-row" style="margin-top:0.9rem">';
+        h += '<button class="btn btn--ghost btn--sm" id="check" type="button">Check my answer</button>';
+        h += '<span class="hint">Reveals the model answer, then you grade yourself.</span>';
+        h += '</div>';
+      } else {
+        h += '<h3 style="margin-top:1.3rem">Model answer</h3><p class="model">' + esc(q.model) + '</p>';
+        var lower = it.text.toLowerCase();
+        var hits = 0;
+        var th = '';
+        q.keyTerms.forEach(function (t) {
+          var hit = lower.indexOf(t.toLowerCase()) !== -1;
+          if (hit) hits++;
+          th += '<b class="' + (hit ? 'hit' : '') + '">' + esc(t) + '</b>';
+        });
+        h += '<h3>Key terms a grader scans for — you hit ' + hits + ' of ' + q.keyTerms.length + '</h3>';
+        h += '<div class="terms">' + th + '</div>';
+        h += '<h3 style="margin-top:1.2rem">How did you do?</h3>';
+        h += '<div class="grade" id="sagrade">' +
+             '<button class="btn btn--quiet btn--sm" data-g="got" aria-pressed="' + (it.grade === 'got') + '">Got it</button>' +
+             '<button class="btn btn--quiet btn--sm" data-g="part" aria-pressed="' + (it.grade === 'part') + '">Partial</button>' +
+             '<button class="btn btn--quiet btn--sm" data-g="miss" aria-pressed="' + (it.grade === 'miss') + '">Missed</button>' +
+             '</div>';
+      }
+    }
+
+    $('#qcard').innerHTML = h;
+    $('#counter').textContent = (cur + 1) + ' / ' + paper.length;
+    $('#progress').style.width = (answeredCount() / paper.length * 100) + '%';
+    $('#answered').textContent = answeredCount() + ' / ' + paper.length;
+    $('#flag').setAttribute('aria-pressed', String(it.flagged));
+    $('#flag').textContent = it.flagged ? 'Unflag' : 'Flag for review';
+    $('#prev').disabled = cur === 0;
+    $('#next').disabled = cur === paper.length - 1;
+
+    Array.prototype.forEach.call($('#qcard').querySelectorAll('.opt'), function (b) {
+      b.addEventListener('click', function () {
+        it.chosen = Number(b.dataset.pos);
+        if (feedback === 'immediate') it.revealed = true;
+        renderQuestion();
+        renderDots();
+      });
+    });
+
+    var ta = $('#sa');
+    if (ta) {
+      ta.addEventListener('input', function () {
+        it.text = ta.value;
+        $('#progress').style.width = (answeredCount() / paper.length * 100) + '%';
+        $('#answered').textContent = answeredCount() + ' / ' + paper.length;
+        renderDots();
+      });
+    }
+
+    var check = $('#check');
+    if (check) {
+      check.addEventListener('click', function () {
+        it.revealed = true;
+        renderQuestion();
+        renderDots();
+      });
+    }
+
+    var sg = $('#sagrade');
+    if (sg) {
+      Array.prototype.forEach.call(sg.querySelectorAll('button'), function (b) {
+        b.addEventListener('click', function () {
+          it.grade = b.dataset.g;
+          renderQuestion();
+          renderDots();
+        });
+      });
+    }
+
+    updateRunningScore();
+  }
+
+  function updateRunningScore() {
+    var el = $('#runningScore');
+    if (feedback !== 'immediate') { el.hidden = true; return; }
+    var done = paper.filter(function (it) { return it.revealed; });
+    el.hidden = done.length === 0;
+    var got = done.reduce(function (a, it) { return a + scoreOf(it); }, 0);
+    $('#runningVal').textContent = (Math.round(got * 10) / 10) + ' / ' + done.length;
+  }
+
+  function renderDots() {
+    var h = '';
+    paper.forEach(function (it, i) {
+      var done = it.q.type === 'mc' ? it.chosen !== null : it.text.trim().length > 0;
+      var state = done ? ' is-answered' : '';
+      if (feedback === 'immediate' && it.revealed) {
+        var s = scoreOf(it);
+        // A short answer stays neutral until it has been self-graded.
+        if (it.q.type === 'sa' && it.grade === null) state = ' is-answered';
+        else state = s === 1 ? ' is-ok' : s === 0.5 ? ' is-part' : ' is-no';
+      }
+      h += '<button class="dot' + state +
+           (it.flagged ? ' is-flagged' : '') + (i === cur ? ' is-current' : '') +
+           '" data-i="' + i + '" type="button" aria-label="Question ' + (i + 1) + '">' + (i + 1) + '</button>';
+    });
+    $('#dots').innerHTML = h;
+    Array.prototype.forEach.call($('#dots').querySelectorAll('.dot'), function (b) {
+      b.addEventListener('click', function () {
+        cur = Number(b.dataset.i);
+        renderQuestion();
+        renderDots();
+      });
+    });
+  }
+
+  $('#prev').addEventListener('click', function () { if (cur > 0) { cur--; renderQuestion(); renderDots(); } });
+  $('#next').addEventListener('click', function () { if (cur < paper.length - 1) { cur++; renderQuestion(); renderDots(); } });
+  $('#flag').addEventListener('click', function () {
+    paper[cur].flagged = !paper[cur].flagged;
+    renderQuestion();
+    renderDots();
+  });
+
+  // window.confirm is a no-op in the sandboxed artifact frame (it returns false
+  // without ever showing anything), so the confirmation is rendered in-page.
+  function closeConfirm() {
+    $('#confirmEnd').hidden = true;
+  }
+
+  function endTest() {
+    var left = paper.length - answeredCount();
+    if (left === 0) { finish(); return; }
+    $('#confirmMsg').textContent = left + (left === 1 ? ' question is' : ' questions are') +
+      ' still unanswered. They will be scored as incorrect.';
+    $('#confirmEnd').hidden = false;
+    $('#confirmYes').focus();
+  }
+
+  $('#submit').addEventListener('click', endTest);
+  $('#endTest').addEventListener('click', endTest);
+  $('#confirmNo').addEventListener('click', closeConfirm);
+  $('#confirmYes').addEventListener('click', function () {
+    closeConfirm();
+    finish();
+  });
+  $('#confirmEnd').addEventListener('click', function (e) {
+    if (e.target === $('#confirmEnd')) closeConfirm();
+  });
+
+  $('#start').addEventListener('click', startExam);
+  $('#retake').addEventListener('click', function () { show('setup'); });
+
+  // ---------- results ----------
+  function finish() {
+    if (ticker) { clearInterval(ticker); ticker = null; }
+    closeConfirm();
+    renderResults();
+    show('results');
+  }
+
+  function scoreOf(it) {
+    if (it.q.type === 'mc') return it.chosen === it.correct ? 1 : 0;
+    if (it.grade === 'got') return 1;
+    if (it.grade === 'part') return 0.5;
+    return 0;
+  }
+
+  function renderResults() {
+    var mcItems = paper.filter(function (it) { return it.q.type === 'mc'; });
+    var total = paper.reduce(function (a, it) { return a + scoreOf(it); }, 0);
+    var pct = Math.round(total / paper.length * 100);
+
+    $('#scoreNum').innerHTML = pct + '<small>%</small>';
+    $('#scoreSub').textContent = (Math.round(total * 10) / 10) + ' of ' + paper.length +
+      ' · ' + mcItems.filter(function (it) { return it.chosen === it.correct; }).length +
+      ' of ' + mcItems.length + ' multiple choice correct';
+
+    var ungraded = paper.filter(function (it) { return it.q.type === 'sa' && it.grade === null; }).length;
+    $('#verdict').textContent = ungraded
+      ? 'Grade your ' + ungraded + ' short answer(s) below and the score will update.'
+      : (pct >= 85 ? 'Strong. Draw another test to confirm it holds across different questions.'
+        : pct >= 70 ? 'Solid pass. Work the weakest modules below, then re-draw.'
+        : 'Below where you want to be on Thursday. Reread the weak modules before drawing again.');
+
+    // per-module
+    var agg = {};
+    paper.forEach(function (it) {
+      var m = it.q.module;
+      if (!agg[m]) agg[m] = { got: 0, of: 0 };
+      agg[m].got += scoreOf(it);
+      agg[m].of += 1;
+    });
+    var rows = Object.keys(agg).sort(function (a, b) {
+      return (agg[a].got / agg[a].of) - (agg[b].got / agg[b].of);
+    });
+    var bh = '';
+    rows.forEach(function (m) {
+      var p = Math.round(agg[m].got / agg[m].of * 100);
+      var cls = p < 50 ? 'low' : p < 75 ? 'mid' : '';
+      bh += '<div class="brow"><span class="name">' + esc(MODNAME[m]) + '</span>' +
+            '<span class="track"><span class="fill ' + cls + '" style="width:' + p + '%"></span></span>' +
+            '<span class="val">' + p + '%</span></div>';
+    });
+    $('#bars').innerHTML = bh;
+
+    var weak = rows.filter(function (m) { return agg[m].got / agg[m].of < 0.75; }).slice(0, 3);
+    if (weak.length) {
+      $('#weak').hidden = false;
+      $('#weakList').innerHTML = 'Reread ' + weak.map(function (m) {
+        return '<strong>' + esc(MODNAME[m]) + '</strong>';
+      }).join(', ') + ' in the <a href="' + GUIDE + '" target="_blank" rel="noopener">study guide</a>, then draw a fresh test.';
+    } else {
+      $('#weak').hidden = true;
+    }
+
+    // review
+    var rh = '';
+    paper.forEach(function (it, i) {
+      var q = it.q;
+      var cls, mark;
+      if (q.type === 'mc') {
+        cls = it.chosen === it.correct ? 'ok' : 'no';
+        mark = it.chosen === null ? 'Skipped' : (cls === 'ok' ? 'Correct' : 'Incorrect');
+        if (it.chosen === null) cls = 'no';
+      } else {
+        cls = it.grade === 'got' ? 'ok' : it.grade === 'part' ? 'part' : it.grade === 'miss' ? 'no' : '';
+        mark = it.grade === null ? 'Grade this' : (it.grade === 'got' ? 'Got it' : it.grade === 'part' ? 'Partial' : 'Missed');
+      }
+
+      // Some questions are deliberately terse ("Why?"); the scenario is what identifies them.
+      var label = q.q.length < 32
+        ? q.scenario.slice(0, 96).replace(/\s+\S*$/, '') + '… ' + q.q
+        : q.q;
+
+      rh += '<details class="rev ' + cls + '" data-i="' + i + '"' + (q.type === 'sa' && it.grade === null ? ' open' : '') + '>';
+      rh += '<summary><span class="n">' + (i + 1) + '</span><span>' + esc(label) +
+            '</span><span class="mark">' + mark + '</span></summary>';
+      rh += '<div class="rev__body">';
+      rh += '<div class="scenario"><p>' + esc(q.scenario) + '</p></div>';
+
+      if (q.type === 'mc') {
+        rh += '<div class="opts">';
+        it.order.forEach(function (srcIx, pos) {
+          var k = '';
+          if (pos === it.correct) k = ' is-right';
+          else if (pos === it.chosen) k = ' is-wrong';
+          rh += '<button class="opt' + k + '" type="button" disabled><em>' + 'ABCD'[pos] +
+                '</em><span>' + esc(q.options[srcIx]) +
+                (pos === it.chosen ? '<i class="mine">your answer</i>' : '') +
+                '</span></button>';
+        });
+        rh += '</div>';
+        rh += '<div class="explain"><strong>Why:</strong> ' + esc(q.explain) + '</div>';
+      } else {
+        rh += '<h3>Your answer</h3><div class="yours">' + esc(it.text.trim()) + '</div>';
+        rh += '<h3>Model answer</h3><p class="model">' + esc(q.model) + '</p>';
+        var lower = it.text.toLowerCase();
+        rh += '<h3>Key terms a grader scans for</h3><div class="terms">';
+        q.keyTerms.forEach(function (t) {
+          var hit = lower.indexOf(t.toLowerCase()) !== -1;
+          rh += '<b class="' + (hit ? 'hit' : '') + '">' + esc(t) + '</b>';
+        });
+        rh += '</div>';
+        rh += '<div class="grade" data-grade="' + i + '">' +
+              '<button class="btn btn--quiet btn--sm" data-g="got" aria-pressed="' + (it.grade === 'got') + '">Got it</button>' +
+              '<button class="btn btn--quiet btn--sm" data-g="part" aria-pressed="' + (it.grade === 'part') + '">Partial</button>' +
+              '<button class="btn btn--quiet btn--sm" data-g="miss" aria-pressed="' + (it.grade === 'miss') + '">Missed</button>' +
+              '</div>';
+      }
+      rh += '</div></details>';
+    });
+    $('#review').innerHTML = rh;
+
+    Array.prototype.forEach.call($('#review').querySelectorAll('.grade button'), function (b) {
+      b.addEventListener('click', function () {
+        var i = Number(b.parentElement.dataset.grade);
+        paper[i].grade = b.dataset.g;
+        var open = [];
+        Array.prototype.forEach.call($('#review').querySelectorAll('.rev'), function (d) {
+          if (d.open) open.push(Number(d.dataset.i));
+        });
+        renderResults();
+        open.forEach(function (ix) {
+          var d = $('#review').querySelector('.rev[data-i="' + ix + '"]');
+          if (d) d.open = true;
+        });
+      });
+    });
+  }
+
+  // keyboard
+  document.addEventListener('keydown', function (e) {
+    if (!$('#confirmEnd').hidden) {
+      if (e.key === 'Escape') closeConfirm();
+      return;
+    }
+    if (!$('#exam').classList.contains('is-active')) return;
+    if (e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 'ArrowRight') $('#next').click();
+    if (e.key === 'ArrowLeft') $('#prev').click();
+    var n = 'abcd'.indexOf(e.key.toLowerCase());
+    if (n > -1) {
+      var b = $('#qcard').querySelector('.opt[data-pos="' + n + '"]');
+      if (b) b.click();
+    }
+  });
+
+  syncStart();
+})();
+</script>
+
+</body>
+</html>

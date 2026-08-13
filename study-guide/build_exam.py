@@ -1404,6 +1404,16 @@ window.__GUIDE__ = "{GUIDE_URL}";
     OUT.write_text(page)
     print(f"wrote {OUT} ({len(page):,} bytes, {len(bank)} questions)")
 
+    # The Artifact host supplies the document skeleton, so OUT is a fragment.
+    # Also emit a complete file that works when opened straight from disk.
+    standalone = OUT.with_name(OUT.stem + "-standalone.html")
+    standalone.write_text(
+        '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
+        '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+        "</head>\n<body>\n" + page + "\n</body>\n</html>\n"
+    )
+    print(f"wrote {standalone}")
+
 
 if __name__ == "__main__":
     main()
