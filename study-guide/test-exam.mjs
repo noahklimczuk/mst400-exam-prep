@@ -189,6 +189,59 @@ async function seekMC(page, frame) {
   await page.close();
 }
 
+// -------------------------------------------------- short-answer marking
+{
+  const { page, frame, noise } = await open();
+  const bank = await frame.evaluate(() => window.__BANK__);
+  const byScenario = (sc) => bank.find((q) => q.scenario === sc) || {};
+  const saModules = [...new Set(bank.filter((q) => q.type === 'sa').map((q) => q.module))];
+
+  // Walk every module that owns a short answer, feeding it a known input.
+  async function sweep(makeAnswer) {
+    const seen = new Map();
+    for (const m of saModules) {
+      await frame.click('.mode[data-mode="focus"]');
+      await frame.click(`.chip[data-mod="${m}"]`);
+      await frame.click('#start');
+      await page.waitForTimeout(120);
+      const total = parseInt((await frame.textContent('#counter')).split('/')[1], 10);
+      for (let i = 0; i < total; i++) {
+        if (i > 0) { await frame.click('#next'); await page.waitForTimeout(45); }
+        if (!(await frame.$('#sa'))) continue;
+        const q = byScenario(await frame.textContent('.scenario p'));
+        if (seen.has(q.id)) continue;
+        await frame.fill('#sa', makeAnswer(q));
+        await frame.click('#check');
+        await page.waitForTimeout(70);
+        seen.set(q.id, (await frame.textContent('.verdictline')).trim());
+      }
+      await frame.click('#endTest');
+      await page.waitForTimeout(120);
+      if (!(await hidden(frame, '#confirmEnd'))) { await frame.click('#confirmYes'); await page.waitForTimeout(150); }
+      await frame.click('#retake');
+      await frame.click(`.chip[data-mod="${m}"]`); // deselect for the next module
+    }
+    return seen;
+  }
+
+  const perfect = await sweep((q) => q.model);
+  check(
+    'model answer scores full marks on every short answer',
+    perfect.size > 0 && [...perfect.values()].every((v) => v.startsWith('✓') && v.includes('100%')),
+    [...perfect.entries()].filter(([, v]) => !v.includes('100%')).map(([k, v]) => k + ' ' + v).join('; ') || `${perfect.size} checked`
+  );
+
+  const junk = await sweep(() => 'The cloud is a computer somewhere else and Azure runs it.');
+  check(
+    'irrelevant answer scores zero on every short answer',
+    junk.size > 0 && [...junk.values()].every((v) => v.startsWith('✗')),
+    [...junk.entries()].filter(([, v]) => !v.startsWith('✗')).map(([k, v]) => k + ' ' + v).join('; ') || `${junk.size} checked`
+  );
+
+  check('no page errors while marking', noise.length === 0, noise.join(' | '));
+  await page.close();
+}
+
 // ------------------------------------------------------------------ clock
 {
   const { page, frame } = await open();

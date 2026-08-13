@@ -639,7 +639,15 @@ textarea:focus { border-color: var(--accent); }
 }
 .terms b.hit { border-color: var(--good); color: var(--good); background: var(--good-soft); }
 
-.grade { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0 0; }
+.grade { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin: 1rem 0 0; }
+.grade__label {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-right: 0.2rem;
+}
 .grade button[aria-pressed="true"] { background: var(--accent); color: var(--ground); border-color: var(--accent); }
 
 /* ---------- in-page confirm ----------
@@ -746,6 +754,102 @@ SCRIPT = r"""
     return out;
   }
 
+  // ---------- short-answer auto-marking ----------
+  // Marks free text by checking which of the question's key points appear.
+  // Multi-word points match in any order within a proximity window, so
+  // "the subnet NSG is evaluated first" still scores the point "subnet first".
+
+  function normWords(s) {
+    return String(s)
+      .toLowerCase()
+      .replace(/[‘’“”]/g, "'")
+      .replace(/[^a-z0-9%.\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .split(' ')
+      .filter(Boolean)
+      .map(function (w) { return w.replace(/[%.]+$/, ''); })
+      .filter(Boolean);
+  }
+
+  // Light stemming so "reused" scores the point "reuse", "redeploying" scores
+  // "redeploy", and "declaratively" scores "declarative".
+  function variants(w) {
+    var v = [w];
+    if (w.length > 3 && /s$/.test(w)) v.push(w.slice(0, -1));
+    if (w.length > 4 && /es$/.test(w)) v.push(w.slice(0, -2));
+    if (w.length > 3 && /d$/.test(w)) v.push(w.slice(0, -1));
+    if (w.length > 4 && /ed$/.test(w)) v.push(w.slice(0, -2));
+    if (w.length > 5 && /ing$/.test(w)) v.push(w.slice(0, -3), w.slice(0, -3) + 'e');
+    if (w.length > 4 && /ly$/.test(w)) v.push(w.slice(0, -2));
+    return v;
+  }
+
+  function wordEq(a, b) {
+    if (a === b) return true;
+    var va = variants(a), vb = variants(b);
+    for (var i = 0; i < va.length; i++) {
+      for (var j = 0; j < vb.length; j++) if (va[i] === vb[j]) return true;
+    }
+    return false;
+  }
+
+  function positionsOf(words, w) {
+    var ps = [];
+    for (var i = 0; i < words.length; i++) if (wordEq(words[i], w)) ps.push(i);
+    return ps;
+  }
+
+  function termHit(words, term) {
+    var tw = normWords(term);
+    if (!tw.length) return false;
+    if (tw.length === 1) return positionsOf(words, tw[0]).length > 0;
+
+    var span = 4 + 3 * tw.length;
+    var pos = [];
+    for (var i = 0; i < tw.length; i++) {
+      var p = positionsOf(words, tw[i]);
+      if (!p.length) return false;
+      pos.push(p);
+    }
+    for (var a = 0; a < pos[0].length; a++) {
+      var anchor = pos[0][a], ok = true;
+      for (var k = 1; k < pos.length && ok; k++) {
+        var near = false;
+        for (var j = 0; j < pos[k].length; j++) {
+          if (Math.abs(pos[k][j] - anchor) <= span) { near = true; break; }
+        }
+        ok = near;
+      }
+      if (ok) return true;
+    }
+    return false;
+  }
+
+  function markSA(item) {
+    var terms = item.q.keyTerms || [];
+    var words = item.text.trim() ? normWords(item.text) : [];
+    var hits = terms.map(function (t) { return words.length ? termHit(words, t) : false; });
+    var n = 0;
+    hits.forEach(function (h) { if (h) n++; });
+    var coverage = terms.length ? n / terms.length : 0;
+    return {
+      hits: hits,
+      n: n,
+      total: terms.length,
+      pct: Math.round(coverage * 100),
+      grade: coverage >= 0.7 ? 'got' : coverage >= 0.4 ? 'part' : 'miss'
+    };
+  }
+
+  /** Mark and lock in the result for a short answer. */
+  function applyMark(item) {
+    item.mark = markSA(item);
+    item.auto = item.mark.grade;
+    if (item.grade === null) item.grade = item.mark.grade;
+    return item.mark;
+  }
+
   function esc(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -831,7 +935,7 @@ SCRIPT = r"""
     var picks = mcPool.slice(0, wantMC).concat(saPool.slice(0, wantSA));
 
     paper = shuffle(picks).map(function (q) {
-      var item = { q: q, flagged: false, chosen: null, text: '', grade: null, revealed: false };
+      var item = { q: q, flagged: false, chosen: null, text: '', grade: null, auto: null, mark: null, revealed: false };
       if (q.type === 'mc') {
         var order = shuffle(q.options.map(function (_, i) { return i; }));
         item.order = order;
@@ -877,6 +981,38 @@ SCRIPT = r"""
     }).length;
   }
 
+  var GRADE_LABEL = { got: 'Correct', part: 'Partial credit', miss: 'Not enough' };
+  var GRADE_CLASS = { got: 'ok', part: 'part', miss: 'no' };
+  var GRADE_MARK  = { got: '✓', part: '~', miss: '✗' };
+
+  /** Verdict line, key-point chips, and override control for a marked short answer.
+   *  `attrs` is a raw attribute string for the override container. */
+  function saMarkHtml(it, attrs) {
+    var m = it.mark || applyMark(it);
+    var g = it.grade || m.grade;
+    var h = '';
+
+    h += '<p class="verdictline ' + GRADE_CLASS[g] + '">' + GRADE_MARK[g] + ' ' +
+         GRADE_LABEL[g] + ' — ' + m.n + ' of ' + m.total + ' key points (' + m.pct + '%)' +
+         (it.grade !== it.auto ? ' · overridden' : '') + '</p>';
+
+    var th = '';
+    it.q.keyTerms.forEach(function (t, i) {
+      th += '<b class="' + (m.hits[i] ? 'hit' : '') + '">' + esc(t) + '</b>';
+    });
+    h += '<h3 style="margin-top:1.1rem">Key points — highlighted ones were found in your answer</h3>';
+    h += '<div class="terms">' + th + '</div>';
+
+    h += '<div class="grade" ' + (attrs || '') + '>';
+    h += '<span class="grade__label">Disagree? Override:</span>';
+    ['got', 'part', 'miss'].forEach(function (key) {
+      h += '<button class="btn btn--quiet btn--sm" data-g="' + key + '" aria-pressed="' +
+           (g === key) + '">' + GRADE_LABEL[key] + '</button>';
+    });
+    h += '</div>';
+    return h;
+  }
+
   function renderQuestion() {
     var it = paper[cur];
     var q = it.q;
@@ -916,32 +1052,17 @@ SCRIPT = r"""
       }
     } else {
       h += '<textarea id="sa"' + (shown ? ' disabled' : '') +
-           ' placeholder="Write your answer. Aim for the key terms — graders scan for them.">' +
+           ' placeholder="Write your answer. You are marked on how many of the key points you cover.">' +
            esc(it.text) + '</textarea>';
 
       if (!shown) {
         h += '<div class="nav-row" style="margin-top:0.9rem">';
-        h += '<button class="btn btn--ghost btn--sm" id="check" type="button">Check my answer</button>';
-        h += '<span class="hint">Reveals the model answer, then you grade yourself.</span>';
+        h += '<button class="btn btn--ghost btn--sm" id="check" type="button">Mark my answer</button>';
+        h += '<span class="hint">Scores your answer against the key points, then shows the model answer.</span>';
         h += '</div>';
       } else {
+        h += saMarkHtml(it, 'id="sagrade"');
         h += '<h3 style="margin-top:1.3rem">Model answer</h3><p class="model">' + esc(q.model) + '</p>';
-        var lower = it.text.toLowerCase();
-        var hits = 0;
-        var th = '';
-        q.keyTerms.forEach(function (t) {
-          var hit = lower.indexOf(t.toLowerCase()) !== -1;
-          if (hit) hits++;
-          th += '<b class="' + (hit ? 'hit' : '') + '">' + esc(t) + '</b>';
-        });
-        h += '<h3>Key terms a grader scans for — you hit ' + hits + ' of ' + q.keyTerms.length + '</h3>';
-        h += '<div class="terms">' + th + '</div>';
-        h += '<h3 style="margin-top:1.2rem">How did you do?</h3>';
-        h += '<div class="grade" id="sagrade">' +
-             '<button class="btn btn--quiet btn--sm" data-g="got" aria-pressed="' + (it.grade === 'got') + '">Got it</button>' +
-             '<button class="btn btn--quiet btn--sm" data-g="part" aria-pressed="' + (it.grade === 'part') + '">Partial</button>' +
-             '<button class="btn btn--quiet btn--sm" data-g="miss" aria-pressed="' + (it.grade === 'miss') + '">Missed</button>' +
-             '</div>';
       }
     }
 
@@ -977,6 +1098,7 @@ SCRIPT = r"""
     if (check) {
       check.addEventListener('click', function () {
         it.revealed = true;
+        applyMark(it);
         renderQuestion();
         renderDots();
       });
@@ -1071,6 +1193,7 @@ SCRIPT = r"""
   function finish() {
     if (ticker) { clearInterval(ticker); ticker = null; }
     closeConfirm();
+    paper.forEach(function (it) { if (it.q.type === 'sa') applyMark(it); });
     renderResults();
     show('results');
   }
@@ -1092,12 +1215,12 @@ SCRIPT = r"""
       ' · ' + mcItems.filter(function (it) { return it.chosen === it.correct; }).length +
       ' of ' + mcItems.length + ' multiple choice correct';
 
-    var ungraded = paper.filter(function (it) { return it.q.type === 'sa' && it.grade === null; }).length;
-    $('#verdict').textContent = ungraded
-      ? 'Grade your ' + ungraded + ' short answer(s) below and the score will update.'
-      : (pct >= 85 ? 'Strong. Draw another test to confirm it holds across different questions.'
+    var saCount = paper.filter(function (it) { return it.q.type === 'sa'; }).length;
+    $('#verdict').textContent =
+      (pct >= 85 ? 'Strong. Draw another test to confirm it holds across different questions.'
         : pct >= 70 ? 'Solid pass. Work the weakest modules below, then re-draw.'
-        : 'Below where you want to be on Thursday. Reread the weak modules before drawing again.');
+        : 'Below where you want to be on Thursday. Reread the weak modules before drawing again.') +
+      (saCount ? ' Short answers were marked on key points — override any you disagree with.' : '');
 
     // per-module
     var agg = {};
@@ -1140,8 +1263,8 @@ SCRIPT = r"""
         mark = it.chosen === null ? 'Skipped' : (cls === 'ok' ? 'Correct' : 'Incorrect');
         if (it.chosen === null) cls = 'no';
       } else {
-        cls = it.grade === 'got' ? 'ok' : it.grade === 'part' ? 'part' : it.grade === 'miss' ? 'no' : '';
-        mark = it.grade === null ? 'Grade this' : (it.grade === 'got' ? 'Got it' : it.grade === 'part' ? 'Partial' : 'Missed');
+        cls = GRADE_CLASS[it.grade] || '';
+        mark = GRADE_LABEL[it.grade] || 'Unmarked';
       }
 
       // Some questions are deliberately terse ("Why?"); the scenario is what identifies them.
@@ -1149,7 +1272,7 @@ SCRIPT = r"""
         ? q.scenario.slice(0, 96).replace(/\s+\S*$/, '') + '… ' + q.q
         : q.q;
 
-      rh += '<details class="rev ' + cls + '" data-i="' + i + '"' + (q.type === 'sa' && it.grade === null ? ' open' : '') + '>';
+      rh += '<details class="rev ' + cls + '" data-i="' + i + '">';
       rh += '<summary><span class="n">' + (i + 1) + '</span><span>' + esc(label) +
             '</span><span class="mark">' + mark + '</span></summary>';
       rh += '<div class="rev__body">';
@@ -1170,19 +1293,8 @@ SCRIPT = r"""
         rh += '<div class="explain"><strong>Why:</strong> ' + esc(q.explain) + '</div>';
       } else {
         rh += '<h3>Your answer</h3><div class="yours">' + esc(it.text.trim()) + '</div>';
-        rh += '<h3>Model answer</h3><p class="model">' + esc(q.model) + '</p>';
-        var lower = it.text.toLowerCase();
-        rh += '<h3>Key terms a grader scans for</h3><div class="terms">';
-        q.keyTerms.forEach(function (t) {
-          var hit = lower.indexOf(t.toLowerCase()) !== -1;
-          rh += '<b class="' + (hit ? 'hit' : '') + '">' + esc(t) + '</b>';
-        });
-        rh += '</div>';
-        rh += '<div class="grade" data-grade="' + i + '">' +
-              '<button class="btn btn--quiet btn--sm" data-g="got" aria-pressed="' + (it.grade === 'got') + '">Got it</button>' +
-              '<button class="btn btn--quiet btn--sm" data-g="part" aria-pressed="' + (it.grade === 'part') + '">Partial</button>' +
-              '<button class="btn btn--quiet btn--sm" data-g="miss" aria-pressed="' + (it.grade === 'miss') + '">Missed</button>' +
-              '</div>';
+        rh += saMarkHtml(it, 'data-grade="' + i + '"');
+        rh += '<h3 style="margin-top:1.3rem">Model answer</h3><p class="model">' + esc(q.model) + '</p>';
       }
       rh += '</div></details>';
     });
@@ -1256,8 +1368,8 @@ def main() -> None:
       <h1>Draw a practice test</h1>
       <p class="lede">Every test is a fresh random draw, and the answer options are reshuffled each
         time, so you cannot memorise position. Questions are scenario-based: you are given a
-        situation and asked what you would actually do. By default each answer is marked
-        straight away, with the reasoning, before you move on.</p>
+        situation and asked what you would actually do. Everything is marked automatically,
+        short answers included, which are scored on how many of the key points you cover.</p>
     </div>
 
     <h2>Choose a test</h2>
@@ -1295,13 +1407,15 @@ def main() -> None:
         <span class="spec">Learn as you go</span>
         <b>Check as I go</b>
         <small>Marks each question the moment you answer it and shows the correct answer and
-          the reasoning before you move on. Best for learning the material.</small>
+          the reasoning before you move on. Short answers are scored on the key points they
+          cover. Best for learning the material.</small>
       </button>
       <button class="mode" type="button" data-fb="end" aria-pressed="false">
         <span class="spec">Exam conditions</span>
         <b>Grade at the end</b>
-        <small>No feedback until you submit, so nothing tips you off mid-test. Best for a
-          realistic dress rehearsal.</small>
+        <small>No feedback until you submit, so nothing tips you off mid-test. Everything,
+          short answers included, is marked when you finish. Best for a realistic dress
+          rehearsal.</small>
       </button>
     </div>
 

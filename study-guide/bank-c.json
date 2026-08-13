@@ -476,9 +476,9 @@
    "own hostnames",
    "validate",
    "before",
-   "no downtime",
+   "eliminates downtime",
    "cold start",
-   "roll back",
+   "rollback",
    "last known good",
    "slot-specific",
    "connection strings",
@@ -690,7 +690,7 @@
    "region outage",
    "disaster",
    "replicates",
-   "fail over",
+   "failover",
    "fail back",
    "different region",
    "complementary"
@@ -922,8 +922,8 @@
    "records",
    "combined for analysis",
    "Log Analytics",
-   "KQL",
-   "correlate"
+   "Kusto",
+   "correlation"
   ]
  }
 ]

@@ -177,7 +177,7 @@
   "q": "Explain why the first test failed, what you changed, and why the second test succeeded.",
   "model": "The first test failed because the two virtual machines were in separate virtual networks. Azure routes traffic between all subnets within a virtual network by default, but separate VNets are isolated from each other, so there was no route and no connectivity between them and the TCP 3389 test returned UnReachable. The change was to create a virtual network peering between CoreServicesVnet and ManufacturingVnet, configured in both directions with allow access and allow forwarded traffic, and confirmed by a peering status of Connected on both sides. After peering, resources in one virtual network can communicate with resources in the other privately over the Microsoft backbone network with no gateways or encryption required, so Test-NetConnection to the private IP on port 3389 succeeded. The address spaces did not overlap, which peering requires.",
   "keyTerms": [
-   "different virtual networks",
+   "separate virtual networks",
    "isolated",
    "no route",
    "peering",
@@ -186,7 +186,7 @@
    "Microsoft backbone",
    "private",
    "Test-NetConnection",
-   "non-overlapping"
+   "did not overlap"
   ]
  },
  {
@@ -416,7 +416,7 @@
   "type": "sa",
   "scenario": "A colleague proposes replacing your Application Gateway with a Standard Load Balancer to save money, arguing that both distribute traffic across the same virtual machines.",
   "q": "Explain what capability would be lost, referring to the OSI layer each service operates at.",
-  "model": "Azure Load Balancer operates at Layer 4 and distributes traffic based only on IP address and port, using a frontend IP, load balancing rules, a backend pool, and health probes. Application Gateway operates at Layer 7 on HTTP and HTTPS, so it can read the request itself. Replacing it would lose URL path-based routing, so requests for /images and /videos could no longer be sent to different backend pools; multi-site hosting on host header; SSL and TLS termination and end-to-end encryption, so backend servers would have to handle certificates themselves; the Web Application Firewall, which protects against attacks such as SQL injection and cross-site scripting; cookie-based session affinity; and connection draining for graceful maintenance. It would also lose the dedicated /27 subnet requirement, which is a cost saving rather than a capability. If the application only needs traffic spread across VMs on a port, the Load Balancer is the right choice; if any routing decision depends on the contents of the HTTP request, it is not.",
+  "model": "Azure Load Balancer operates at Layer 4 and distributes traffic based only on IP address and port, using a frontend IP, load balancing rules, a backend pool, and health probes. Application Gateway operates at Layer 7 on HTTP and HTTPS, so it can read the request itself. Replacing it would lose URL path-based routing, so requests for /images and /videos could no longer be sent to different backend pools; multi-site hosting on host header; SSL and TLS termination and end-to-end encryption, so backend servers would have to handle certificates themselves; the Web Application Firewall (WAF), which protects against attacks such as SQL injection and cross-site scripting; cookie-based session affinity; and connection draining for graceful maintenance. It would also lose the dedicated /27 subnet requirement, which is a cost saving rather than a capability. If the application only needs traffic spread across VMs on a port, the Load Balancer is the right choice; if any routing decision depends on the contents of the HTTP request, it is not.",
   "keyTerms": [
    "Layer 4",
    "IP and port",
