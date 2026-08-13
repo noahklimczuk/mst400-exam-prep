@@ -643,6 +643,42 @@ textarea:focus { border-color: var(--accent); }
 .grade { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0 0; }
 .grade button[aria-pressed="true"] { background: var(--accent); color: var(--ground); border-color: var(--accent); }
 
+/* ---------- in-page confirm ----------
+   The artifact renders in a sandboxed iframe without allow-modals, so
+   window.confirm() is ignored and returns false. This replaces it. */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+}
+.modal[hidden] { display: none; }
+
+.modal__box {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--warn);
+  padding: 1.4rem 1.5rem 1.5rem;
+  max-width: 26rem;
+  width: 100%;
+}
+
+.modal__box h3 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink);
+  margin: 0 0 0.5rem;
+}
+
+.modal__box p { color: var(--muted); font-size: 0.94rem; margin: 0 0 1.2rem; }
+
 .themer {
   position: fixed;
   right: 1.1rem;
@@ -808,6 +844,7 @@ SCRIPT = r"""
   }
 
   function startExam() {
+    closeConfirm();
     draw();
     var mins = MODES[mode].minutes;
     if (mins) {
@@ -1002,14 +1039,31 @@ SCRIPT = r"""
     renderDots();
   });
 
+  // window.confirm is a no-op in the sandboxed artifact frame (it returns false
+  // without ever showing anything), so the confirmation is rendered in-page.
+  function closeConfirm() {
+    $('#confirmEnd').hidden = true;
+  }
+
   function endTest() {
     var left = paper.length - answeredCount();
-    if (left > 0 && !confirm(left + ' question(s) are unanswered. End the test anyway?')) return;
-    finish();
+    if (left === 0) { finish(); return; }
+    $('#confirmMsg').textContent = left + (left === 1 ? ' question is' : ' questions are') +
+      ' still unanswered. They will be scored as incorrect.';
+    $('#confirmEnd').hidden = false;
+    $('#confirmYes').focus();
   }
 
   $('#submit').addEventListener('click', endTest);
   $('#endTest').addEventListener('click', endTest);
+  $('#confirmNo').addEventListener('click', closeConfirm);
+  $('#confirmYes').addEventListener('click', function () {
+    closeConfirm();
+    finish();
+  });
+  $('#confirmEnd').addEventListener('click', function (e) {
+    if (e.target === $('#confirmEnd')) closeConfirm();
+  });
 
   $('#start').addEventListener('click', startExam);
   $('#retake').addEventListener('click', function () { show('setup'); });
@@ -1017,6 +1071,7 @@ SCRIPT = r"""
   // ---------- results ----------
   function finish() {
     if (ticker) { clearInterval(ticker); ticker = null; }
+    closeConfirm();
     renderResults();
     show('results');
   }
@@ -1153,6 +1208,10 @@ SCRIPT = r"""
 
   // keyboard
   document.addEventListener('keydown', function (e) {
+    if (!$('#confirmEnd').hidden) {
+      if (e.key === 'Escape') closeConfirm();
+      return;
+    }
     if (!$('#exam').classList.contains('is-active')) return;
     if (e.target.tagName === 'TEXTAREA') return;
     if (e.key === 'ArrowRight') $('#next').click();
@@ -1319,6 +1378,17 @@ def main() -> None:
     </div>
   </section>
 
+</div>
+
+<div class="modal" id="confirmEnd" hidden>
+  <div class="modal__box" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <h3 id="confirmTitle">End the test?</h3>
+    <p id="confirmMsg"></p>
+    <div class="nav-row">
+      <button class="btn" id="confirmYes" type="button">End test &amp; see results</button>
+      <button class="btn btn--quiet" id="confirmNo" type="button">Keep going</button>
+    </div>
+  </div>
 </div>
 
 <button class="themer" type="button" aria-label="Cycle colour theme">theme <span>system</span></button>
